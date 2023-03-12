@@ -61,12 +61,13 @@ struct StudyClass{
     Student* pStudent = nullptr;
     StudyClass* nextClass = nullptr;
 };
-struct Schoolyear{
-    StudyClass* pClass = nullptr;
-    Schoolyear* nextYear = nullptr;
+struct SchoolYear{
+    int yearStart, yearEnd;
+    StudyClass* pClass;
+    SchoolYear* prevYear;
 };
 
 
-// void getInfo(Info &student, ifstream& ifs);
-// void getStudent(StudyClass &ClassToAdd);
+void getInfo(Info &student, ifstream& ifs);
+void getStudent(StudyClass &ClassToAdd);
 #endif

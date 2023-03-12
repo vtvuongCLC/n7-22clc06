@@ -8,11 +8,13 @@ void getInfo(Info &student, ifstream& ifs){
     getline(ifs, gender, ',');
     if(gender == "male") student.isMale = true;
     else student.isMale = false;
-    ifs >> student.Birth.day;
-    ifs.ignore(1);
-    ifs >> student.Birth.month;
-    ifs.ignore(1);
-    ifs >> student.Birth.year;
+    string day, month, year;
+    getline(ifs, day, '/');
+    student.Birth.day = stoi(day);
+    getline(ifs, month, '/');
+    student.Birth.month = stoi(month);
+    getline(ifs, year, ',');
+    student.Birth.year = stoi(year);
     getline(ifs, student.SocialID);
 }
 
@@ -24,11 +26,16 @@ void getStudent(StudyClass &ClassToAdd){
         return;        
     }
     while(!ifs.eof()){
+
     Student* cur = ClassToAdd.pStudent;
     ClassToAdd.pStudent = new Student;
     ClassToAdd.pStudent->nextStudent = cur;
     ClassToAdd.pStudent->mainClass = ClassToAdd.nameStudyClass;
-    ifs >> ClassToAdd.pStudent->No;
+
+    string no;
+    getline(ifs, no, ',');
+    ClassToAdd.pStudent->No = stoi(no);
     getInfo(ClassToAdd.pStudent->This_Student, ifs);
     }
+    ifs.close();
 }
