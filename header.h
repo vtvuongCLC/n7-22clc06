@@ -58,7 +58,8 @@ struct StudyClass{
     StudyClass* nextClass = nullptr;
 };
 struct Schoolyear{
+    int yearStart, yearEnd;
     StudyClass* pClass = nullptr;
-    Schoolyear* nextYear = nullptr;
+    Schoolyear* nextYear = nullptr; 
 };
 #endif
