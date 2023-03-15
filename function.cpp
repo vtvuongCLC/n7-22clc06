@@ -5,8 +5,6 @@
 #include "header.h"
 using namespace std;
 bool validInfo(int no,Info infoparam,char gender) {
-    if (no <= 1)
-        return false;
     if (gender != 'm' && gender != 'f')
         return false;
     if (infoparam.Birth.day <= 0 || infoparam.Birth.day > 31)
@@ -25,15 +23,15 @@ void AddStudentManual(bool toAppend,string className)
     }
     else
         StudentDataOut.open(className+".txt");
+    int no = 0;
     do {
-        int no;
+        int check;
         system("cls");
         cout << "Add new student (-1 to exit) : " << endl;
-        cin >> no;
-        if (no < 0)
-            break;   
-        cout << "Enter student No. :";
-        cin >> no;
+        cin >> check;
+        if (check < 0)
+            break;
+        no += 1;
         Info tempInfo;
         cout << "Enter student ID : ";
         getline(cin,tempInfo.StudentID,'\n');
@@ -47,7 +45,7 @@ void AddStudentManual(bool toAppend,string className)
         gender = tolower(gender);
         cout << "Enter student Date of birth(dd/mm/yyyy) : ";
         scanf("%d/%d/%d",&tempInfo.Birth.day,&tempInfo.Birth.month,&tempInfo.Birth.year);
-        if (validInfo(no,tempInfo,gender) == true) {
+        if (validInfo(tempInfo,gender) == true) {
             StudentDataOut << no << ',';
             StudentDataOut << tempInfo.StudentID << ',';
             StudentDataOut << tempInfo.FirstName << ',';
