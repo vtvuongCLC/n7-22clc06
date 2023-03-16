@@ -54,12 +54,9 @@ struct Student{
     Student* nextStudent = nullptr;
 };
 struct StudyClass{
-    Student* pStudent = nullptr;
-    StudyClass* nextClass = nullptr;
+    string className;
 };
 struct Schoolyear{
-    int yearStart, yearEnd;
-    StudyClass* pClass = nullptr;
-    Schoolyear* nextYear = nullptr; 
+    string year;
 };
 #endif
