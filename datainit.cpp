@@ -316,11 +316,12 @@ void SchoolYearManage(string ListYearFile)
         delete []ptrS;
     }
 }
-int main()
-{
-    string ListYearFIle = "SchoolyearList";
-    SchoolYearManage(ListYearFIle);
-}
+// int main() <--- FOR TESTING AND DEBUGGING
+// {
+//     string ListYearFIle = "SchoolyearList";
+//     SchoolYearManage(ListYearFIle);
+// }
+
 // void pullYearFromFile(Schoolyear* &pHead, string ListYearFile)
 // {
 //     ifstream ifs;
