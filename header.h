@@ -65,9 +65,12 @@ struct SchoolYear{
     int yearStart, yearEnd;
     StudyClass* pClass;
     SchoolYear* prevYear;
+    Semester* SemesterList;
 };
 
 
 void getInfo(Info &student, ifstream& ifs);
 void getStudent(StudyClass &ClassToAdd);
+void viewListCourses(Semester* curSemester);
+Course* findTheCourse(Course* thisCourse, string nameCourse);
 #endif
