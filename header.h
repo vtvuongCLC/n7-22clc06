@@ -18,9 +18,9 @@ struct Scoreboard{
     int No;
     string StudentID;
     string StudentName;
-    double OtherMark;
-    double Midterm;
-    double Final;
+    double OtherMark = 0;
+    double Midterm = 0;
+    double Final = 0;
     Scoreboard* nextBoard = nullptr;
 };
 
@@ -71,6 +71,4 @@ struct SchoolYear{
 
 void getInfo(Info &student, ifstream& ifs);
 void getStudent(StudyClass &ClassToAdd);
-void viewListCourses(Semester* curSemester);
-Course* findTheCourse(Course* thisCourse, string nameCourse);
 #endif
