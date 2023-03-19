@@ -39,24 +39,29 @@ struct Semester{
     double GPA;
 };
 struct Info{
+    int No;
     string StudentID;
     string FirstName;
     string LastName;
-    bool isMale;
+    string Gender;
     BirthDate Birth;
     string SocialID;
+    Info* pNext = nullptr;
 };
 struct Student{
-    int No;
-    Info This_Student;
-    string mainClass;
-    Semester* SemesterList = nullptr;
+    string yearName;
+    string className;
+    Info dInfo;
     Student* nextStudent = nullptr;
 };
 struct StudyClass{
     string className;
+    Student* listStudent = nullptr;
+    StudyClass* nextClass = nullptr;
 };
 struct Schoolyear{
     string year;
+    StudyClass* listClass = nullptr; 
+    Schoolyear* nextYear = nullptr;
 };
 #endif
