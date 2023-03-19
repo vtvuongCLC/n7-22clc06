@@ -63,13 +63,13 @@ struct Semester {
 };
 struct StudyClass {
     string className;
+    Student* pStudent = nullptr;
     StudyClass* nextClass = nullptr;
 };
 struct Schoolyear {
     string year;
     Semester* firstSem = nullptr;
     StudyClass* listClass = nullptr;
-    Student* listStudent = nullptr;
     Schoolyear* nextYear = nullptr;
 };
 #endif
