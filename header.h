@@ -46,11 +46,11 @@ struct Info{
     string Gender;
     BirthDate Birth;
     string SocialID;
-    Info* pNext = nullptr;
 };
 struct Student{
     string yearName;
     string className;
+    string password;
     Info dInfo;
     Student* nextStudent = nullptr;
 };

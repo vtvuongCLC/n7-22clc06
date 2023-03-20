@@ -1,10 +1,12 @@
 #include <fstream>
 #include <string>
 #include <iostream>
-#include <stdio.h>
-#include "header.h"
 #include <iomanip>
+#include "datainit.h"
+#include "header.h"
+
 using namespace std;
+
 bool IsemptyFile(string fileName)
 {
     bool result = false;
@@ -22,6 +24,22 @@ bool IsemptyFile(string fileName)
     test.close();
     return result;
 }
+bool validInfo(Info infoparam,char gender)
+{
+    if (gender != 'm' && gender != 'M')
+    {
+        if (gender != 'f' && gender != 'F')
+        return false;
+    }
+    if (infoparam.Birth.day <= 0 || infoparam.Birth.day > 31)
+        return false;
+    if (infoparam.Birth.month <= 0 || infoparam.Birth.month > 12)
+        return false;
+    if (infoparam.Birth.year < 0)
+        return false;
+    return true;
+}
+
 void LoadYearFromFile(string YearFile, Schoolyear* &listYear)
 {
     ifstream YearIn;
@@ -75,7 +93,7 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
     Student* curStudent = nullptr;
     while (StudentIn.eof() == false) {
         string tempData;
-        getline(StudentIn,tempData,'\n');
+        getline(StudentIn,tempData,',');
         if (tempData.empty() == false) {
             if (listStudent == nullptr) {
                 listStudent = new Student;
@@ -87,7 +105,9 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
             curStudent->yearName = yearName;
             curStudent->className = className;
             curStudent->dInfo.No = stoi(tempData);
-            getline(StudentIn,curStudent->dInfo.StudentID,',');
+            getline(StudentIn,tempData,',');
+            curStudent->dInfo.StudentID = tempData;
+            getline(StudentIn,curStudent->password,',');
             getline(StudentIn,curStudent->dInfo.FirstName,',');
             getline(StudentIn,curStudent->dInfo.LastName,',');
             getline(StudentIn,curStudent->dInfo.Gender,',');
@@ -117,67 +137,204 @@ void LoadData(string YearFile, Schoolyear* &listYear)
     }
         
 }
-void InitBaseData(string YearFile)
+
+void AddYear(Schoolyear* &listYear)
 {
-    ifstream check;
-    ofstream ClassDataOut;
-    ofstream YearOut;
-    YearOut.open(YearFile+".txt", ios::app);
+    system("cls");
     string schoolyear;
-    check.open(YearFile+".txt");
-    bool existed;
+    bool exist;
     do {
-        system("cls");
-        char ask;
-        cout << "Enter any key to continue (0 to exit): " << endl;
-        cin >> ask;
-        if (ask  == '0')
-        {
-            YearOut.close();
-            check.close();
-            return;
+        exist = false;
+    cout << "Enter School year's start year and end year" << endl << endl;
+    cin.ignore();
+    cout << "Enter School year's Start year: ";
+    cin >> schoolyear;
+    schoolyear += '-';
+    string temp;
+    cout << "Enter School year's End year: ";
+    cin >> temp;
+    schoolyear += temp;
+    Schoolyear* check = listYear;
+    while (check != nullptr) {
+        if (check->year == schoolyear) {
+            cout << "This year has already existed" << endl;
+            system("pause");
+            exist = true;
+            break;
         }
-        cout << "Enter School year's start year and end year" << endl;
-        cin.ignore();
-        cout << "Enter School year's Start year: ";
-        cin >> schoolyear;
-        schoolyear += '-';
-        string temp;
-        cout << "Enter School year's End year: ";
-        cin >> temp;
-        schoolyear += temp;
-        existed = false;
-        while (check.eof() == false)
-        {
-            string test;
-            getline(check,test,'\n');
-            if (test == schoolyear)
-            {
-                cout << "This school year is already existed" << endl;
-                system("pause");
-                existed = true;
-                check.clear();
-                check.seekg(0);
-                break;
-            }
-        }
-    } while (existed == true);
-    check.close();
-    YearOut << schoolyear << endl;
-    YearOut.close();
-    ClassDataOut.open(schoolyear+".txt");
-    cin.ignore(1000,'\n');
-    cout << "Enter Classes in this year (0 to stop): " << endl << endl;
+        check = check->nextYear;
+    }
+    } while (exist == true);
+    if (listYear == nullptr) {
+        listYear = new Schoolyear;
+        listYear->year = schoolyear;
+        return;
+    }
+    Schoolyear* curYear = listYear;
+    while (curYear->nextYear != nullptr)
+    {
+        curYear = curYear->nextYear;
+    }
+    curYear->nextYear = new Schoolyear;
+    curYear = curYear->nextYear;
+    curYear->year = schoolyear;
+}
+void AddClass(StudyClass* &listClass)
+{
+    StudyClass* curClass = nullptr;
     string tempClass;
+    cout << "Enter Classes in this year (0 to stop): " << endl << endl;
+    cin.ignore();
     do {
         cout << "Enter Class name: ";
         getline(cin,tempClass,'\n');
         if (tempClass == "0") {
             break;
         }
-        ClassDataOut << tempClass << endl;
+        if (listClass == nullptr) {
+            listClass = new StudyClass;
+            curClass = listClass;
+        } else {
+            curClass->nextClass = new StudyClass;
+            curClass = curClass->nextClass;
+        }
+        curClass->className = tempClass;
     } while (tempClass != "0");
-    ClassDataOut.close();
+}
+void AddStudentManual(Student* &listStudent, string yearName, string className)
+{
+    int no = 0;
+    Student* curStudent = nullptr;
+    do {
+        int check;
+        system("cls");
+        cout << "Add new student ? (1 to proceed | 0 to exit) : " << endl;
+        cin >> check;
+        if (check <= 0)
+            break;
+        no += 1;
+        Info tempInfo;
+        cin.ignore();
+        cout << "Enter student ID : ";
+        getline(cin,tempInfo.StudentID,'\n');
+        cout << "Enter student First Name : ";
+        getline(cin,tempInfo.FirstName,'\n');
+        cout << "Enter student Last Name : ";
+        getline(cin,tempInfo.LastName,'\n');
+        char gender;
+        cout << "Enter student Gender (male = m | female = f) : ";
+        cin >> gender;
+        cout << "Enter student Date of birth (Ex: 29 2 2004) : ";
+        cin >> tempInfo.Birth.day >> tempInfo.Birth.month >> tempInfo.Birth.year;
+        cin.ignore();
+        cout << "Enter student Social ID: ";
+        getline(cin,tempInfo.SocialID,'\n');
+        if (validInfo(tempInfo,gender) == true) {
+            if (listStudent == nullptr) {
+                listStudent = new Student;
+                curStudent = listStudent;
+            } else {
+                curStudent->nextStudent = new Student;
+                curStudent = curStudent->nextStudent;
+            }
+            curStudent->yearName = yearName;
+            curStudent->className = className;
+            curStudent->password = className;
+            curStudent->dInfo.No = no;
+            curStudent->dInfo.StudentID = tempInfo.StudentID;
+            curStudent->dInfo.FirstName = tempInfo.FirstName;
+            curStudent->dInfo.LastName = tempInfo.LastName;
+            if (gender == 'm' || gender == 'M') {
+                curStudent->dInfo.Gender = "male";
+            } else {
+                curStudent->dInfo.Gender = "female";
+            }
+            curStudent->dInfo.Birth.day = tempInfo.Birth.day;
+            curStudent->dInfo.Birth.month = tempInfo.Birth.month;
+            curStudent->dInfo.Birth.year = tempInfo.Birth.year;
+            curStudent->dInfo.SocialID = tempInfo.SocialID;
+        } else {
+            cout << "Some information is invalid...";
+            system("pause"); 
+        }
+    } while (true);
+}
+void AddStudentCSV(Student* &listStudent, string yearName, string className)
+{
+    string filepath;
+    ifstream csvIn;
+    system("cls");
+    do {
+        cout << "Enter CSV file path: ";
+        getline(cin,filepath,'\n');
+        csvIn.open(filepath);
+        if (csvIn.is_open() == false) {
+            cout << "Unable to open file (ERROR)";
+            system("pause");
+        }
+    } while (csvIn.is_open() == false);
+    csvIn.ignore(1000,'\n');
+    Student* curStudent = nullptr;
+    while (csvIn.eof() == false)
+    {
+        if (listStudent == nullptr) {
+            listStudent = new Student;
+            curStudent = listStudent;
+        } else {
+            curStudent->nextStudent = new Student;
+            curStudent = curStudent->nextStudent;
+        }
+        curStudent->yearName = yearName;
+        curStudent->className = className;
+        
+        string tempdata;
+        getline(csvIn,tempdata,',');
+        curStudent->dInfo.No = stoi(tempdata);
+        
+        getline(csvIn,tempdata,',');
+        curStudent->password = className;
+        curStudent->dInfo.StudentID = tempdata;        
+        
+        getline(csvIn,tempdata,',');
+        curStudent->dInfo.FirstName = tempdata;
+        
+        getline(csvIn,tempdata,',');
+        curStudent->dInfo.LastName = tempdata;
+        
+        getline(csvIn,tempdata,',');
+        curStudent->dInfo.Gender = tempdata;
+        
+        getline(csvIn,tempdata,'/');
+        curStudent->dInfo.Birth.day = stoi(tempdata);
+        
+        getline(csvIn,tempdata,'/');
+        curStudent->dInfo.Birth.month = stoi(tempdata);
+        
+        getline(csvIn,tempdata,',');
+        curStudent->dInfo.Birth.year = stoi(tempdata);
+        
+        getline(csvIn,tempdata,'\n');
+        curStudent->dInfo.SocialID = tempdata;
+    }
+    system("pause");
+}
+void AddStudent(Student* &listStudent, string yearName, string className)
+{
+    char choose; 
+    cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
+    cout << ">> ";
+    cin >> choose;
+    if (choose == 'f' || choose == 'F')
+        AddStudentCSV(listStudent,yearName,className);
+    else
+        AddStudentManual(listStudent,yearName,className);
+}
+
+void InitBaseData(Schoolyear* &listYear)
+{  
+    system("cls");
+    AddYear(listYear);
+    AddClass(listYear->listClass);
 }
 void SaveData(string YearFile, Schoolyear* ListYear)
 {
@@ -215,6 +372,7 @@ void SaveData(string YearFile, Schoolyear* ListYear)
             while (curStudent != nullptr) {
                 out << curStudent->dInfo.No << ',';
                 out << curStudent->dInfo.StudentID << ',';
+                out << curStudent->password << ',';
                 out << curStudent->dInfo.FirstName << ',';
                 out << curStudent->dInfo.LastName << ',';
                 out << curStudent->dInfo.Gender << ',';
@@ -252,14 +410,196 @@ void ClearData(Schoolyear* &listYear)
         delete curYear;
     }
 }
-int main()
+
+Schoolyear* navigateYear(Schoolyear* listYear, int userindex)
 {
-    string YearFile = "Listyear";
-    Schoolyear* DataList = nullptr;
-    if (IsemptyFile(YearFile) == true) {
-        InitBaseData(YearFile);
+    if (listYear == nullptr)
+        return nullptr;
+    int i = 0;
+    while (listYear != nullptr) {
+        i++;
+        if (i == userindex)
+            return listYear;
+        listYear = listYear->nextYear;
     }
-    LoadData(YearFile,DataList);
-    SaveData(YearFile,DataList);
-    ClearData(DataList);
+    return nullptr;
 }
+StudyClass* navigateClass(StudyClass* listClass, int userindex)
+{
+    if (listClass == nullptr)
+        return nullptr;
+    int i = 0;
+    while (listClass != nullptr) {
+        i++;
+        if (i == userindex)
+            return listClass;
+        listClass = listClass->nextClass;
+    }
+    return nullptr;
+}
+
+void DisplayYearList(Schoolyear* listYear, int &max)
+{
+    int i = 0;
+    while (listYear != nullptr) {
+        i += 1;
+        cout << i << ". " << listYear->year << endl;
+        listYear = listYear->nextYear;
+    }
+    max = i;
+}
+void DisplayClassList(StudyClass* listClass, int &max)
+{
+    int i = 0;
+    while (listClass != nullptr) {
+        i++;
+        cout << i << ". " << listClass->className << endl;
+        listClass = listClass->nextClass;
+    }
+    max = i;
+}
+void DisplayBirth(BirthDate InputBirth)
+{
+    int offset = 0;
+    if (InputBirth.day / 10 == 0) {
+        offset += 1;
+    }
+    if (InputBirth.month / 10 == 0) {
+        offset += 1;
+    }
+    cout << left << InputBirth.day << '/';
+    cout << left << InputBirth.month << '/';
+    cout << left << setw(13+offset) << InputBirth.year;
+} 
+void DisplayStudentList(Student* listStudent)
+{
+    while (listStudent != nullptr) {
+        cout << left << setw(5) << listStudent->dInfo.No;
+        cout << left << setw(15) << listStudent->dInfo.StudentID;
+        cout << left << setw(25) << listStudent->dInfo.FirstName;
+        cout << left << setw(15) << listStudent->dInfo.LastName;
+        listStudent->dInfo.Gender[0] = toupper(listStudent->dInfo.Gender[0]);
+        cout << left << setw(11) << listStudent->dInfo.Gender;
+        DisplayBirth(listStudent->dInfo.Birth);
+        cout << left << setw(25) << listStudent->dInfo.SocialID << endl;
+        listStudent = listStudent->nextStudent;
+    }
+}
+
+void StudyClassManage(StudyClass* InputClass, string yearName)
+{
+    int selection;
+    if (InputClass->listStudent == nullptr) {
+        system("cls");
+        cout << "No student data available" <<endl;
+        cout << "Add student ? (1 to proceed | 0 to cancel)" << endl;
+        cin >> selection;
+        if (selection == 1) {
+            AddStudent(InputClass->listStudent,yearName, InputClass->className);
+            StudyClassManage(InputClass, yearName);
+        }
+    } else {
+        do {
+            system("cls");
+            cout << "Student Management" << endl;
+            cout << endl; 
+            cout << "Year: " << yearName << endl;
+            cout << "Class: " << InputClass->className << endl;
+            cout << endl;
+            cout << left << setw(5) << "No";
+            cout << left << setw(15) << "Student ID";
+            cout << left << setw(25) << "First Name";
+            cout << left << setw(15) << "Last Name";
+            cout << left << setw(11) << "Gender";
+            cout << left << setw(19) << "Date of Birth";
+            cout << left << setw(25) << "Social ID" << endl;
+            DisplayStudentList(InputClass->listStudent);
+            cout << endl;
+            cout << "0. Back" << endl;
+            cout << endl << ">> ";
+            cin >> selection;
+            if (selection == 0)
+                break;
+        } while (true);
+    }
+}
+void ListClassManage(Schoolyear* InputYear)
+{
+    int selection;
+    if (InputYear->listClass == nullptr) {
+        system("cls");
+        cout << "No class data available" <<endl;
+        cout << "Add class ? (1 to proceed | 0 to cancel)" << endl;
+        cin >> selection;
+        if (selection == 1) {
+            AddClass(InputYear->listClass);
+            ListClassManage(InputYear);
+        }
+    }
+    else {
+        int maxSelection;
+        StudyClass* toClass = nullptr;
+        do {
+            system("cls");
+            cout << "Classes Management" << endl;
+            cout << endl;
+            cout << "Year: " << InputYear->year << endl;
+            cout << endl;
+            cout << "List of classes: " << endl;
+            DisplayClassList(InputYear->listClass, maxSelection);
+            cout << endl;
+            cout << "0. Back" << endl;
+            cout << endl << ">> ";
+            cin >> selection;
+            if (selection == 0)
+                break;
+            if (selection > 0 && selection <= maxSelection) {
+                toClass = navigateClass(InputYear->listClass, selection);
+                StudyClassManage(toClass, InputYear->year);
+            }
+        } while (true);
+    }
+}
+void SchoolYearManage(Schoolyear *DataList)
+{
+    
+    int maxSelection;
+    Schoolyear* toYear;
+    string selection;
+    do {
+        system("cls");
+        cout << "School Year Management" << endl << endl;
+        cout << "List of years:" << endl;
+        DisplayYearList(DataList,maxSelection);
+        cout << endl;
+        cout << "n. Add a new year" << endl;
+        cout << "0. End program" << endl;
+        cout << endl << ">> ";
+        cin >> selection;
+        if (selection == "n") {
+            AddYear(DataList);
+            continue;
+        }
+        int intselection = stoi(selection);
+        if (intselection == 0)
+            break;
+        if (intselection > 0 && intselection <= maxSelection) {
+            toYear = navigateYear(DataList,intselection);
+            ListClassManage(toYear);
+        }
+    } while (true);
+}
+
+// int main()
+// {
+//     string YearFile = "Listyear";
+//     Schoolyear* DataList = nullptr;
+//     if (IsemptyFile(YearFile) == true) {
+//         InitBaseData(DataList);
+//     } else {
+//         LoadData(YearFile,DataList);
+//     }
+//     SchoolYearManage(DataList);
+//     SaveData(YearFile,DataList);
+//     ClearData(DataList);
+// }
