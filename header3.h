@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <iomanip>
 
 using namespace std;
 struct BirthDate {
@@ -18,10 +19,12 @@ struct Scoreboard {
     int No;
     string StudentID;
     string StudentName;
-    double OtherMark;
-    double Midterm;
-    double Final;
+    string studyClassName;
+    double OtherMark = 0;
+    double Midterm = 0;
+    double Final = 0;
     Scoreboard* nextBoard = nullptr;
+    Scoreboard* prevBoard = nullptr;
 };
 
 struct Course {
@@ -52,23 +55,23 @@ struct Info {
     string Gender;
     BirthDate Birth;
     string SocialID;
-    Info* pNext = nullptr;
 };
 struct Student {
     string yearName;
     string className;
+    string password;
     Info dInfo;
     Student* nextStudent = nullptr;
 };
 struct StudyClass {
     string className;
+    Student* listStudent = nullptr;
     StudyClass* nextClass = nullptr;
 };
 struct Schoolyear {
     string year;
     Semester* firstSem = nullptr;
     StudyClass* listClass = nullptr;
-    Student* listStudent = nullptr;
     Schoolyear* nextYear = nullptr;
 };
 #endif

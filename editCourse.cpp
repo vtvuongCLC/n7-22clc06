@@ -22,23 +22,27 @@ void viewListCourses(Semester* curSemester){
     }
 }
 
-Course* findTheCourse(Course* thisCourse, string NameCourse, string IDCourse, string NameClass){
-    while(thisCourse != nullptr){
-        if(NameCourse == thisCourse->courseName 
-            && IDCourse == thisCourse->courseID 
-            && NameClass == thisCourse->className) 
+Course* findTheCourse(Course* pCourse, string NameCourse, string IDCourse, string NameClass){
+    while(pCourse != nullptr){
+        if(NameCourse == pCourse->courseName 
+            && IDCourse == pCourse->courseID 
+            && NameClass == pCourse->className) 
         break;
-        thisCourse = thisCourse->nextCourse;
+        pCourse = pCourse->nextCourse;
     }
-    return thisCourse;
+    return pCourse;
 } 
 
 void updateCourseInformation(Semester* curSemester){
-    string nameCourse;
-    cout << "Please enter the course name you want to update: ";
-    getline(cin, nameCourse);
+    string courseName, courseID, className;
+    cout << "Enter the course name you want to add student: ";
+    getline(cin, courseName);
+    cout << "Enter the course ID you want to add student: ";
+    getline(cin, courseID);
+    cout << "Enter the class name of course you want to add student: ";
+    getline(cin, className);
 
-    Course* thisCourse = findTheCourse(curSemester->Courselist, nameCourse);
+    Course* thisCourse = findTheCourse(curSemester->Courselist, courseName, courseID, className);
 
     if(thisCourse){
         while(true){
@@ -75,45 +79,46 @@ void updateCourseInformation(Semester* curSemester){
             }
         }
     }
-    else cout << "This course isn't exist.\n";
+    else cout << "This course doesn't exist.\n";
 }
+// Return the current school year pointer
+//
+// SchoolYear* findSchoolYear(SchoolYear* yearHead, int year){
+//     while(yearHead){
+//         if(yearHead->yearStart == year) break;
+//         yearHead = yearHead->prevYear;
+//     }
+//     return yearHead;
+// }
 
-SchoolYear* findSchoolYear(SchoolYear* yearHead, int year){
-    while(yearHead){
-        if(yearHead->yearStart == year) break;
-        yearHead = yearHead->prevYear;
+StudyClass* findStudyClass(StudyClass* pClass, string name){
+    while(pClass){
+        if(pClass->className == name) break;
+        pClass = pClass->nextClass;
     }
-    return yearHead;
+    return pClass;
 }
 
-StudyClass* findStudyClass(StudyClass* classHead, string className){
-    while(classHead){
-        if(classHead->nameStudyClass == className) break;
-        classHead = classHead->nextClass;
+Student* findStudent(Student* pStudent, string IDStudent){ 
+    while(pStudent){
+        if(pStudent->dInfo.StudentID == IDStudent) break;
+        pStudent = pStudent->nextStudent;
     }
-    return classHead;
-}
-
-Student* findStudent(Student* studentHead, string IDStudent){
-    while(studentHead){
-        if(studentHead->This_Student.StudentID == IDStudent) break;
-        studentHead = studentHead->nextStudent;
-    }
-    return studentHead;
+    return pStudent;
 }
 
 
-void exportListStudentsInCourse(Course thisCourse){
+void exportListStudentsInCourse(Course* thisCourse){
     ofstream ofs;
-    ofs.open(thisCourse.courseName + '-' + thisCourse.courseID + '-' + thisCourse.className);
-    while(thisCourse.thisCourseScore){
-        ofs << thisCourse.thisCourseScore->No << "," 
-            << thisCourse.thisCourseScore->StudentID << "," 
-            << thisCourse.thisCourseScore->StudentName << "," 
-            << thisCourse.thisCourseScore->Midterm << "," 
-            << thisCourse.thisCourseScore->OtherMark << "," 
-            << thisCourse.thisCourseScore->Final << endl;
-        thisCourse.thisCourseScore = thisCourse.thisCourseScore->nextBoard;
+    ofs.open(thisCourse->courseName + '-' + thisCourse->courseID + '-' + thisCourse->className);
+    while(thisCourse->thisCourseScore){
+        ofs << thisCourse->thisCourseScore->No << "," 
+            << thisCourse->thisCourseScore->StudentID << "," 
+            << thisCourse->thisCourseScore->StudentName << "," 
+            << thisCourse->thisCourseScore->Midterm << "," 
+            << thisCourse->thisCourseScore->OtherMark << "," 
+            << thisCourse->thisCourseScore->Final << endl;
+        thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
     }
     ofs.close();
 }
@@ -125,6 +130,13 @@ int countStudentIn1Course(Course* thisCourse){
     }
     return countStudent;
 }
+bool studentExistInCourse(Course* thisCourse, string studentID){
+    while(thisCourse->thisCourseScore){
+        if(studentID == thisCourse->thisCourseScore->StudentID) return true;
+        thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
+    }
+    return false;
+}
 void addStudentToCourse(Semester* curSemester){
     string courseName, courseID, className;
     cout << "Enter the course name you want to add student: ";
@@ -135,6 +147,10 @@ void addStudentToCourse(Semester* curSemester){
     getline(cin, className);
 
     Course* thisCourse = findTheCourse(curSemester->Courselist, courseName, courseID, className);
+    if(!thisCourse) {
+        cout << "This course doesn't exist!\n";
+        return;
+    }
     int numStudent = countStudentIn1Course(thisCourse);
 
     if(numStudent >= thisCourse->maxStudent){
@@ -142,7 +158,7 @@ void addStudentToCourse(Semester* curSemester){
         return;
     }
 
-    // còn phần check xem student có tồn tại hay không
+    // còn phần check xem student có tồn tại trong lớp sinh hoạt hay không
     string studentName, studentID; 
     int no;
     cout << "Enter the student name you want to add: ";
@@ -152,10 +168,22 @@ void addStudentToCourse(Semester* curSemester){
     cout << "Enter the number of No you want to add: ";
     cin >> no;
 
+    if(!studentExistInCourse(thisCourse, studentID)) return;
     Scoreboard* tmp = new Scoreboard;
-    tmp->nextBoard = thisCourse->thisCourseScore->nextBoard;
     tmp->No = no;
     tmp->StudentID = studentID;
     tmp->StudentName = studentName;
+    tmp->nextBoard = thisCourse->thisCourseScore;
+    if(thisCourse->thisCourseScore)
+        thisCourse->thisCourseScore->prevBoard = tmp;
     thisCourse->thisCourseScore = tmp;
+}
+
+void displayStudentInCourse(Course* thisCourse){
+    while(thisCourse->thisCourseScore){
+        cout << left << setw(15) << thisCourse->thisCourseScore->StudentID 
+             << left << setw(40) << thisCourse->thisCourseScore->StudentName 
+             << left << setw(20) << thisCourse->thisCourseScore->studyClassName << endl;
+        thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
+    }
 }
