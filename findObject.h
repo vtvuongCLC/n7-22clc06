@@ -10,7 +10,7 @@ StudyClass* findStudyClass(StudyClass* classHead, string className);
 Student* findStudent(Student* studentHead, string IDStudent);
 void exportListStudentsInCourse(Course thisCourse);
 int countStudentIn1Course(Course* thisCourse);
-bool studentExistInCourse(Course* thisCourse, string studentID);
+Scoreboard* findStudentInScoreboard(Scoreboard* thisBoard, string studentID);
 void addStudentToCourse(Semester* curSemester);
 void displayStudentInCourse(Course* thisCourse);
 #endif

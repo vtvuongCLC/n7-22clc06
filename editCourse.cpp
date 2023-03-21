@@ -130,12 +130,12 @@ int countStudentIn1Course(Course* thisCourse){
     }
     return countStudent;
 }
-bool studentExistInCourse(Course* thisCourse, string studentID){
-    while(thisCourse->thisCourseScore){
-        if(studentID == thisCourse->thisCourseScore->StudentID) return true;
-        thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
+Scoreboard* findStudentInScoreboard(Scoreboard* thisBoard, string studentID){
+    while(thisBoard){
+        if(studentID == thisBoard->StudentID) break;
+        thisBoard = thisBoard->nextBoard;
     }
-    return false;
+    return thisBoard;
 }
 void addStudentToCourse(Semester* curSemester){
     string courseName, courseID, className;
@@ -168,22 +168,62 @@ void addStudentToCourse(Semester* curSemester){
     cout << "Enter the number of No you want to add: ";
     cin >> no;
 
-    if(!studentExistInCourse(thisCourse, studentID)) return;
-    Scoreboard* tmp = new Scoreboard;
-    tmp->No = no;
-    tmp->StudentID = studentID;
-    tmp->StudentName = studentName;
-    tmp->nextBoard = thisCourse->thisCourseScore;
+    Scoreboard* studentAdd = findStudentInScoreboard(thisCourse->thisCourseScore, studentID);
+    if(studentAdd != nullptr) {
+        cout << "This student has existed in this course!\n";
+        return;
+    }
+    studentAdd = new Scoreboard;
+    studentAdd->No = no;
+    studentAdd->StudentID = studentID;
+    studentAdd->StudentName = studentName;
+    studentAdd->nextBoard = thisCourse->thisCourseScore;
     if(thisCourse->thisCourseScore)
-        thisCourse->thisCourseScore->prevBoard = tmp;
-    thisCourse->thisCourseScore = tmp;
+        thisCourse->thisCourseScore->prevBoard = studentAdd;
+    thisCourse->thisCourseScore = studentAdd;
 }
 
 void displayStudentInCourse(Course* thisCourse){
     while(thisCourse->thisCourseScore){
-        cout << left << setw(15) << thisCourse->thisCourseScore->StudentID 
+        cout << left << setw(5)  << thisCourse->thisCourseScore->No
+             << left << setw(15) << thisCourse->thisCourseScore->StudentID 
              << left << setw(40) << thisCourse->thisCourseScore->StudentName 
              << left << setw(20) << thisCourse->thisCourseScore->studyClassName << endl;
         thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
     }
+}
+void removeStudentFromCourse(Semester* curSemester){
+    string courseName, courseID, className;
+    cout << "Enter the course name you want to remove student: ";
+    getline(cin, courseName);
+    cout << "Enter the course ID you want to remove student: ";
+    getline(cin, courseID);
+    cout << "Enter the class name of course you want to remove student: ";
+    getline(cin, className);
+
+    Course* thisCourse = findTheCourse(curSemester->Courselist, courseName, courseID, className);
+    if(thisCourse == nullptr){
+        cout << "This course doesn't exist!\n";
+        return;
+    }
+
+    displayStudentInCourse(thisCourse);
+
+    string studentID;
+    cout << "Enter the student ID you want to remove from this course: ";
+    getline(cin, studentID);
+    Scoreboard* studentRemove = findStudentInScoreboard(thisCourse->thisCourseScore, studentID);
+    if(studentRemove == nullptr){
+        cout << "This student hasn't enrroled this course!\n";
+        return;
+    }
+    Scoreboard* tmp = studentRemove->nextBoard;
+    if(studentRemove->prevBoard)    studentRemove->prevBoard->nextBoard = studentRemove->nextBoard;
+    else thisCourse->thisCourseScore = studentRemove->nextBoard;
+
+    if(tmp->prevBoard)    tmp->prevBoard = studentRemove->prevBoard;
+
+    delete studentRemove;
+
+    cout << "This student was removed from this course\n";
 }
