@@ -1,11 +1,35 @@
 #include<iostream>
 #include<string>
 #include"header.h"
-#include"datainit.h"
+#include"datainit3.h"
 
 using namespace std;
 
-int login(Schoolyear user){
+bool pass_student(Student* user,string &pass){
+    if(user->password!=pass){ 
+        cout<<"Wrong password!. Please try again."<<endl;
+        cout<<"password: ";
+        cin>>pass;
+        return pass_student(user,pass);
+    }
+    return true;   
+}
+
+bool login_student(string &id,string &pass, Student* user){
+    Student *tmp= user;
+    while(tmp!=nullptr){
+        if(tmp->dInfo.StudentID==id){
+            if(pass_student(tmp,pass)) return true;
+        } 
+        tmp=tmp->nextStudent;
+    };
+    cout<<"Wrong student id, please try again"<<endl;
+    cout<<"ID: ";
+    cin>>id;
+    return login_student(id,pass,user);
+}
+
+int login(Student* user){
     int tmp;
     cout<<"You are :"<<endl;
     cout<<"1. Student:"<<endl;
@@ -18,24 +42,20 @@ int login(Schoolyear user){
     case 1:
     {
         string id;
+        string pass;
         do{
             cout<<"ID: ";
             cin>>id;
-            while(user.listClass!=nullptr){
-                while(user.listClass->listStudent!=nullptr){
-                    if(user.listClass->listStudent->dInfo.StudentID==id){
-                        return 1;
-                    }
-                    user.listClass->listStudent=user.listClass->listStudent->nextStudent;           
-                }
-                user.listClass=user.listClass->nextClass;
-            }
+            cout<<"password: ";
+            cin>>pass; 
         }
-        while(true);
-        break;
+        while(login_student(id,pass,user));
+        cout<<"Successful to login"<<endl;
+        return 1;
     }
     case 2:
-        break;
+
+        return 2;
     default:
         return 0;
     }
