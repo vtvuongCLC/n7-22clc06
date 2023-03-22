@@ -13,4 +13,7 @@ int countStudentIn1Course(Course* thisCourse);
 Scoreboard* findStudentInScoreboard(Scoreboard* thisBoard, string studentID);
 void addStudentToCourse(Semester* curSemester);
 void displayStudentInCourse(Course* thisCourse);
+void removeStudentFromCourse(Semester* curSemester);
+void removeCourse(Semester* curSemester);
+void deleteAllStudentsOfCourse(Course* thisCourse);
 #endif

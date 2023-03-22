@@ -9,14 +9,14 @@ void viewListCourses(Semester* curSemester){
     cout << "The list of courses in semester " << curSemester->semesterIndex << endl;
     while(pCourse != nullptr){
 
-        cout << pCourse->courseID << " " 
-             << pCourse->courseName << " " 
-             << pCourse->className << " " 
-             << pCourse->Teacher << " " 
-             << pCourse->credit << " " 
-             << pCourse->maxStudent << " " 
-             << pCourse->CourseDate.day << ", " 
-             << pCourse->CourseDate.session << endl;
+        cout << left << setw(15) << pCourse->courseID 
+             << left << setw(25) <<pCourse->courseName 
+             << left << setw(15) << pCourse->className
+             << left << setw(25) << pCourse->Teacher
+             << left << setw(5)  << pCourse->credit 
+             << left << setw(5)  <<pCourse->maxStudent 
+             << left << setw(10) << pCourse->CourseDate.day
+                                 << ", " << pCourse->CourseDate.session << endl;
 
         pCourse = pCourse->nextCourse;
     }
@@ -218,12 +218,48 @@ void removeStudentFromCourse(Semester* curSemester){
         return;
     }
     Scoreboard* tmp = studentRemove->nextBoard;
-    if(studentRemove->prevBoard)    studentRemove->prevBoard->nextBoard = studentRemove->nextBoard;
-    else thisCourse->thisCourseScore = studentRemove->nextBoard;
+    if(studentRemove->prevBoard)    studentRemove->prevBoard->nextBoard = tmp;
+    else thisCourse->thisCourseScore = tmp;
 
-    if(tmp->prevBoard)    tmp->prevBoard = studentRemove->prevBoard;
+    if(tmp)     tmp->prevBoard = studentRemove->prevBoard;
 
     delete studentRemove;
 
     cout << "This student was removed from this course\n";
+}
+
+void deleteAllStudentsOfCourse(Course* thisCourse){
+    while(thisCourse->thisCourseScore){
+        Scoreboard* tmp = thisCourse->thisCourseScore;
+        thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
+        delete tmp;
+    }
+}
+
+void removeCourse(Semester* curSemester){
+    string courseName, courseID, className;
+    cout << "Enter the course name you want to remove: ";
+    getline(cin, courseName);
+    cout << "Enter the course ID you want to remove: ";
+    getline(cin, courseID);
+    cout << "Enter the class name of course you want to remove: ";
+    getline(cin, className);
+
+    Course* thisCourse = findTheCourse(curSemester->Courselist, courseName, courseID, className);
+    if(thisCourse == nullptr){
+        cout << "This course doesn't exist!\n";
+        return;
+    }
+
+    Course* tmp = thisCourse->nextCourse;
+    if(thisCourse->prevCourse)  thisCourse->prevCourse->nextCourse = tmp;
+    else curSemester->Courselist = tmp;
+
+    if(tmp)     tmp->prevCourse = thisCourse->prevCourse;
+
+    deleteAllStudentsOfCourse(thisCourse);
+
+    delete thisCourse;
+
+    cout << "This course was removed from system\n";
 }
