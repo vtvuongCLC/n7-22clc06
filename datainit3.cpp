@@ -1,5 +1,6 @@
 #include<iostream>
 #include<string>
+#include<fstream>
 #include"header.h"
 #include"datainit3.h"
 
@@ -29,6 +30,20 @@ bool login_student(string &id,string &pass, Student* user){
     return login_student(id,pass,user);
 }
 
+bool login_staff(string AccountStaff,string passStaff){
+    ifstream filein;
+    filein.open("Staff.csv");
+    while(!filein.eof()){
+        string tmpAcc;
+        string tmpPass;
+        getline(filein,tmpAcc,',');
+        getline(filein,tmpPass);
+        if(tmpAcc==AccountStaff && tmpPass==passStaff) return true;
+    }
+    filein.close();
+    return false;
+}
+
 int login(Student* user){
     int tmp;
     cout<<"You are :"<<endl;
@@ -44,7 +59,7 @@ int login(Student* user){
         string id;
         string pass;
         do{
-            cout<<"ID: ";
+            cout<<"Student ID: ";
             cin>>id;
             cout<<"password: ";
             cin>>pass; 
@@ -54,8 +69,18 @@ int login(Student* user){
         return 1;
     }
     case 2:
-
+    {   
+        string AccountStaff;
+        string passStaff;
+        do{
+        cout<<"Staff Account: ";
+        cin>>AccountStaff;
+        cout<<"Password: ";
+        cin>>passStaff;
+        }while(login_staff(AccountStaff,passStaff));
+        cout<<"Successful to login"<<endl;
         return 2;
+    }    
     default:
         return 0;
     }
