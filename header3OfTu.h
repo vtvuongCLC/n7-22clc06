@@ -1,11 +1,8 @@
 #ifndef _NSTRUCT_H
 #define _NSTRUCT_H
-#include <iostream>
 #include <string>
-#include <fstream>
-#include <iomanip>
-
 using namespace std;
+
 struct BirthDate {
     int day;
     int month;
