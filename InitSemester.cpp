@@ -1,4 +1,8 @@
 #include "InitSemester.h"
+
+Semester* isInit(Schoolyear* year){
+    
+}
 // chưa check xem hk trong năm đó này tạo r chưa, phần nào trong hk đó chưa tạo
 bool UploadListofStud(Course* &curCour, string CoursName){
     if(curCour->StudentList)
