@@ -12,34 +12,25 @@ struct dDate {
     string day;
     string session;
 };
+
 struct Scoreboard {
     double totalMark = 0;
     double otherMark = 0;
     double midtermMark = 0;
     double finalMark = 0;
 };      
-struct ListCourse{
-    Course* thisCourse;
-    Scoreboard thisScoreCourse;
-    ListCourse* nextCourse = nullptr;
-    ListCourse* prevCourse = nullptr;
-};
-struct Course {
-    string semester;
+struct SharedCourseInfo {
     string courseID;
     string courseName;
     string className;
     string Teacher;
     int credit;
-    int maxStudent;
-    dDate CourseDate;       
-    ListStudent* firstStudent;
+    dDate CourseDate;
 };
-struct Semester {
-    string start, end;
-    int semesterIndex;
-    ListCourse* firstCourse = nullptr;
-    Semester* nextSem = nullptr;
+struct EnrolledCourse {
+    SharedCourseInfo CourseInfo;
+    Scoreboard Score;
+    EnrolledCourse* nextCourse = nullptr;
 };
 struct Info {
     string StudentID;
@@ -50,25 +41,40 @@ struct Info {
     string SocialID;
 };
 struct Student {
+    int No;
     string yearName;
     string className;
     string password;
     Info dInfo;
-    ListCourse* firstCourse;   
+    EnrolledCourse* CourseList = nullptr;
+    Student* nextStudent = nullptr;
 };
-struct ListStudent{
-    int No;
-    Student* thisStudent;   
-    ListStudent* nextStudent;
-};
-struct StudyClass{
+struct StudyClass {
     string className;
-    ListStudent* firstStudent = nullptr;
+    int numStudent;
+    Student* listStudent = nullptr;
+    Student** quickPtr = nullptr;
     StudyClass* nextClass = nullptr;
+};
+struct StudentLoc {
+    int classIndex;
+    int studentIndex;
+};
+struct Course {
+    SharedCourseInfo thisCourse;
+    int maxStudent;
+    Student* listStudent = nullptr;
+};
+struct Semester {
+    string start, end;
+    int semesterIndex;
+    string semester;
+    Course* CourseList = nullptr;
+    Semester* nextSemester = nullptr;
 };
 struct Schoolyear {
     string year;
-    Semester* firstSem = nullptr;
+    Semester* SemesterList = nullptr;
     StudyClass* listClass = nullptr;
     Schoolyear* nextYear = nullptr;
 };
