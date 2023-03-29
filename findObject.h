@@ -2,6 +2,7 @@
 #define _FIND_OBJECT_H_
 #include "header3OfTu.h"
 
+void viewInfoOfCourse(Course* thisCourse);
 void viewListCourses(Semester* curSemester);
 void viewAllListCourses(Schoolyear* firstYear);
 // Course* findTheCourse(Course* thisCourse, string nameCourse);
