@@ -1,5 +1,5 @@
-#ifndef _NSTRUCT_H
-#define _NSTRUCT_H
+#ifndef _NEWSTRUCT_H
+#define _NEWSTRUCT_H
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -21,12 +21,7 @@ struct Scoreboard {
     double midtermMark = 0;
     double finalMark = 0;
 };      
-struct ListCourse{
-    Course* thisCourse;
-    Scoreboard thisScoreCourse;
-    ListCourse* nextCourse = nullptr;
-    ListCourse* prevCourse = nullptr;
-};
+
 struct Course {
     string semester;
     string courseID;
@@ -35,13 +30,19 @@ struct Course {
     string Teacher;
     int credit;
     int maxStudent;
-    dDate CourseDate;       
-    ListStudent* firstStudent;
+    dDate CourseDate;
+    Course* nextCourse;
+    StudentLoc* firstStudentLoc = nullptr;
+};
+struct EnrolledCourse {
+    Scoreboard Score;
+    EnrolledCourse* nextCourse = nullptr;
+    Course* thisCourse;
 };
 struct Semester {
     string start, end;
     int semesterIndex;
-    ListCourse* firstCourse = nullptr;
+    Course* firstCourse = nullptr;
     Semester* nextSem = nullptr;
 };
 struct Info {
@@ -52,21 +53,26 @@ struct Info {
     BirthDate Birth;
     string SocialID;
 };
+struct StudentLoc {
+    int no;
+    int classIndex;
+    int studentIndex;
+    StudentLoc* nextStudentLoc;
+};
 struct Student {
+    int No;
     string yearName;
     string className;
     string password;
     Info dInfo;
-    ListCourse* firstCourse;   
+    EnrolledCourse* CourseList = nullptr;
+    Student* nextStudent = nullptr;
 };
-struct ListStudent{
-    int No;
-    Student* thisStudent;   
-    ListStudent* nextStudent;
-};
-struct StudyClass{
+struct StudyClass {
     string className;
-    ListStudent* firstStudent = nullptr;
+    int numStudent;
+    Student* listStudent = nullptr;
+    Student** quickPtr = nullptr;
     StudyClass* nextClass = nullptr;
 };
 struct Schoolyear {
