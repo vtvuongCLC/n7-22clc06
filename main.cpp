@@ -10,6 +10,7 @@ int main()
     string YearFile = "Listyear";
     Schoolyear* DataBase = nullptr;
     LoadData(YearFile, DataBase);
+    
     int key = login(DataBase);
     if (key == 1)
         StudentGUI(DataBase);

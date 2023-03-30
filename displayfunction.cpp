@@ -61,7 +61,7 @@ void StudyClassManage(StudyClass* InputClass, string yearName)
         cout << "Add student ? (1 to proceed | 0 to cancel)" << endl;
         cin >> selection;
         if (selection == 1) {
-            AddStudent(InputClass->listStudent,yearName, InputClass->className);
+            AddStudent(InputClass->listStudent,yearName, InputClass->className,InputClass->numStudent);
             StudyClassManage(InputClass, yearName);
         }
     } else {
@@ -157,8 +157,24 @@ void SchoolYearManage(Schoolyear *DataList)
 }
 
 void StaffGUI(Schoolyear* DataBase)
-{
-    SchoolYearManage(DataBase);
+{   
+    int selection;
+    do {
+        cout << "1. School year initialization." << endl;
+        cout << "2. Semester management" << endl;
+        cout << "0. Exit program" << endl;
+        cout << ">> ";
+        cin >> selection;
+        if (selection == 0)
+            break;
+        if (selection == 1)
+            SchoolYearManage(DataBase);
+        if (selection == 2)
+        {
+            
+        }
+    } while (true);
+    
 }
 
 void StudentGUI(Schoolyear* DataBase)

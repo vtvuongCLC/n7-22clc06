@@ -57,13 +57,14 @@ void LoadYearFromFile(string YearFile, Schoolyear* &listYear)
     }
     YearIn.close();
 }
-void LoadClassFromfile(string yearName, StudyClass* &listClass)
+void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass)
 {
     if (IsemptyFile(yearName) == true)
         return;
     ifstream ClassIn;
     ClassIn.open(yearName+".txt");
     StudyClass* curClass = nullptr;
+    numClass = 0;
     while (ClassIn.eof() == false) {
         string tempClass;
         getline(ClassIn,tempClass,'\n');
@@ -75,18 +76,20 @@ void LoadClassFromfile(string yearName, StudyClass* &listClass)
                 curClass->nextClass = new StudyClass;
                 curClass = curClass->nextClass;
             }
+            numClass++;
             curClass->className = tempClass; 
         }
     }
     ClassIn.close();
 }
-void LoadStudentListFromFile(string yearName, string className, Student* &listStudent)
+void LoadStudentListFromFile(string yearName, string className, Student* &listStudent, int &numStudent)
 {
     if (IsemptyFile(className) == true)
         return;
     ifstream StudentIn;
     StudentIn.open(className+".txt");
     Student* curStudent = nullptr;
+    numStudent = 0;
     while (StudentIn.eof() == false) {
         string tempData;
         getline(StudentIn,tempData,',');
@@ -98,6 +101,7 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
                 curStudent->nextStudent = new Student;
                 curStudent = curStudent->nextStudent;
             }
+            numStudent++;
             curStudent->yearName = yearName;
             curStudent->className = className;
             curStudent->No = stoi(tempData);
@@ -123,15 +127,14 @@ void LoadData(string YearFile, Schoolyear* &listYear)
     LoadYearFromFile(YearFile,listYear);
     Schoolyear* curYear = listYear;
     while (curYear != nullptr) {
-        LoadClassFromfile(curYear->year,curYear->listClass);
+        LoadClassFromfile(curYear->year,curYear->listClass,curYear->numClass);
         StudyClass* curClass = curYear->listClass;
         while (curClass != nullptr) {
-            LoadStudentListFromFile(curYear->year,curClass->className,curClass->listStudent);
+            LoadStudentListFromFile(curYear->year,curClass->className,curClass->listStudent,curClass->numStudent);
             curClass = curClass->nextClass;
         }
         curYear = curYear->nextYear;
     }
-        
 }
 
 void AddYear(Schoolyear* &listYear)
@@ -197,10 +200,11 @@ void AddClass(StudyClass* &listClass)
         curClass->className = tempClass;
     } while (tempClass != "0");
 }
-void AddStudentManual(Student* &listStudent, string yearName, string className)
+void AddStudentManual(Student* &listStudent, string yearName, string className, int &numStudent)
 {
     int no = 0;
     Student* curStudent = nullptr;
+    numStudent = 0;
     do {
         int check;
         system("cls");
@@ -255,7 +259,7 @@ void AddStudentManual(Student* &listStudent, string yearName, string className)
         }
     } while (true);
 }
-void AddStudentCSV(Student* &listStudent, string yearName, string className)
+void AddStudentCSV(Student* &listStudent, string yearName, string className, int &numStudent)
 {
     string filepath;
     ifstream csvIn;
@@ -271,6 +275,7 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className)
     } while (csvIn.is_open() == false);
     csvIn.ignore(1000,'\n');
     Student* curStudent = nullptr;
+    numStudent = 0;
     while (csvIn.eof() == false)
     {
         if (listStudent == nullptr) {
@@ -282,7 +287,7 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className)
         }
         curStudent->yearName = yearName;
         curStudent->className = className;
-        
+        numStudent++;
         string tempdata;
         getline(csvIn,tempdata,',');
         curStudent->No = stoi(tempdata);
@@ -314,16 +319,16 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className)
     }
     system("pause");
 }
-void AddStudent(Student* &listStudent, string yearName, string className)
+void AddStudent(Student* &listStudent, string yearName, string className, int &numStudent)
 {
     char choose; 
     cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
     cout << ">> ";
     cin >> choose;
     if (choose == 'f' || choose == 'F')
-        AddStudentCSV(listStudent,yearName,className);
+        AddStudentCSV(listStudent,yearName,className, numStudent);
     else
-        AddStudentManual(listStudent,yearName,className);
+        AddStudentManual(listStudent,yearName,className, numStudent);
 }
 
 void InitBaseData(Schoolyear* &listYear)
@@ -392,9 +397,11 @@ void ClearData(Schoolyear* &listYear)
     Student* curStudent = nullptr;
     while (listYear != nullptr) {
         curYear = listYear;
+        delete []curYear->quickClassPtr;
         listYear = listYear->nextYear;
         while (curYear->listClass != nullptr) {
             curClass = curYear->listClass;
+            delete []curClass->quickStudentPtr;
             while (curClass->listStudent != nullptr) {
                 curStudent = curClass->listStudent;
                 curClass->listStudent = curClass->listStudent->nextStudent;
@@ -405,6 +412,43 @@ void ClearData(Schoolyear* &listYear)
         }
         delete curYear;
     }
+}
+void QuickPtrBinder(Schoolyear* &listYear)
+{
+    if (listYear == nullptr)
+        return;
+    Schoolyear* curYear = listYear;
+    StudyClass* curClass = nullptr;
+    Student* curStudent = nullptr;
+    while (curYear != nullptr)
+    {
+        if (curYear->numClass != 0)
+        {
+            curClass = curYear->listClass;
+            curYear->quickClassPtr = new StudyClass*[curYear->numClass];
+            int i = 0;
+            while (curClass != nullptr)
+            {
+                curYear->quickClassPtr[i] = curClass;
+                i++;
+                if (curClass->numStudent != 0)
+                {
+                    curStudent = curClass->listStudent;
+                    curClass->quickStudentPtr = new Student*[curClass->numStudent];
+                    int j = 0;
+                    while (curStudent != nullptr)
+                    {
+                        curClass->quickStudentPtr[j] = curStudent;
+                        j++;
+                        curStudent = curStudent->nextStudent;
+                    }
+                }
+                curClass = curClass->nextClass;
+            }
+        }
+        curYear = curYear->nextYear;
+    }
+
 }
 
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex)

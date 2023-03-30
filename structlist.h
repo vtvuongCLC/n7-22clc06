@@ -1,6 +1,8 @@
 #ifndef _STRUCTLIST_H
 #define _STRUCTLIST_H
+
 #include <string>
+
 using namespace std;
 
 struct BirthDate {
@@ -53,7 +55,7 @@ struct StudyClass {
     string className;
     int numStudent;
     Student* listStudent = nullptr;
-    Student** quickPtr = nullptr;
+    Student** quickStudentPtr= nullptr;
     StudyClass* nextClass = nullptr;
 };
 struct StudentLoc {
@@ -75,7 +77,9 @@ struct Semester {
 struct Schoolyear {
     string year;
     Semester* SemesterList = nullptr;
+    int numClass;
     StudyClass* listClass = nullptr;
+    StudyClass** quickClassPtr = nullptr;
     Schoolyear* nextYear = nullptr;
 };
 #endif
