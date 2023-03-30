@@ -85,7 +85,7 @@ void updateCourseInformation(Semester* curSemester){
                  << left << setw(3)  << "Day, Session" 
                  << left << setw(4)  << "Max Students" << endl;
              
-            viewInfoOfCourse(thisCourse);
+            viewInfoOfCourse(thisCourse->infoThisCourse);
             
             cout << endl;
             cout << "The current course name is " << thisCourse->infoThisCourse.courseName << endl;

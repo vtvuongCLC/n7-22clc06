@@ -2,11 +2,11 @@
 #define _FIND_OBJECT_H_
 #include "header3OfTu.h"
 
-void viewInfoOfCourse(Course* thisCourse);
-void viewListCourses(Semester* curSemester);
-void viewAllListCourses(Schoolyear* firstYear);
-// Course* findTheCourse(Course* thisCourse, string nameCourse);
-// void updateCourseInformation(Semester* curSemester);
+void viewInfoOfCourse(CourseInfo infoThisCourse);
+void viewListOfCourses(Semester* curSemester);
+void viewAllListOfCourses(Schoolyear* firstYear);
+Course* findTheCourse(Course* pCourse, string NameCourse, string IDCourse, string NameClass);
+void updateCourseInformation(Semester* curSemester);
 // StudyClass* findStudyClass(StudyClass* classHead, string className);
 // Student* findStudent(Student* studentHead, string IDStudent);
 // void exportListStudentsInCourse(Course thisCourse);
