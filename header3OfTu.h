@@ -1,9 +1,12 @@
-#ifndef _NEWSTRUCT_H
-#define _NEWSTRUCT_H
+#ifndef _STRUCTLIST_H
+#define _STRUCTLIST_H
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <string>
 using namespace std;
 
+//SUPPORT INFO STRUCTS
 struct BirthDate {
     int day;
     int month;
@@ -19,30 +22,6 @@ struct Scoreboard {
     double midtermMark = 0;
     double finalMark = 0;
 };      
-
-struct Course {
-    string semester;
-    string courseID;
-    string courseName;
-    string className;
-    string Teacher;
-    int credit;
-    int maxStudent;
-    dDate CourseDate;
-    Course* nextCourse;
-    StudentLoc* firstStudentLoc = nullptr;
-};
-struct EnrolledCourse {
-    Scoreboard Score;
-    EnrolledCourse* nextCourse = nullptr;
-    Course* thisCourse;
-};
-struct Semester {
-    string start, end;
-    int semesterIndex;
-    Course* firstCourse = nullptr;
-    Semester* nextSem = nullptr;
-};
 struct Info {
     string StudentID;
     string FirstName;
@@ -51,11 +30,21 @@ struct Info {
     BirthDate Birth;
     string SocialID;
 };
-struct StudentLoc {
+struct CourseInfo {
+    string courseID;
+    string courseName;
+    string className;
+    string Teacher;
+    int credit;
+    dDate CourseDate;
+};
+
+//FUNCTIONAL STRUCTS
+struct EnrolledCourse {
     int no;
-    int classIndex;
-    int studentIndex;
-    StudentLoc* nextStudentLoc;
+    Scoreboard Score;
+    CourseInfo* thisCourseInfo = nullptr;
+    EnrolledCourse* nextCourse = nullptr;
 };
 struct Student {
     int No;
@@ -70,13 +59,33 @@ struct StudyClass {
     string className;
     int numStudent;
     Student* listStudent = nullptr;
-    Student** quickPtr = nullptr;
+    Student** quickStudentPtr= nullptr;
     StudyClass* nextClass = nullptr;
+};
+struct CourseStudentList {
+    int classIndex;
+    int studentIndex;
+    Student** toStudent = nullptr;
+    CourseStudentList* nextStudent = nullptr;
+};
+struct Course {
+    CourseInfo* thisCourse = nullptr;
+    int maxStudent;
+    CourseStudentList* listStudent = nullptr;
+};
+struct Semester {
+    string start, end;
+    int semesterIndex;
+    string semester;
+    Course* CourseList = nullptr;
+    Semester* nextSemester = nullptr;
 };
 struct Schoolyear {
     string year;
-    Semester* firstSem = nullptr;
+    Semester* SemesterList = nullptr;
+    int numClass;
     StudyClass* listClass = nullptr;
+    StudyClass** quickClassPtr = nullptr;
     Schoolyear* nextYear = nullptr;
 };
 #endif
