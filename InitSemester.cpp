@@ -1,50 +1,62 @@
 #include "InitSemester.h"
 
-Semester* isInit(Schoolyear* year){
-    
+Semester* FindUninitSem(Schoolyear* year){
+    if(!year->SemesterList) return nullptr;
+    Semester* temp = year->SemesterList;
+    while(temp->nextSemester && temp->CourseList) temp = temp->nextSemester;
+    return temp;
 }
-// chưa check xem hk trong năm đó này tạo r chưa, phần nào trong hk đó chưa tạo
-bool UploadListofStud(Course* &curCour, string CoursName){
-    if(curCour->StudentList)
+
+void FindStudentIndex(StudyClass* firstClass,CourseStudentList* &curCourse, string className, string StudID){
+    StudyClass* curClass = firstClass;
+    Student* curStudent = nullptr;
+    int x = 0,y = 0;
+    while(curClass && curClass->className != className){
+        curClass = curClass->nextClass;
+        x++;
+    }
+    if(curClass == nullptr) return;
+    curStudent = curClass->listStudent;
+    while(curStudent->dInfo.StudentID != StudID){
+        curStudent = curStudent->nextStudent;
+        y++;
+    }
+    if(curStudent == nullptr) return;
+        curCourse->classIndex = x;
+        curCourse->studentIndex = y;
+}
+
+bool UploadListofStud(Course* &curCourse,StudyClass* curClass){
+    if(curCourse->listStudent)
     {
         cout<<"List of students has already been added for this course.";
         return false;
     }
-    Student* temp = nullptr;
-    string str;
+    CourseStudentList* temp = nullptr;
+    string className, StudID;
     ifstream in;
     int i = 1;
-    in.open(CoursName+".csv");
+    in.open(curCourse->infoThisCourse.courseName+".csv");
     if(!in.is_open()){
         cout<<"Unable to find list"<<endl;
         return false;
     }
-    while (i <= curCour->maxStudent && !in.eof())
+    while (i <= curCourse->maxStudent && !in.eof())
     {
-        if(!curCour->StudentList)
-        {
-            curCour->StudentList = new Student;
-            temp = curCour->StudentList;
+        getline(in,className,',');
+        getline(in,StudID);
+        if(!curCourse->listStudent){
+            curCourse->listStudent = new CourseStudentList;
+            temp = curCourse->listStudent;
         }
-        else
-        {
-            temp->nextStudent = new Student;
-            temp->nextStudent->prevStudent = temp;
+        else{
+            temp->nextStudent = new CourseStudentList;
             temp = temp->nextStudent;
         }
-        getline(in,str,',');
-        temp->className = str;
-        getline(in,str,',');
-        temp->dInfo.No = stoi(str);
-        getline(in,str,',');
-        temp->dInfo.StudentID = str;
-        getline(in,str,',');
-        temp->dInfo.LastName = str;
-        getline(in,str);
-        temp->dInfo.FirstName = str;
+        FindStudentIndex(curClass,temp,className,StudID);
         i++;
     }
-    if(i <= curCour->maxStudent) 
+    if(i <= curCourse->maxStudent) 
         cout<<"No student left to add.";
     else 
         cout<<"Maximum number of students added.";
@@ -54,54 +66,41 @@ bool UploadListofStud(Course* &curCour, string CoursName){
 
 void EnterCourseData(Course* &firstCour)
 {
-    string str;
-    int n;
     cin.ignore();
     cout<<"Enter course ID: ";
-    getline(cin,str);
-    firstCour->courseID = str;
+    getline(cin,firstCour->infoThisCourse.courseID);
     cout<<"Enter course name: ";
-    getline(cin,str);
-    firstCour->courseName = str;
+    getline(cin,firstCour->infoThisCourse.courseName);
     cout<<"Enter class name: ";
-    getline(cin,str);
-    firstCour->className = str;
+    getline(cin,firstCour->infoThisCourse.className);
     cout<<"Enter teacher name: ";
-    getline(cin,str);
-    firstCour->Teacher = str;
+    getline(cin,firstCour->infoThisCourse.Teacher);
     cout<<"Enter number of credits: ";
-    cin>>n;
-    firstCour->credit = n;
+    cin>>firstCour->infoThisCourse.credit;
     cout<<"Enter max number of students: ";
-    cin>>n;
-    firstCour->maxStudent = n;
+    cin>>firstCour->maxStudent;
     cin.ignore();
     cout<<"Enter session for course"<<endl;
     cout<<"=> Day of the week: ";
-    getline(cin,str);
-    firstCour->CourseDate.day = str;
+    getline(cin,firstCour->infoThisCourse.CourseDate.day);
     cout<<"=> Session for that day: ";
-    getline(cin,str);
-    firstCour->CourseDate.session = str;
+    getline(cin,firstCour->infoThisCourse.CourseDate.session);
 }
 
 void InitSemester(Semester* &Sem,int i)
 {
     Sem->semesterIndex = i;
-    string date;
     cout<<"Enter starting date for semester "<< Sem->semesterIndex <<": ";
     cin.ignore();
-    getline(cin,date);
-    Sem->start = date;
+    getline(cin, Sem->start);
     cout<<"Enter ending date for semester "<< Sem->semesterIndex <<": ";
-    getline(cin,date);
-    Sem->end = date;
+    getline(cin,Sem->end );
 }
 
 void LinkAndInit(Schoolyear* &Year)
 {
-    if(!Year) {
-        cout<<"Unable to find year.";
+    if(!Year){
+        cout<<"Can not find year.";
         return;
     }
     int i = 1,n = 1;
@@ -110,20 +109,20 @@ void LinkAndInit(Schoolyear* &Year)
     while(n)
     {
         cout<<"School year "<<Year->year<<endl<<endl;
-        if(!Year->firstSem)
+        if(!Year->SemesterList)
         {
             cout<<"Initiate Semester "<<i<<" ?"<<endl;
             cout<<"Enter "<<1<<" to continue."<<endl;
             cout<<"Enter "<<0<<" to stop."<<endl;
             cin>>n;
             if(!n) return;
-            Year->firstSem = new Semester;
-            curSem = Year->firstSem;
+            Year->SemesterList = new Semester;
+            curSem = Year->SemesterList;
         }
         else
         {
-            curSem->nextSem = new Semester;
-            curSem = curSem->nextSem;
+            curSem->nextSemester = new Semester;
+            curSem = curSem->nextSemester;
         }
         InitSemester(curSem,i);
         cout<<"\n--------------------------------------------\n";
@@ -133,10 +132,10 @@ void LinkAndInit(Schoolyear* &Year)
         cin>>n;
         while(n)
         {
-            if(!curSem->Courselist)
+            if(!curSem->CourseList)
             {
-                curSem->Courselist = new Course;
-                curCour = curSem->Courselist;
+                curSem->CourseList = new Course;
+                curCour = curSem->CourseList;
             }
             else
             {
@@ -145,7 +144,7 @@ void LinkAndInit(Schoolyear* &Year)
                 curCour = curCour->nextCourse;
             }
             EnterCourseData(curCour);
-            while(!UploadListofStud(curCour,curCour->courseName))
+            while(!UploadListofStud(curCour,Year->listClass))
             {
                 cout<<"Please re add the course with the correct infotmation.";
                 EnterCourseData(curCour);
