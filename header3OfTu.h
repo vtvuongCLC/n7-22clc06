@@ -69,9 +69,10 @@ struct CourseStudentList {
     CourseStudentList* nextStudent = nullptr;
 };
 struct Course {
-    CourseInfo infoThisCourse = nullptr;
+    CourseInfo infoThisCourse;
     int maxStudent;
     Course* nextCourse = nullptr;
+    Course* prevCourse = nullptr;
     CourseStudentList* listStudent = nullptr;
 };
 struct Semester {
