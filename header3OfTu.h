@@ -36,6 +36,7 @@ struct CourseInfo {
     string className;
     string Teacher;
     int credit;
+    int maxStudent;
     dDate CourseDate;
 };
 
@@ -43,8 +44,9 @@ struct CourseInfo {
 struct EnrolledCourse {
     int no;
     Scoreboard Score;
-    CourseInfo* thisCourseInfo = nullptr;
+    Course* thisCourse = nullptr;
     EnrolledCourse* nextCourse = nullptr;
+    EnrolledCourse* prevCourse = nullptr;
 };
 struct Student {
     int No;
@@ -65,12 +67,12 @@ struct StudyClass {
 struct CourseStudentList {
     int classIndex;
     int studentIndex;
-    Student** toStudent = nullptr;
+    Student* toStudent = nullptr;
     CourseStudentList* nextStudent = nullptr;
 };
 struct Course {
     CourseInfo infoThisCourse;
-    int maxStudent;
+    int numCurStudents;
     Course* nextCourse = nullptr;
     Course* prevCourse = nullptr;
     CourseStudentList* listStudent = nullptr;

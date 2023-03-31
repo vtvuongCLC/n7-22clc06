@@ -6,6 +6,7 @@ void viewInfoOfCourse(CourseInfo infoThisCourse);
 void viewListOfCourses(Semester* curSemester);
 void viewAllListOfCourses(Schoolyear* firstYear);
 Course* findTheCourse(Course* pCourse, string NameCourse, string IDCourse, string NameClass);
+bool checkExistStudentInCourse(CourseStudentList* listStudent, string studID);
 void updateCourseInformation(Semester* curSemester);
 // StudyClass* findStudyClass(StudyClass* classHead, string className);
 // Student* findStudent(Student* studentHead, string IDStudent);
