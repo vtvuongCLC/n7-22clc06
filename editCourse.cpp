@@ -202,51 +202,63 @@ void updateCourseInformation(Semester* curSemester){
 //     ofs.close();
 // }
 
-// void addStudentToCourse(Semester* curSemester){
-//     string courseName, courseID, className;
-//     cout << "Enter the course name you want to add student: ";
-//     getline(cin, courseName);
-//     cout << "Enter the course ID you want to add student: ";
-//     getline(cin, courseID);
-//     cout << "Enter the class name of course you want to add student: ";
-//     getline(cin, className);
+void addStudentToCourse(Semester* curSemester, StudyClass* pClass){
+    string courseName, courseID, className;
+    cout << "Enter the course name you want to add student: ";
+    getline(cin, courseName);
+    cout << "Enter the course ID you want to add student: ";
+    getline(cin, courseID);
+    cout << "Enter the class name of course you want to add student: ";
+    getline(cin, className);
 
-//     Course* thisCourse = findTheCourse(curSemester->Courselist, courseName, courseID, className);
-//     if(!thisCourse) {
-//         cout << "This course doesn't exist!\n";
-//         return;
-//     }
-//     int numStudent = countStudentIn1Course(thisCourse);
+    Course* pCourse = findTheCourse(curSemester->CourseList, courseName, courseID, className);
+    if(!pCourse) {
+        cout << "This course doesn't exist!\n";
+        return;
+    }
 
-//     if(numStudent >= thisCourse->maxStudent){
-//         cout << "The course is having maximum student!!! You cannot add student to this course.\n";
-//         return;
-//     }
+    if(pCourse->numCurStudents >= pCourse->infoThisCourse.maxStudent ){
+        cout << "The course is having maximum student!!! You cannot add student to this course.\n";
+        return;
+    }
 
-//     // còn phần check xem student có tồn tại trong lớp sinh hoạt hay không
-//     string studentName, studentID; 
-//     int no;
-//     cout << "Enter the student name you want to add: ";
-//     getline(cin, studentName);
-//     cout << "Enter the student ID you want to add: ";
-//     getline(cin, studentID);
-//     cout << "Enter the number of No you want to add: ";
-//     cin >> no;
+    string studentName, studentID, nameStudyClass;
+    cout << "Enter the student name you want to add: ";
+    getline(cin, studentName);
+    cout << "Enter the student ID you want to add: ";
+    getline(cin, studentID);
+    cout << "Enter the name of study class of student you want to add: ";
+    getline(cin, nameStudyClass);
+    if(checkExistStudentInCourse(pCourse->listStudent, studentID) == true){
+        cout << "This student has existed in this course!\n";
+        return;
+    }
 
-//     Scoreboard* studentAdd = findStudentInScoreboard(thisCourse->thisCourseScore, studentID);
-//     if(studentAdd != nullptr) {
-//         cout << "This student has existed in this course!\n";
-//         return;
-//     }
-//     studentAdd = new Scoreboard;
-//     studentAdd->No = no;
-//     studentAdd->StudentID = studentID;
-//     studentAdd->StudentName = studentName;
-//     studentAdd->nextBoard = thisCourse->thisCourseScore;
-//     if(thisCourse->thisCourseScore)
-//         thisCourse->thisCourseScore->prevBoard = studentAdd;
-//     thisCourse->thisCourseScore = studentAdd;
-// }
+    CourseStudentList* newStudent = new CourseStudentList;
+    if(/* !function to return index classstudy and studID of the pointer Student */1){
+        delete newStudent;
+        cout << "The student hasn't existed in system!!!\n";
+        return;
+    }
+    newStudent->nextStudent = pCourse->listStudent;
+    if(pCourse->listStudent){
+        pCourse->listStudent->prevStudent = newStudent;
+    }
+    pCourse->listStudent = newStudent;
+
+    // need the function to return the pointer to the student
+    // pCourse->listStdent->toStudent = function
+
+    cout << "Enter the no number of the student in this course: ";
+    cin >> pCourse->listStudent->toStudent->No;
+    EnrolledCourse* tmp = new EnrolledCourse;
+    tmp->thisCourse = pCourse;
+    tmp->nextCourse = pCourse->listStudent->toStudent->CourseList;
+    if(pCourse->listStudent->toStudent->CourseList) {
+        tmp->nextCourse->prevCourse = tmp;
+    } 
+    pCourse->listStudent->toStudent->CourseList = tmp;
+}
 
 // void displayStudentInCourse(Course* thisCourse){
 //     while(thisCourse->thisCourseScore){

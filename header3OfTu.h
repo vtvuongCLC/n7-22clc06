@@ -69,6 +69,7 @@ struct CourseStudentList {
     int studentIndex;
     Student* toStudent = nullptr;
     CourseStudentList* nextStudent = nullptr;
+    CourseStudentList* prevStudent = nullptr;
 };
 struct Course {
     CourseInfo infoThisCourse;
