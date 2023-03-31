@@ -22,7 +22,7 @@ bool IsemptyFile(string fileName)
 {
     bool result = false;
     ifstream test;
-    test.open(fileName + ".txt");
+    test.open("Data\\" + fileName + ".txt");
     if (test.is_open() == false) {
         result = true;
     }
@@ -38,8 +38,10 @@ bool IsemptyFile(string fileName)
 
 void LoadYearFromFile(string YearFile, Schoolyear* &listYear)
 {
+    if (IsemptyFile(YearFile) == true)
+        return;
     ifstream YearIn;
-    YearIn.open(YearFile+".txt");
+    YearIn.open("Data\\" + YearFile + ".txt");
     Schoolyear* curYear = nullptr;
     while (YearIn.eof() == false) {
         string tempData;
@@ -62,7 +64,7 @@ void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass)
     if (IsemptyFile(yearName) == true)
         return;
     ifstream ClassIn;
-    ClassIn.open(yearName+".txt");
+    ClassIn.open("Data\\" + yearName + ".txt");
     StudyClass* curClass = nullptr;
     numClass = 0;
     while (ClassIn.eof() == false) {
@@ -87,7 +89,7 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
     if (IsemptyFile(className) == true)
         return;
     ifstream StudentIn;
-    StudentIn.open(className+".txt");
+    StudentIn.open("Data\\" + className + ".txt");
     Student* curStudent = nullptr;
     numStudent = 0;
     while (StudentIn.eof() == false) {
@@ -123,7 +125,7 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
     StudentIn.close();
 }
 void LoadData(string YearFile, Schoolyear* &listYear)
-{
+{   
     LoadYearFromFile(YearFile,listYear);
     Schoolyear* curYear = listYear;
     while (curYear != nullptr) {
@@ -204,7 +206,6 @@ void AddStudentManual(Student* &listStudent, string yearName, string className, 
 {
     int no = 0;
     Student* curStudent = nullptr;
-    numStudent = 0;
     do {
         int check;
         system("cls");
@@ -275,7 +276,6 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className, int
     } while (csvIn.is_open() == false);
     csvIn.ignore(1000,'\n');
     Student* curStudent = nullptr;
-    numStudent = 0;
     while (csvIn.eof() == false)
     {
         if (listStudent == nullptr) {
@@ -398,19 +398,22 @@ void ClearData(Schoolyear* &listYear)
     while (listYear != nullptr) {
         curYear = listYear;
         delete []curYear->quickClassPtr;
-        listYear = listYear->nextYear;
+        curYear->quickClassPtr = nullptr;
         while (curYear->listClass != nullptr) {
             curClass = curYear->listClass;
             delete []curClass->quickStudentPtr;
+            curClass->quickStudentPtr = nullptr;
             while (curClass->listStudent != nullptr) {
                 curStudent = curClass->listStudent;
-                curClass->listStudent = curClass->listStudent->nextStudent;
                 delete curStudent;
+                curClass->listStudent = curClass->listStudent->nextStudent;
             }
-            curYear->listClass = curYear->listClass->nextClass;
             delete curClass;
+            curYear->listClass = curYear->listClass->nextClass;
+            
         }
         delete curYear;
+        listYear = listYear->nextYear;
     }
 }
 void QuickPtrBinder(Schoolyear* &listYear)
@@ -422,7 +425,7 @@ void QuickPtrBinder(Schoolyear* &listYear)
     Student* curStudent = nullptr;
     while (curYear != nullptr)
     {
-        if (curYear->numClass != 0)
+        if (curYear->listClass != nullptr)
         {
             curClass = curYear->listClass;
             curYear->quickClassPtr = new StudyClass*[curYear->numClass];
@@ -431,7 +434,7 @@ void QuickPtrBinder(Schoolyear* &listYear)
             {
                 curYear->quickClassPtr[i] = curClass;
                 i++;
-                if (curClass->numStudent != 0)
+                if (curClass->listStudent != nullptr)
                 {
                     curStudent = curClass->listStudent;
                     curClass->quickStudentPtr = new Student*[curClass->numStudent];

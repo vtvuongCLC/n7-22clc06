@@ -1,10 +1,12 @@
 #ifndef _STRUCTLIST_H
 #define _STRUCTLIST_H
-
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <string>
-
 using namespace std;
 
+//SUPPORT INFO STRUCTS
 struct BirthDate {
     int day;
     int month;
@@ -14,26 +16,12 @@ struct dDate {
     string day;
     string session;
 };
-
 struct Scoreboard {
     double totalMark = 0;
     double otherMark = 0;
     double midtermMark = 0;
     double finalMark = 0;
 };      
-struct SharedCourseInfo {
-    string courseID;
-    string courseName;
-    string className;
-    string Teacher;
-    int credit;
-    dDate CourseDate;
-};
-struct EnrolledCourse {
-    SharedCourseInfo CourseInfo;
-    Scoreboard Score;
-    EnrolledCourse* nextCourse = nullptr;
-};
 struct Info {
     string StudentID;
     string FirstName;
@@ -41,6 +29,22 @@ struct Info {
     string Gender;
     BirthDate Birth;
     string SocialID;
+};
+struct CourseInfo {
+    string courseID;
+    string courseName;
+    string className;
+    string Teacher;
+    int credit;
+    dDate CourseDate;
+};
+
+//FUNCTIONAL STRUCTS
+struct EnrolledCourse {
+    int no;
+    Scoreboard Score;
+    Course* thisCourse = nullptr;
+    EnrolledCourse* nextCourse = nullptr;
 };
 struct Student {
     int No;
@@ -53,19 +57,22 @@ struct Student {
 };
 struct StudyClass {
     string className;
-    int numStudent;
+    int numStudent = 0;
     Student* listStudent = nullptr;
     Student** quickStudentPtr= nullptr;
     StudyClass* nextClass = nullptr;
 };
-struct StudentLoc {
+struct CourseStudentList {
     int classIndex;
     int studentIndex;
+    Student** toStudent = nullptr;
+    CourseStudentList* nextStudent = nullptr;
 };
 struct Course {
-    SharedCourseInfo thisCourse;
+    CourseInfo thisCourse;
     int maxStudent;
-    Student* listStudent = nullptr;
+    CourseStudentList* listStudent = nullptr;
+    Course* nextCourse = nullptr;
 };
 struct Semester {
     string start, end;
@@ -77,7 +84,7 @@ struct Semester {
 struct Schoolyear {
     string year;
     Semester* SemesterList = nullptr;
-    int numClass;
+    int numClass = 0;
     StudyClass* listClass = nullptr;
     StudyClass** quickClassPtr = nullptr;
     Schoolyear* nextYear = nullptr;

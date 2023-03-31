@@ -13,10 +13,16 @@ int main()
     
     int key = login(DataBase);
     if (key == 1)
+    {
         StudentGUI(DataBase);
+    }
+        
     if (key == 2)
+    {   
+        if (IsemptyFile(YearFile) == true)
+            InitBaseData(DataBase); 
         StaffGUI(DataBase);
-    
+    }
     SaveData(YearFile,DataBase);
     ClearData(DataBase);
 }

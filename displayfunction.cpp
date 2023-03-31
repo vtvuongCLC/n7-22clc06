@@ -127,7 +127,7 @@ void ListClassManage(Schoolyear* InputYear)
     }
 }
 void SchoolYearManage(Schoolyear *DataList)
-{
+{   
     
     int maxSelection;
     Schoolyear* toYear;
@@ -139,7 +139,7 @@ void SchoolYearManage(Schoolyear *DataList)
         DisplayYearList(DataList,maxSelection);
         cout << endl;
         cout << "n. Add a new year" << endl;
-        cout << "0. End program" << endl;
+        cout << "0. Back" << endl;
         cout << endl << ">> ";
         cin >> selection;
         if (selection == "n") {
@@ -158,6 +158,7 @@ void SchoolYearManage(Schoolyear *DataList)
 
 void StaffGUI(Schoolyear* DataBase)
 {   
+    bool haslinked = false;
     int selection;
     do {
         cout << "1. School year initialization." << endl;
@@ -171,6 +172,11 @@ void StaffGUI(Schoolyear* DataBase)
             SchoolYearManage(DataBase);
         if (selection == 2)
         {
+            if (haslinked == false)
+            {
+                QuickPtrBinder(DataBase);
+                haslinked = true;
+            }
             
         }
     } while (true);
