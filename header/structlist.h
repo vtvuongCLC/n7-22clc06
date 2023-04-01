@@ -40,10 +40,14 @@ struct CourseInfo {
 };
 
 //FUNCTIONAL STRUCTS
+
+//STRUCTS PROTOTYPES
+struct Course;
+
+//STRUCT IMPLEMENTATION
 struct EnrolledCourse {
-    int no;
     Scoreboard Score;
-    Course* thisCourse = nullptr;
+    Course* ptoCourse = nullptr;
     EnrolledCourse* nextCourse = nullptr;
 };
 struct Student {
@@ -62,16 +66,17 @@ struct StudyClass {
     Student** quickStudentPtr= nullptr;
     StudyClass* nextClass = nullptr;
 };
-struct CourseStudentList {
+struct CourseStudent {
     int classIndex;
     int studentIndex;
-    Student** toStudent = nullptr;
-    CourseStudentList* nextStudent = nullptr;
+    Scoreboard* savedScore;
+    Student* ptoStudent = nullptr;
+    CourseStudent* nextStudent = nullptr;
 };
 struct Course {
-    CourseInfo thisCourse;
+    CourseInfo thisCourseInfo;
     int maxStudent;
-    CourseStudentList* listStudent = nullptr;
+    CourseStudent* listStudent = nullptr;
     Course* nextCourse = nullptr;
 };
 struct Semester {
