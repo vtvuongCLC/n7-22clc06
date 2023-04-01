@@ -9,12 +9,12 @@ void viewInfoOfCourse(CourseInfo infoThisCourse);
 void viewListOfCourses(Semester* curSemester);
 void viewAllListOfCourses(Schoolyear* firstYear);
 Course* findTheCourse(Course* pCourse, string NameCourse, string IDCourse, string NameClass);
-bool checkExistStudentInCourse(CourseStudentList* listStudent, string studID);
+CourseStudentList* checkExistStudentInCourse(CourseStudentList* listStudent, string studID);
 void updateCourseInformation(Semester* curSemester);
 void addStudentToCourse(Semester* curSemester, StudyClass* pClass);
-// void exportListStudentsInCourse(Course thisCourse);
 // void displayStudentInCourse(Course* thisCourse);
-// void removeStudentFromCourse(Semester* curSemester);
+void removeEnrollCourse(Student* removedStudent, Course* pCourse);
+void removeStudentFromCourse(Semester* curSemester);
 // void removeCourse(Semester* curSemester);
 // void deleteAllStudentsOfCourse(Course* thisCourse);
 #endif
