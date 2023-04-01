@@ -13,11 +13,12 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse)
     if(!temp){
         curStudent->CourseList = new EnrolledCourse;
         temp = curStudent->CourseList;
-        temp->thisCourse->infoThisCourse.courseName = curCourse->infoThisCourse.courseName;
+        temp->thisCourse = curCourse;
         return;
     }
     while(temp->nextCourse) temp = temp->nextCourse;
     temp->nextCourse = new EnrolledCourse;
+    temp->nextCourse->prevCourse = temp;
     temp = temp->nextCourse;
     temp->thisCourse->infoThisCourse.courseName = curCourse->infoThisCourse.courseName;
 }
