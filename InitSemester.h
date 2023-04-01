@@ -3,7 +3,8 @@
 #define _INITSEMESTER_H
 
 Semester* FindUninitSem(Schoolyear* year);
-void FindStudentIndex(StudyClass* firstClass,CourseStudentList* &curCourse, string className, string StudID);
+void LinkEnrolledCourse(Student *&curStudent, Course *curCourse);
+bool FindStudentIndex(StudyClass* firstClass,CourseStudentList* &CourseStud, string className, string StudID,Course* curCourse);
 bool UploadListofStud(Course* &curCourse,StudyClass* curClass);
 void EnterCourseData(Course*& firstCour);
 void InitSemester(Semester*& Sem, int i);
