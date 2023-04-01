@@ -7,7 +7,23 @@ Semester* FindUninitSem(Schoolyear* year){
     return temp;
 }
 
-void FindStudentIndex(StudyClass* firstClass,CourseStudentList* &curCourse, string className, string StudID){
+void LinkEnrolledCourse(Student *&curStudent, Course *curCourse)
+{
+    EnrolledCourse* temp = curStudent->CourseList;
+    if(!temp){
+        curStudent->CourseList = new EnrolledCourse;
+        temp = curStudent->CourseList;
+        temp->thisCourse = curCourse;
+        return;
+    }
+    while(temp->nextCourse) temp = temp->nextCourse;
+    temp->nextCourse = new EnrolledCourse;
+    temp->nextCourse->prevCourse = temp;
+    temp = temp->nextCourse;
+    temp->thisCourse->infoThisCourse.courseName = curCourse->infoThisCourse.courseName;
+}
+
+bool FindStudentIndex(StudyClass* firstClass,CourseStudentList* &CourseStud, string className, string StudID,Course* curCourse){
     StudyClass* curClass = firstClass;
     Student* curStudent = nullptr;
     int x = 0,y = 0;
@@ -15,18 +31,20 @@ void FindStudentIndex(StudyClass* firstClass,CourseStudentList* &curCourse, stri
         curClass = curClass->nextClass;
         x++;
     }
-    if(curClass == nullptr) return;
+    if(curClass == nullptr) return false;
     curStudent = curClass->listStudent;
     while(curStudent->dInfo.StudentID != StudID){
         curStudent = curStudent->nextStudent;
         y++;
     }
-    if(curStudent == nullptr) return;
-        curCourse->classIndex = x;
-        curCourse->studentIndex = y;
+    if(curStudent == nullptr) return false;
+    CourseStud->classIndex = x;
+    CourseStud->studentIndex = y;
+    LinkEnrolledCourse(curStudent,curCourse);
+    return true;
 }
 
-bool UploadListofStud(Course* &curCourse,StudyClass* curClass){
+bool UploadListofStud(Course* &curCourse,StudyClass* firstClass){
     if(curCourse->listStudent)
     {
         cout<<"List of students has already been added for this course.";
@@ -35,13 +53,13 @@ bool UploadListofStud(Course* &curCourse,StudyClass* curClass){
     CourseStudentList* temp = nullptr;
     string className, StudID;
     ifstream in;
-    int i = 1;
-    in.open(curCourse->infoThisCourse.courseName+".csv");
+    int i = 0;
+    in.open(curCourse->infoThisCourse.courseID+".csv");
     if(!in.is_open()){
         cout<<"Unable to find list"<<endl;
         return false;
     }
-    while (i <= curCourse->maxStudent && !in.eof())
+    while (i < curCourse->infoThisCourse.maxStudent && !in.eof())
     {
         getline(in,className,',');
         getline(in,StudID);
@@ -51,16 +69,21 @@ bool UploadListofStud(Course* &curCourse,StudyClass* curClass){
         }
         else{
             temp->nextStudent = new CourseStudentList;
+            temp->nextStudent->prevStudent = temp;
             temp = temp->nextStudent;
         }
-        FindStudentIndex(curClass,temp,className,StudID);
+        while(!FindStudentIndex(firstClass,temp,className,StudID,curCourse)){
+             getline(in,className,',');
+             getline(in,StudID);
+        }
         i++;
     }
-    if(i <= curCourse->maxStudent) 
+    if(i <= curCourse->infoThisCourse.maxStudent) 
         cout<<"No student left to add.";
     else 
         cout<<"Maximum number of students added.";
     in.close();
+    curCourse->numCurStudents = i;
     return true;
 }
 
@@ -78,7 +101,7 @@ void EnterCourseData(Course* &firstCour)
     cout<<"Enter number of credits: ";
     cin>>firstCour->infoThisCourse.credit;
     cout<<"Enter max number of students: ";
-    cin>>firstCour->maxStudent;
+    cin>>firstCour->infoThisCourse.maxStudent;
     cin.ignore();
     cout<<"Enter session for course"<<endl;
     cout<<"=> Day of the week: ";
@@ -112,8 +135,8 @@ void LinkAndInit(Schoolyear* &Year)
         if(!Year->SemesterList)
         {
             cout<<"Initiate Semester "<<i<<" ?"<<endl;
-            cout<<"Enter "<<1<<" to continue."<<endl;
-            cout<<"Enter "<<0<<" to stop."<<endl;
+            cout<<"Enter 1 to continue."<<endl;
+            cout<<"Enter 0 to stop."<<endl;
             cin>>n;
             if(!n) return;
             Year->SemesterList = new Semester;
@@ -127,8 +150,8 @@ void LinkAndInit(Schoolyear* &Year)
         InitSemester(curSem,i);
         cout<<"\n--------------------------------------------\n";
         cout<<"Initiate courses for semester "<<i<<" ?"<<endl;
-        cout<<"Enter "<<1<<" to continue."<<endl;
-        cout<<"Enter "<<0<<" to stop."<<endl;
+        cout<<"Enter 1 to continue."<<endl;
+        cout<<"Enter 0 to stop."<<endl;
         cin>>n;
         while(n)
         {
@@ -146,13 +169,17 @@ void LinkAndInit(Schoolyear* &Year)
             EnterCourseData(curCour);
             while(!UploadListofStud(curCour,Year->listClass))
             {
-                cout<<"Please re add the course with the correct infotmation.";
+                cout<<"Cant find list of student file or course ID is incorrect."<<endl<<endl;
+                cout<<"Enter 1 to re add the course with the correct infotmation."<<endl;
+                cout<<"Enter 0 to upload student list later";
+                cin>>n;
+                if(n == 0) break;
                 EnterCourseData(curCour);
             }
             cout<<"\n--------------------------------------------\n";
             cout<<"Add new course ?"<<endl;
-            cout<<"Enter "<<1<<" to continue."<<endl;
-            cout<<"Enter "<<0<<" to stop."<<endl;
+            cout<<"Enter 1 to continue."<<endl;
+            cout<<"Enter 0 to stop."<<endl;
             cin>>n;
         }
         i++;
@@ -163,9 +190,14 @@ void LinkAndInit(Schoolyear* &Year)
         }
         cout<<"\n--------------------------------------------\n";
         cout<<"Initiate Semester "<<i<<" ?"<<endl;
-        cout<<"Enter "<<1<<" to continue."<<endl;
-        cout<<"Enter "<<0<<" to stop Initialization."<<endl;
+        cout<<"Enter 1 to continue."<<endl;
+        cout<<"Enter 0 to stop Initialization."<<endl;
         cin>>n;
         cout<<"\n--------------------------------------------\n";
     }
+}
+
+int main(){
+    Schoolyear* a = new Schoolyear;
+    LinkAndInit(a);//chỉ dùng hàm này để init hk và môn, chưa check trường hợp tạo hk rồi mà chưa tạo môn
 }
