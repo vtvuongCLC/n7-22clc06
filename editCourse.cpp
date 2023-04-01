@@ -229,35 +229,27 @@ void addStudentToCourse(Semester* curSemester, StudyClass* pClass){
     getline(cin, studentID);
     cout << "Enter the name of study class of student you want to add: ";
     getline(cin, nameStudyClass);
+
     if(checkExistStudentInCourse(pCourse->listStudent, studentID) == true){
         cout << "This student has existed in this course!\n";
         return;
     }
 
     CourseStudentList* newStudent = new CourseStudentList;
-    if(/* !function to return index classstudy and studID of the pointer Student */1){
+    if(!FindStudentIndex(pClass, newStudent, nameStudyClass, studentID, pCourse)){
         delete newStudent;
         cout << "The student hasn't existed in system!!!\n";
         return;
     }
+    
     newStudent->nextStudent = pCourse->listStudent;
     if(pCourse->listStudent){
         pCourse->listStudent->prevStudent = newStudent;
     }
     pCourse->listStudent = newStudent;
 
-    // need the function to return the pointer to the student
-    // pCourse->listStdent->toStudent = function
-
-    cout << "Enter the no number of the student in this course: ";
-    cin >> pCourse->listStudent->toStudent->No;
-    EnrolledCourse* tmp = new EnrolledCourse;
-    tmp->thisCourse = pCourse;
-    tmp->nextCourse = pCourse->listStudent->toStudent->CourseList;
-    if(pCourse->listStudent->toStudent->CourseList) {
-        tmp->nextCourse->prevCourse = tmp;
-    } 
-    pCourse->listStudent->toStudent->CourseList = tmp;
+    // cout << "Enter the no number of the student in this course: ";
+    // cin >> pCourse->listStudent->toStudent->No;
 }
 
 // void displayStudentInCourse(Course* thisCourse){

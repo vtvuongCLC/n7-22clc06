@@ -10,17 +10,11 @@ Semester* FindUninitSem(Schoolyear* year){
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse)
 {
     EnrolledCourse* temp = curStudent->CourseList;
-    if(!temp){
-        curStudent->CourseList = new EnrolledCourse;
-        temp = curStudent->CourseList;
-        temp->thisCourse = curCourse;
-        return;
-    }
-    while(temp->nextCourse) temp = temp->nextCourse;
-    temp->nextCourse = new EnrolledCourse;
-    temp->nextCourse->prevCourse = temp;
-    temp = temp->nextCourse;
-    temp->thisCourse->infoThisCourse.courseName = curCourse->infoThisCourse.courseName;
+    curStudent->CourseList = new EnrolledCourse;
+    curStudent->CourseList->nextCourse = temp;
+    if(temp) temp->prevCourse = curStudent->CourseList;
+    curStudent->CourseList->thisCourse = curCourse;
+
 }
 
 bool FindStudentIndex(StudyClass* firstClass,CourseStudentList* &CourseStud, string className, string StudID,Course* curCourse){
