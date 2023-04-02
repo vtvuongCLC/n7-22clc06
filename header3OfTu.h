@@ -40,6 +40,9 @@ struct CourseInfo {
     dDate CourseDate;
 };
 
+//STRUCTS PROTOTYPES 
+struct Course;
+
 //FUNCTIONAL STRUCTS
 struct EnrolledCourse {
     Scoreboard Score;
@@ -56,13 +59,6 @@ struct Student {
     EnrolledCourse* CourseList = nullptr;
     Student* nextStudent = nullptr;
 };
-struct StudyClass {
-    string className;
-    int numStudent;
-    Student* listStudent = nullptr;
-    Student** quickStudentPtr= nullptr;
-    StudyClass* nextClass = nullptr;
-};
 struct CourseStudentList {
     int no;
     int classIndex;
@@ -77,6 +73,13 @@ struct Course {
     Course* nextCourse = nullptr;
     Course* prevCourse = nullptr;
     CourseStudentList* listStudent = nullptr;
+};
+struct StudyClass {
+    string className;
+    int numStudent;
+    Student* listStudent = nullptr;
+    Student** quickStudentPtr= nullptr;
+    StudyClass* nextClass = nullptr;
 };
 struct Semester {
     string start, end;
