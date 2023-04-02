@@ -35,6 +35,7 @@ bool FindStudentIndex(StudyClass* firstClass,CourseStudentList* &CourseStud, str
     CourseStud->classIndex = x;
     CourseStud->studentIndex = y;
     LinkEnrolledCourse(curStudent,curCourse);
+    CourseStud->toStudent = curStudent;
     return true;
 }
 

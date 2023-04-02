@@ -42,7 +42,6 @@ struct CourseInfo {
 
 //FUNCTIONAL STRUCTS
 struct EnrolledCourse {
-    int no;
     Scoreboard Score;
     Course* thisCourse = nullptr;
     EnrolledCourse* nextCourse = nullptr;
@@ -65,6 +64,7 @@ struct StudyClass {
     StudyClass* nextClass = nullptr;
 };
 struct CourseStudentList {
+    int no;
     int classIndex;
     int studentIndex;
     Student* toStudent = nullptr;

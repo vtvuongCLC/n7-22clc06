@@ -1,6 +1,6 @@
-#include "header3OfTu.h"
-#ifdef _INITSEMESTER_H
+#ifndef _INITSEMESTER_H
 #define _INITSEMESTER_H
+#include "header3OfTu.h"
 
 Semester* FindUninitSem(Schoolyear* year);
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse);

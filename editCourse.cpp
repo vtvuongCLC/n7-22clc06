@@ -1,4 +1,5 @@
 #include "findObject.h"
+#include "InitSemester.h"
 
 void viewInfoOfCourse(CourseInfo infoThisCourse){
 
@@ -58,9 +59,8 @@ Course* findTheCourse(Course* pCourse, string NameCourse, string IDCourse, strin
     return pCourse;
 } 
 
-CourseStudentList* checkExistStudentInCourse(CourseStudentList* listStudent, string studID){
+CourseStudentList* findStudentInCourse(CourseStudentList* listStudent, string studID){
     while(listStudent){
-        //listStudent->toStudent = function returns the pointer to student in the list of studyclass
         if(listStudent->toStudent->dInfo.StudentID == studID) break;
         listStudent = listStudent->nextStudent;
     }
@@ -187,7 +187,7 @@ void updateCourseInformation(Semester* curSemester){
     else cout << "This course doesn't exist.\n";
 }
 
-void addStudentToCourse(Semester* curSemester, StudyClass* pClass){
+void addStudentToCourse(Semester* curSemester, Schoolyear* curYear){
     string courseName, courseID, className;
     cout << "Enter the course name you want to add student: ";
     getline(cin, courseName);
@@ -215,7 +215,7 @@ void addStudentToCourse(Semester* curSemester, StudyClass* pClass){
     cout << "Enter the name of study class of student you want to add: ";
     getline(cin, nameStudyClass);
 
-    CourseStudentList* newStudent = checkExistStudentInCourse(pCourse->listStudent, studentID);
+    CourseStudentList* newStudent = findStudentInCourse(pCourse->listStudent, studentID);
         
     if(newStudent != nullptr){
         cout << "This student has enrolled to this course!\n";
@@ -223,7 +223,7 @@ void addStudentToCourse(Semester* curSemester, StudyClass* pClass){
     }
     
     newStudent = new CourseStudentList;
-    if(!FindStudentIndex(pClass, newStudent, nameStudyClass, studentID, pCourse)){
+    if(!FindStudentIndex(curYear->listClass, newStudent, nameStudyClass, studentID, pCourse)){
         delete newStudent;
         cout << "The student hasn't existed in system!!!\n";
         return;
@@ -240,15 +240,23 @@ void addStudentToCourse(Semester* curSemester, StudyClass* pClass){
     // cin >> pCourse->listStudent->toStudent->No;
 }
 
-// void displayStudentInCourse(Course* thisCourse){
-//     while(thisCourse->thisCourseScore){
-//         cout << left << setw(5)  << thisCourse->thisCourseScore->No
-//              << left << setw(15) << thisCourse->thisCourseScore->StudentID 
-//              << left << setw(40) << thisCourse->thisCourseScore->StudentName 
-//              << left << setw(20) << thisCourse->thisCourseScore->studyClassName << endl;
-//         thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
-//     }
-// }
+void displayStudentInCourse(Course* thisCourse){
+    cout << "==========================================================================\nThe list student in this course\n";
+    CourseStudentList* firstStudent = thisCourse->listStudent;
+    while(firstStudent){
+        cout << left << setw(5)  << firstStudent->no
+             << left << setw(10) << firstStudent->toStudent->dInfo.StudentID
+             << left << setw(15) << firstStudent->toStudent->dInfo.LastName
+             << left << setw(10) << firstStudent->toStudent->dInfo.FirstName 
+             << left << setw(15) << firstStudent->toStudent->dInfo.SocialID
+             << left << setw(15) << firstStudent->toStudent->dInfo.Gender
+             << firstStudent->toStudent->dInfo.Birth.day << "/"
+             << firstStudent->toStudent->dInfo.Birth.month << "/"
+             << firstStudent->toStudent->dInfo.Birth.year << endl;
+        firstStudent = firstStudent->nextStudent;
+    }
+}
+
 void removeEnrollCourse(Student* removedStudent, Course* pCourse){
     EnrolledCourse* tmp = removedStudent->CourseList;
     while(tmp){
@@ -266,7 +274,7 @@ void removeEnrollCourse(Student* removedStudent, Course* pCourse){
     delete tmp;
 
 }
-void removeStudentFromCourse(Semester* curSemester){
+void removeStudentFromCourse(Semester* curSemester, Schoolyear* curYear){
     string courseName, courseID, className;
     cout << "Enter the course name you want to remove a student: ";
     getline(cin, courseName);
@@ -281,22 +289,20 @@ void removeStudentFromCourse(Semester* curSemester){
         return;
     }
 
+    displayStudentInCourse(pCourse);
+
     string studentName, studentID, nameStudyClass;
     cout << "Enter the student name you want to remove: ";
     getline(cin, studentName);
     cout << "Enter the student ID you want to remove: ";
     getline(cin, studentID);
-    cout << "Enter the name of study class of student you want to remove: ";
-    getline(cin, nameStudyClass);
 
-    CourseStudentList* removedStudent = checkExistStudentInCourse(pCourse->listStudent, studentID);
+    CourseStudentList* removedStudent = findStudentInCourse(pCourse->listStudent, studentID);
 
     if(removedStudent == nullptr){
         cout << "The student hasn't enrolled to this course\n";
         return;
     }
-
-    // removedStudent->toStudent = function returns the pointer to quickly access to student
 
     removeEnrollCourse(removedStudent->toStudent, pCourse);
     
@@ -311,38 +317,37 @@ void removeStudentFromCourse(Semester* curSemester){
     delete removedStudent;
 }
 
-// void deleteAllStudentsOfCourse(Course* thisCourse){
-//     while(thisCourse->thisCourseScore){
-//         Scoreboard* tmp = thisCourse->thisCourseScore;
-//         thisCourse->thisCourseScore = thisCourse->thisCourseScore->nextBoard;
-//         delete tmp;
-//     }
-// }
+void removeCourse(Semester* curSemester){
+    string courseName, courseID, className;
+    cout << "Enter the course name you want to remove a student: ";
+    getline(cin, courseName);
+    cout << "Enter the course ID you want to remove a student: ";
+    getline(cin, courseID);
+    cout << "Enter the class name of course you want to add student: ";
+    getline(cin, className);
 
-// void removeCourse(Semester* curSemester){
-//     string courseName, courseID, className;
-//     cout << "Enter the course name you want to remove: ";
-//     getline(cin, courseName);
-//     cout << "Enter the course ID you want to remove: ";
-//     getline(cin, courseID);
-//     cout << "Enter the class name of course you want to remove: ";
-//     getline(cin, className);
+    Course* pCourse = findTheCourse(curSemester->CourseList, courseName, courseID, className);
+    if(!pCourse) {
+        cout << "This course doesn't exist!\n";
+        return;
+    }
 
-//     Course* thisCourse = findTheCourse(curSemester->Courselist, courseName, courseID, className);
-//     if(thisCourse == nullptr){
-//         cout << "This course doesn't exist!\n";
-//         return;
-//     }
+    if(pCourse == curSemester->CourseList){
+        curSemester->CourseList = curSemester->CourseList->nextCourse;
+        curSemester->CourseList->prevCourse = nullptr;
+    }
+    else {
+        pCourse->prevCourse->nextCourse = pCourse->nextCourse;
+        pCourse->nextCourse->prevCourse = pCourse->prevCourse;
+    }
 
-//     Course* tmp = thisCourse->nextCourse;
-//     if(thisCourse->prevCourse)  thisCourse->prevCourse->nextCourse = tmp;
-//     else curSemester->Courselist = tmp;
+    while(pCourse->listStudent){
+        CourseStudentList* tmp = pCourse->listStudent;
+        pCourse->listStudent = pCourse->listStudent->nextStudent;
+        removeEnrollCourse(tmp->toStudent, pCourse);
+        delete tmp;
+    }
 
-//     if(tmp)     tmp->prevCourse = thisCourse->prevCourse;
-
-//     deleteAllStudentsOfCourse(thisCourse);
-
-//     delete thisCourse;
-
-//     cout << "This course was removed from system\n";
-// }
+    delete pCourse;
+    cout << "The program removed this course.\n";
+}
