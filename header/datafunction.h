@@ -4,26 +4,25 @@
 #include "structlist.h"
 using namespace std;
 
-bool validInfo(Info infoparam,char gender);
 bool IsemptyFile(string fileName);
 
 void LoadYearFromFile(string YearFile, Schoolyear* &listYear);
 void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass);
 void LoadStudentListFromFile(string yearName, string className, Student* &listStudent, int &numStudent);
-void LoadData(string YearFile, Schoolyear* &listYear);
+void LoadSemesterFromFile(string yearName, Semester* &listSemester);
+void LoadCourseInfoFromFile(Course* &aCourse, string semester, string start, string end);
+void LoadCourseStudentFromFile(CourseStudent* &listStudent, string CourseID, string className);
+void LoadData(DataBase &DB, string YearFile);
 
-void AddYear(Schoolyear* &listYear);
-void AddClass(StudyClass* &listClass);
-void AddStudentManual(Student* &listStudent, string yearName, string className, int &numStudent);
-void AddStudentCSV(Student* &listStudent, string yearName, string className, int &numStudent);
-void AddStudent(Student* &listStudent, string yearName, string className, int &numStudent);
-
-void InitBaseData(Schoolyear* &listYear);
+void SaveYearToFile(string YearFile, Schoolyear* ListYear);
+void SaveClassToFile(string yearName, StudyClass* listClass);
+void SaveStudentListToFile(string className, Student* listStudent);
+void SaveSemesterToFile(string yearName, Semester* listSem);
+bool findStudentScoreBoard(EnrolledCourse* enrolledlist, Course* curCourse, Scoreboard result);
+void SaveCourseStudentToFile(Course* aCourse);
+void SaveCourseInfoToFile(Semester* curSem);
 void SaveData(string YearFile, Schoolyear* ListYear);
 void ClearData(Schoolyear* &listYear);
 void QuickPtrBinder(Schoolyear* &listYear);
-
-Schoolyear* navigateYear(Schoolyear* listYear, int userindex);
-StudyClass* navigateClass(StudyClass* listClass, int userindex);
 
 #endif

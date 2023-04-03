@@ -1,5 +1,5 @@
-#include "structlist.h"
-#include "loginfunction.h"
+#include "header/structlist.h"
+#include "header/loginfunction.h"
 #include <fstream>
 #include <iostream>
 using namespace std;

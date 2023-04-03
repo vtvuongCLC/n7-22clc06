@@ -17,25 +17,26 @@ struct dDate {
     string session;
 };
 struct Scoreboard {
-    double totalMark = 0;
-    double otherMark = 0;
+    double totalMark   = 0;
+    double otherMark   = 0;
     double midtermMark = 0;
-    double finalMark = 0;
+    double finalMark   = 0;
 };      
 struct Info {
-    string StudentID;
-    string FirstName;
-    string LastName;
-    string Gender;
+    string    StudentID;
+    string    FirstName;
+    string    LastName;
+    string    Gender;
     BirthDate Birth;
-    string SocialID;
+    string    SocialID;
 };
 struct CourseInfo {
     string courseID;
     string courseName;
     string className;
     string Teacher;
-    int credit;
+    int    maxStudent;
+    int    credit;
     dDate CourseDate;
 };
 
@@ -47,7 +48,8 @@ struct Course;
 //STRUCT IMPLEMENTATION
 struct EnrolledCourse {
     Scoreboard Score;
-    Course* ptoCourse = nullptr;
+    
+    Course*         ptoCourse  = nullptr;
     EnrolledCourse* nextCourse = nullptr;
 };
 struct Student {
@@ -56,42 +58,56 @@ struct Student {
     string className;
     string password;
     Info dInfo;
-    EnrolledCourse* CourseList = nullptr;
-    Student* nextStudent = nullptr;
+
+    EnrolledCourse* CourseList  = nullptr;
+    Student*        nextStudent = nullptr;
 };
 struct StudyClass {
     string className;
-    int numStudent = 0;
-    Student* listStudent = nullptr;
-    Student** quickStudentPtr= nullptr;
-    StudyClass* nextClass = nullptr;
+    int    numStudent = 0;
+
+    Student*    listStudent     = nullptr;
+    Student**   quickStudentPtr = nullptr;
+    StudyClass* nextClass       = nullptr;
 };
 struct CourseStudent {
+    int no;
     int classIndex;
     int studentIndex;
-    Scoreboard* savedScore;
-    Student* ptoStudent = nullptr;
+
+    Scoreboard*    savedScore  = nullptr;
+    Student*       ptoStudent  = nullptr;
     CourseStudent* nextStudent = nullptr;
 };
 struct Course {
+    int        courseIndex;
+    int        numCurStudents;
     CourseInfo thisCourseInfo;
-    int maxStudent;
+    
     CourseStudent* listStudent = nullptr;
-    Course* nextCourse = nullptr;
+    Course*        nextCourse  = nullptr;
 };
 struct Semester {
-    string start, end;
-    int semesterIndex;
+    int    index;
     string semester;
-    Course* CourseList = nullptr;
+    string year;
+    string start, end;
+
+    Course*   CourseList   = nullptr; 
     Semester* nextSemester = nullptr;
 };
 struct Schoolyear {
+    int    index;
+    int    numClass = 0;
     string year;
-    Semester* SemesterList = nullptr;
-    int numClass = 0;
-    StudyClass* listClass = nullptr;
+    
+    StudyClass*  listClass     = nullptr;
     StudyClass** quickClassPtr = nullptr;
-    Schoolyear* nextYear = nullptr;
+    Schoolyear*  nextYear      = nullptr;
+};
+
+struct DataBase {
+    Schoolyear* YearList     = nullptr;
+    Semester*   SemesterList = nullptr; // up to 3
 };
 #endif
