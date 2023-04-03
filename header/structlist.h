@@ -51,6 +51,7 @@ struct EnrolledCourse {
     
     Course*         ptoCourse  = nullptr;
     EnrolledCourse* nextCourse = nullptr;
+    EnrolledCourse* prevCourse = nullptr;
 };
 struct Student {
     int No;
@@ -78,6 +79,7 @@ struct CourseStudent {
     Scoreboard*    savedScore  = nullptr;
     Student*       ptoStudent  = nullptr;
     CourseStudent* nextStudent = nullptr;
+    CourseStudent* prevStudent = nullptr;
 };
 struct Course {
     int        courseIndex;
@@ -86,6 +88,7 @@ struct Course {
     
     CourseStudent* listStudent = nullptr;
     Course*        nextCourse  = nullptr;
+    Course*        prevCourse  = nullptr;
 };
 struct Semester {
     int    index;
