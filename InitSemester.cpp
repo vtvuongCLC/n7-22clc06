@@ -3,7 +3,7 @@
 Semester* FindUninitSem(Schoolyear* year){
     if(!year->SemesterList) return nullptr;
     Semester* temp = year->SemesterList;
-    while(temp->nextSemester && temp->CourseList) temp = temp->nextSemester;
+    while(temp->nextSemester) temp = temp->nextSemester;
     return temp;
 }
 
@@ -51,7 +51,6 @@ bool UploadListofStud(Course* &curCourse,StudyClass* firstClass){
     int i = 0;
     in.open(curCourse->infoThisCourse.courseID+".csv");
     if(!in.is_open()){
-        cout<<"Unable to find list"<<endl;
         return false;
     }
     while (i < curCourse->infoThisCourse.maxStudent && !in.eof())
@@ -115,16 +114,53 @@ void InitSemester(Semester* &Sem,int i)
     getline(cin,Sem->end );
 }
 
-void LinkAndInit(Schoolyear* &Year)
-{
+void LinkAndInit(Schoolyear* &Year){
     if(!Year){
         cout<<"Can not find year.";
         return;
     }
     int i = 1,n = 1;
-    Semester* curSem = nullptr;
+    Semester* curSem = FindUninitSem(Year);
     Course* curCour = nullptr;
-    while(n)
+    if(curSem && curSem->CourseList) i += curSem->semesterIndex;
+    else if(curSem && !curSem->CourseList){ 
+        i = curSem->semesterIndex;
+        cout<<"Courses for semester "<<i<<" have not been added." << endl;
+        cout<<"Initiate courses for semester "<<i<<" ?"<<endl;
+        cout<<"Enter 1 to continue."<<endl;
+        cout<<"Enter 0 to stop."<<endl;
+        cin>>n;
+        while(n)
+        {
+            if(!curSem->CourseList)
+            {
+                curSem->CourseList = new Course;
+                curCour = curSem->CourseList;
+            }
+            else
+            {
+                curCour->nextCourse = new Course;
+                curCour->nextCourse->prevCourse = curCour;
+                curCour = curCour->nextCourse;
+            }
+            EnterCourseData(curCour);
+            while(!UploadListofStud(curCour,Year->listClass))
+            {
+                cout<<"Cant find list of student file or course ID is incorrect."<<endl;
+                cout<<"Enter 1 to re add the course with the correct infotmation."<<endl;
+                cout<<"Enter 0 to upload student list later."<<endl;
+                cin>>n;
+                if(n == 0) break;
+                EnterCourseData(curCour);
+            }
+            cout<<"\n--------------------------------------------\n";
+            cout<<"Add new course ?"<<endl;
+            cout<<"Enter 1 to continue."<<endl;
+            cout<<"Enter 0 to stop."<<endl;
+            cin>>n;
+        }
+    }
+    if(n && i < 4)
     {
         cout<<"School year "<<Year->year<<endl<<endl;
         if(!Year->SemesterList)
@@ -139,6 +175,11 @@ void LinkAndInit(Schoolyear* &Year)
         }
         else
         {
+            cout<<"Initiate Semester "<<i<<" ?"<<endl;
+            cout<<"Enter 1 to continue."<<endl;
+            cout<<"Enter 0 to stop."<<endl;
+            cin>>n;
+            if(!n) return;
             curSem->nextSemester = new Semester;
             curSem = curSem->nextSemester;
         }
@@ -164,9 +205,9 @@ void LinkAndInit(Schoolyear* &Year)
             EnterCourseData(curCour);
             while(!UploadListofStud(curCour,Year->listClass))
             {
-                cout<<"Cant find list of student file or course ID is incorrect."<<endl<<endl;
+                cout<<"Cant find list of student file or course ID is incorrect."<<endl;
                 cout<<"Enter 1 to re add the course with the correct infotmation."<<endl;
-                cout<<"Enter 0 to upload student list later";
+                cout<<"Enter 0 to upload student list later."<<endl;
                 cin>>n;
                 if(n == 0) break;
                 EnterCourseData(curCour);
@@ -177,22 +218,85 @@ void LinkAndInit(Schoolyear* &Year)
             cout<<"Enter 0 to stop."<<endl;
             cin>>n;
         }
+        cout<<"Semester "<<i<<" has been added."<<endl;
         i++;
-        if(i == 4)
-        {
-            cout<<"All 3 semesters have been added.";
-            return;
-        }
-        cout<<"\n--------------------------------------------\n";
-        cout<<"Initiate Semester "<<i<<" ?"<<endl;
-        cout<<"Enter 1 to continue."<<endl;
-        cout<<"Enter 0 to stop Initialization."<<endl;
-        cin>>n;
-        cout<<"\n--------------------------------------------\n";
     }
+    if(i == 4) cout<<"All 3 semesters have been added."<<endl;
 }
 
-int main(){
-    Schoolyear* a = new Schoolyear;
-    LinkAndInit(a);//chỉ dùng hàm này để init hk và môn, chưa check trường hợp tạo hk rồi mà chưa tạo môn
-}
+// void LinkAndInit(Schoolyear* &Year)
+// {
+//     if(!Year){
+//         cout<<"Can not find year.";
+//         return;
+//     }
+//     int i = 1,n = 1;
+//     Semester* curSem = nullptr;
+//     Course* curCour = nullptr;
+//     while(n)
+//     {
+//         cout<<"School year "<<Year->year<<endl<<endl;
+//         if(!Year->SemesterList)
+//         {
+//             cout<<"Initiate Semester "<<i<<" ?"<<endl;
+//             cout<<"Enter 1 to continue."<<endl;
+//             cout<<"Enter 0 to stop."<<endl;
+//             cin>>n;
+//             if(!n) return;
+//             Year->SemesterList = new Semester;
+//             curSem = Year->SemesterList;
+//         }
+//         else
+//         {
+//             curSem->nextSemester = new Semester;
+//             curSem = curSem->nextSemester;
+//         }
+//         InitSemester(curSem,i);
+//         cout<<"\n--------------------------------------------\n";
+//         cout<<"Initiate courses for semester "<<i<<" ?"<<endl;
+//         cout<<"Enter 1 to continue."<<endl;
+//         cout<<"Enter 0 to stop."<<endl;
+//         cin>>n;
+//         while(n)
+//         {
+//             if(!curSem->CourseList)
+//             {
+//                 curSem->CourseList = new Course;
+//                 curCour = curSem->CourseList;
+//             }
+//             else
+//             {
+//                 curCour->nextCourse = new Course;
+//                 curCour->nextCourse->prevCourse = curCour;
+//                 curCour = curCour->nextCourse;
+//             }
+//             EnterCourseData(curCour);
+//             while(!UploadListofStud(curCour,Year->listClass))
+//             {
+//                 cout<<"Cant find list of student file or course ID is incorrect."<<endl<<endl;
+//                 cout<<"Enter 1 to re add the course with the correct infotmation."<<endl;
+//                 cout<<"Enter 0 to upload student list later";
+//                 cin>>n;
+//                 if(n == 0) break;
+//                 EnterCourseData(curCour);
+//             }
+//             cout<<"\n--------------------------------------------\n";
+//             cout<<"Add new course ?"<<endl;
+//             cout<<"Enter 1 to continue."<<endl;
+//             cout<<"Enter 0 to stop."<<endl;
+//             cin>>n;
+//         }
+//         i++;
+//         if(i == 4)
+//         {
+//             cout<<"All 3 semesters have been added.";
+//             return;
+//         }
+//         cout<<"\n--------------------------------------------\n";
+//         cout<<"Initiate Semester "<<i<<" ?"<<endl;
+//         cout<<"Enter 1 to continue."<<endl;
+//         cout<<"Enter 0 to stop Initialization."<<endl;
+//         cin>>n;
+//         cout<<"\n--------------------------------------------\n";
+//     }
+// }
