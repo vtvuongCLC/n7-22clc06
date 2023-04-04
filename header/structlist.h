@@ -61,6 +61,7 @@ struct Student {
     Info dInfo;
 
     EnrolledCourse* CourseList  = nullptr;
+    EnrolledCourse* lastEnrolledCourse  = nullptr;
     Student*        nextStudent = nullptr;
 };
 struct StudyClass {
@@ -85,7 +86,9 @@ struct Course {
     int        courseIndex;
     int        numCurStudents;
     CourseInfo thisCourseInfo;
-    
+    string semester;
+    string year;
+
     CourseStudent* listStudent = nullptr;
     Course*        nextCourse  = nullptr;
     Course*        prevCourse  = nullptr;

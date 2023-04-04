@@ -151,6 +151,7 @@ void LoadCourseInfoFromFile(Course* &aCourse, string semester, string start, str
                 curCourse = aCourse;
             } else {
                 curCourse->nextCourse = new Course;
+                curCourse->nextCourse->prevCourse = curCourse;
                 curCourse = curCourse->nextCourse;
             }
             curCourse->thisCourseInfo.courseID = tempData;
@@ -188,6 +189,7 @@ void LoadCourseStudentFromFile(CourseStudent* &listStudent, string CourseID, str
                 curCourseStudent = listStudent;
             } else {
                 curCourseStudent->nextStudent = new CourseStudent;
+                curCourseStudent->nextStudent->prevStudent = curCourseStudent;
                 curCourseStudent = curCourseStudent->nextStudent;
             }
             curCourseStudent->classIndex = stoi(tempData);

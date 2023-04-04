@@ -12,4 +12,8 @@ CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID);
 void LinkEnrolledCourseToCourse(Student *curStudent, Course *curCourse);
 bool FindStudentIndexInStudyClass(Schoolyear* curYear, CourseStudent* newStudent, string year, string className, string StudID,Course* curCourse);
 void addStudentToCourse(Semester* curSemester, Schoolyear* curYear);
+void displayStudentInCourse(Course* thisCourse);
+void removeEnrollCourse(Student* removedStudent, Course* pCourse);
+void removeStudentFromCourse(Semester* curSemester, Schoolyear* curYear);
+void printListCoursesOfAStudent(Student* thisStudent, string semester, string year);
 #endif
