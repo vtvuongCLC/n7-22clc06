@@ -7,41 +7,58 @@
 //     return temp;
 // }
 
-void LinkEnrolledCourse(Student *&curStudent, Course *curCourse)
+void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent)
 {
     EnrolledCourse* temp = curStudent->CourseList;
     curStudent->CourseList = new EnrolledCourse;
     curStudent->CourseList->nextCourse = temp;
     if(temp) temp->prevCourse = curStudent->CourseList;
     curStudent->CourseList->ptoCourse = curCourse;
+    curStudent->CourseList->Score = &curCourseStudent->savedScore;
 }
 
-bool FindStudentIndex(StudyClass* firstClass,CourseStudent* &CourseStud, string className, string StudID,Course* curCourse){
-    StudyClass* curClass = firstClass;
-    Student* curStudent = nullptr;
-    int x = 0,y = 0;
-    while(curClass && curClass->className != className){
-        curClass = curClass->nextClass;
+bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string yearName,string className, string StudID,Course* curCourse)
+{
+    Schoolyear* curYear = listYear;
+    int x = 0;
+    while (listYear && listYear->year != yearName) {
+        curYear = curYear->nextYear;
         x++;
     }
-    if(curClass == nullptr) return false;
-    curStudent = curClass->listStudent;
-    while(curStudent->dInfo.StudentID != StudID){
-        curStudent = curStudent->nextStudent;
+    if (curYear == nullptr)
+        return false;
+
+    StudyClass* curClass = curYear->listClass;
+    int y = 0;
+    while(curClass && curClass->className != className) {
+        curClass = curClass->nextClass;
         y++;
     }
-    if(curStudent == nullptr) return false;
-    CourseStud->classIndex = x;
-    CourseStud->studentIndex = y;
-    LinkEnrolledCourse(curStudent,curCourse);
+    if(curClass == nullptr)
+        return false;
+
+    Student* curStudent = curClass->listStudent;
+    int z = 0;
+    while(curStudent->dInfo.StudentID != StudID) {
+        curStudent = curStudent->nextStudent;
+        z++;
+    }
+    if(curStudent == nullptr)
+        return false;
+        
+    CourseStud->yearIndex = x;
+    CourseStud->classIndex = y;
+    CourseStud->studentIndex = z;
+    LinkEnrolledCourse(curStudent,curCourse, CourseStud);
     return true;
 }
 
-bool UploadListofStud(Course* &curCourse,StudyClass* firstClass){
+bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
+{
     if(curCourse->listStudent)
         return false;
     CourseStudent* temp = nullptr;
-    string className, StudID;
+    string yearName, className, StudID;
     ifstream in;
     int i = 0;
     in.open(curCourse->thisCourseInfo.courseID+".csv");
@@ -50,6 +67,8 @@ bool UploadListofStud(Course* &curCourse,StudyClass* firstClass){
     }
     while (i < curCourse->thisCourseInfo.maxStudent && !in.eof())
     {
+        in.ignore(100,',');
+        getline(in,yearName,',');
         getline(in,className,',');
         getline(in,StudID);
         if(!curCourse->listStudent){
@@ -61,7 +80,8 @@ bool UploadListofStud(Course* &curCourse,StudyClass* firstClass){
             temp->nextStudent->prevStudent = temp;
             temp = temp->nextStudent;
         }
-        while(!FindStudentIndex(firstClass,temp,className,StudID,curCourse)){
+    
+        while(!FindStudentIndex(listYear,temp,yearName,className,StudID,curCourse)){
              getline(in,className,',');
              getline(in,StudID);
         }
@@ -106,14 +126,15 @@ void InitSemester(Semester* &Sem,int index)
     cin.ignore();
     getline(cin,Sem->year);
     cout<<"Enter semester number: ";
-    getline(cin, Sem->semester);
+    cin >> Sem->semester;
     cout<<"Enter starting date for semester "<< Sem->semester <<": ";
     getline(cin, Sem->start);
     cout<<"Enter ending date for semester "<< Sem->semester <<": ";
     getline(cin,Sem->end );
 }
 
-void LinkAndInit(Semester* &curSemester, StudyClass* firstClass){
+void LinkAndInit(Semester* &curSemester, Schoolyear* listYear)
+{
     Semester* temp = curSemester ;
     while(temp && temp->CourseList) temp = temp->nextSemester;
     Course* curCour = nullptr;
@@ -140,7 +161,7 @@ void LinkAndInit(Semester* &curSemester, StudyClass* firstClass){
                 curCour = curCour->nextCourse;
             }
             EnterCourseData(curCour);
-            while(!UploadListofStud(curCour,firstClass))
+            while(!UploadListofStud(curCour, listYear))
             {
                 cout<<"Cant find list of student file or course ID is incorrect."<<endl;
                 cout<<"Enter 1 to re add the course with the correct infotmation."<<endl;
@@ -198,7 +219,7 @@ void LinkAndInit(Semester* &curSemester, StudyClass* firstClass){
                 curCour = curCour->nextCourse;
             }
             EnterCourseData(curCour);
-            while(!UploadListofStud(curCour,firstClass))
+            while(!UploadListofStud(curCour,listYear))
             {
                 cout<<"Cant find list of student file or course ID is incorrect."<<endl;
                 cout<<"Enter 1 to re add the course with the correct infotmation."<<endl;

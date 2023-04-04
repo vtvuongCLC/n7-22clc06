@@ -37,7 +37,7 @@ struct CourseInfo {
     string Teacher;
     int    maxStudent;
     int    credit;
-    dDate CourseDate;
+    dDate  CourseDate;
 };
 
 //FUNCTIONAL STRUCTS
@@ -47,8 +47,8 @@ struct Course;
 
 //STRUCT IMPLEMENTATION
 struct EnrolledCourse {
-    Scoreboard Score;
     
+    Scoreboard*     Score      = nullptr;
     Course*         ptoCourse  = nullptr;
     EnrolledCourse* nextCourse = nullptr;
     EnrolledCourse* prevCourse = nullptr;
@@ -58,7 +58,7 @@ struct Student {
     string yearName;
     string className;
     string password;
-    Info dInfo;
+    Info   dInfo;
 
     EnrolledCourse* CourseList  = nullptr;
     EnrolledCourse* lastEnrolledCourse  = nullptr;
@@ -73,11 +73,12 @@ struct StudyClass {
     StudyClass* nextClass       = nullptr;
 };
 struct CourseStudent {
-    int no;
-    int classIndex;
-    int studentIndex;
+    int        no;
+    int        yearIndex;
+    int        classIndex;
+    int        studentIndex;
+    Scoreboard savedScore;
 
-    Scoreboard*    savedScore  = nullptr;
     Student*       ptoStudent  = nullptr;
     CourseStudent* nextStudent = nullptr;
     CourseStudent* prevStudent = nullptr;
@@ -85,17 +86,17 @@ struct CourseStudent {
 struct Course {
     int        courseIndex;
     int        numCurStudents;
+    string     year;
+    string     semester;
     CourseInfo thisCourseInfo;
-    string semester;
-    string year;
-
+    
     CourseStudent* listStudent = nullptr;
     Course*        nextCourse  = nullptr;
     Course*        prevCourse  = nullptr;
 };
 struct Semester {
     int    index;
-    string semester;
+    int    semester;
     string year;
     string start, end;
 
@@ -113,7 +114,12 @@ struct Schoolyear {
 };
 
 struct DataBase {
-    Schoolyear* YearList     = nullptr;
-    Semester*   SemesterList = nullptr; // up to 3
+    string      YearFile     = "Schoolyear";
+    string      SemesterFile = "Semester";
+    int         numYear      = 0;
+
+    Schoolyear*  YearList       = nullptr;
+    Schoolyear** quickSchoolPtr = nullptr;
+    Semester*    SemesterList   = nullptr; // up to 3
 };
 #endif
