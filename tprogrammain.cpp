@@ -14,7 +14,7 @@ int main()
     cin >> usertype;
     string YearFile = "Listyear";
     DataBase DB;
-    LoadData(DB,YearFile);
+    LoadSchoolData(DB);
     int key = login(DB.YearList);
     // if (key == 1)
     // {
@@ -25,6 +25,6 @@ int main()
     {    
         StaffGUI(DB);
     }
-    SaveData(YearFile,DB.YearList);
-    ClearData(DB.YearList);
+    SaveData(DB);
+    ClearData(DB);
 }

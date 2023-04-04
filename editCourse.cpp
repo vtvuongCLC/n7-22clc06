@@ -1,15 +1,55 @@
 #include "header/findObject.h"
 
+void EnterCourseData(Course* &firstCour)
+{
+    system("cls");
+    Course* tmp = firstCour;
+    firstCour = new Course;
+    firstCour->nextCourse = tmp;
+    if(tmp) tmp->prevCourse = firstCour;
+    cout<<"Enter course ID: ";
+    getline(cin,firstCour->thisCourseInfo.courseID);
+    cout<<"Enter course name: ";
+    getline(cin,firstCour->thisCourseInfo.courseName);
+    cout<<"Enter class name: ";
+    getline(cin,firstCour->thisCourseInfo.className);
+    cout<<"Enter teacher name: ";
+    getline(cin,firstCour->thisCourseInfo.Teacher);
+    cout<<"Enter number of credits: ";
+    cin>>firstCour->thisCourseInfo.credit;
+    cout<<"Enter max number of students: ";
+    cin>>firstCour->thisCourseInfo.maxStudent;
+    cin.ignore();
+    cout<<"Enter session for course"<<endl;
+    cout<<"=> Day of the week: ";
+    getline(cin,firstCour->thisCourseInfo.CourseDate.day);
+    cout<<"=> Session for that day: ";
+    getline(cin,firstCour->thisCourseInfo.CourseDate.session);
+}
+
+void InitSemester(Semester* &Sem, int semester, string year)
+{
+    Semester* tmp = Sem;
+    Sem = new Semester;
+    Sem->nextSemester = tmp;
+    Sem->semester = semester;
+    Sem->year = year;
+    cout << "\nThe system created semester " << Sem->semester << " in year " <<Sem->year << endl;
+    cout<<"Enter starting date for semester "<< Sem->semester <<": ";
+    getline(cin, Sem->start);
+    cout<<"Enter ending date for semester "<< Sem->semester <<": ";
+    getline(cin,Sem->end );
+}
 void viewInfoOfCourse(CourseInfo infoThisCourse){
 
-    cout << " " << left << setw(15) << infoThisCourse.courseID 
-                << left << setw(20) << infoThisCourse.courseName 
-                << left << setw(15) << infoThisCourse.className
-                << left << setw(25) << infoThisCourse.Teacher
-                << left << setw(3)  << infoThisCourse.credit
-                << left << setw(4)  << infoThisCourse.maxStudent  
-                << left << setw(3)  << infoThisCourse.CourseDate.day
-                            << ", " << infoThisCourse.CourseDate.session << endl;                                 
+    cout    << left << setw(15) << infoThisCourse.courseID 
+            << left << setw(20) << infoThisCourse.courseName 
+            << left << setw(15) << infoThisCourse.className
+            << left << setw(15) << infoThisCourse.Teacher
+            << left << setw(8)  << infoThisCourse.credit
+            << left << setw(15) << infoThisCourse.maxStudent  
+            << infoThisCourse.CourseDate.day
+            << ", " << infoThisCourse.CourseDate.session << "   ";                                 
 }
 
 void viewListOfCoursesIn1Semester(Semester* curSemester){
@@ -19,21 +59,20 @@ void viewListOfCoursesIn1Semester(Semester* curSemester){
         cout << "This semester hasn't yet been added course!!! First, please add the course to this semester";
         return;
     }
+    cout << "----------------------------------------------------------------------\n";
     cout << "The courses list in semester " << curSemester->semester << " year " << curSemester->year << endl << endl;
     while(pCourse){
-        cout << "----------------------------------------------------------------------\n";
-        cout << "The courses list of semester " << curSemester->semester << " year " << curSemester->year << endl;
         cout << left << setw(15) << "Course ID" 
-             << left << setw(25) << "Course Name" 
+             << left << setw(20) << "Course Name" 
              << left << setw(15) << "Class Name"
-             << left << setw(25) << "Teacher"
-             << left << setw(3)  << "Credit"
-             << left << setw(4)  << "Max Students"  
-             << left << setw(3)  << "Day, Session" 
-             << left << setw(4)  << "Number Current Students" << endl;
+             << left << setw(15) << "Teacher"
+             << left << setw(8)  << "Credit"
+             << left << setw(15) << "Max Students"  
+             << left << setw(15) << "Day, Session" 
+             << left << setw(25) << "Number Current Students" << endl;
 
         viewInfoOfCourse(pCourse->thisCourseInfo);
-        cout << left << setw(4)  << pCourse->numCurStudents;
+        cout << pCourse->numCurStudents << endl;
         pCourse = pCourse->nextCourse;
     }
 }
@@ -56,7 +95,7 @@ void viewAllListOfCourses(Semester* curSemester){
                      << left << setw(15) << "Class Name"
                      << left << setw(25) << "Teacher"
                      << left << setw(3)  << "Credit"
-                     << left << setw(4)  << "Max Students"  
+                     << left << setw(5)  << "Max Students"  
                      << left << setw(3)  << "Day, Session" << endl;
                 viewInfoOfCourse(pCourse->thisCourseInfo);
                 pCourse = pCourse->nextCourse;
@@ -65,7 +104,7 @@ void viewAllListOfCourses(Semester* curSemester){
     }
 }
 
-Course* findTheCourse(Semester* pSemester, string year, string semester, string NameCourse, string IDCourse, string NameClass){
+Course* findTheCourse(Semester* pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass){
     while(pSemester){
         if(pSemester->year == year && pSemester->semester == semester) break;
         pSemester = pSemester->nextSemester;
