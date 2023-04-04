@@ -1,5 +1,5 @@
-#include "structlist.h"
-#include "loginfunction.h"
+#include "header/structlist.h"
+#include "header/loginfunction.h"
 #include <fstream>
 #include <iostream>
 using namespace std;
@@ -46,7 +46,9 @@ int login_student(string id,string pass, Schoolyear* DataBase) {
 bool login_staff(string AccountStaff, string passStaff) {
     ifstream filein;
 	bool key = false;
-    filein.open("Staff.csv");
+    filein.open("Data\\Staff.csv");
+	if (filein.is_open() == false)
+		return false;
     while(!filein.eof()){
         string tmpAcc;
         string tmpPass;
@@ -68,6 +70,11 @@ int login(Schoolyear *DataBase) {
     cout<<">> ";
     cin>>tmp;
 	if (tmp == 1) {
+		if (DataBase == nullptr)
+		{
+			cout << "No data found. Contact Staff for more information" << endl;
+			return -1;
+		}
 		string id;
 		string pass;
 		int key;
@@ -105,5 +112,6 @@ int login(Schoolyear *DataBase) {
         cout<<"Successful to login"<<endl;
 		system("pause");
         return 2;
-    }    
+    }   
+	return -1; 
 }
