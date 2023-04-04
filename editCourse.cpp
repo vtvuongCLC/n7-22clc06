@@ -1,5 +1,45 @@
 #include "header/findObject.h"
 
+void EnterCourseData(Course* &firstCour)
+{
+    system("cls");
+    Course* tmp = firstCour;
+    firstCour = new Course;
+    firstCour->nextCourse = tmp;
+    if(tmp) tmp->prevCourse = firstCour;
+    cout<<"Enter course ID: ";
+    getline(cin,firstCour->thisCourseInfo.courseID);
+    cout<<"Enter course name: ";
+    getline(cin,firstCour->thisCourseInfo.courseName);
+    cout<<"Enter class name: ";
+    getline(cin,firstCour->thisCourseInfo.className);
+    cout<<"Enter teacher name: ";
+    getline(cin,firstCour->thisCourseInfo.Teacher);
+    cout<<"Enter number of credits: ";
+    cin>>firstCour->thisCourseInfo.credit;
+    cout<<"Enter max number of students: ";
+    cin>>firstCour->thisCourseInfo.maxStudent;
+    cin.ignore();
+    cout<<"Enter session for course"<<endl;
+    cout<<"=> Day of the week: ";
+    getline(cin,firstCour->thisCourseInfo.CourseDate.day);
+    cout<<"=> Session for that day: ";
+    getline(cin,firstCour->thisCourseInfo.CourseDate.session);
+}
+
+void InitSemester(Semester* &Sem, int semester, string year)
+{
+    Semester* tmp = Sem;
+    Sem = new Semester;
+    Sem->nextSemester = tmp;
+    Sem->semester = semester;
+    Sem->year = year;
+    cout << "\nThe system created semester " << Sem->semester << " in year " <<Sem->year << endl;
+    cout<<"Enter starting date for semester "<< Sem->semester <<": ";
+    getline(cin, Sem->start);
+    cout<<"Enter ending date for semester "<< Sem->semester <<": ";
+    getline(cin,Sem->end );
+}
 void viewInfoOfCourse(CourseInfo infoThisCourse){
 
     cout    << left << setw(15) << infoThisCourse.courseID 

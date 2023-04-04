@@ -78,11 +78,7 @@ bool UploadListofStud(Course* &curCourse,StudyClass* firstClass){
 
 void EnterCourseData(Course* &firstCour)
 {
-    system("cls");
-    Course* tmp = firstCour;
-    firstCour = new Course;
-    firstCour->nextCourse = tmp;
-    if(tmp) tmp->prevCourse = firstCour;
+    cin.ignore();
     cout<<"Enter course ID: ";
     getline(cin,firstCour->thisCourseInfo.courseID);
     cout<<"Enter course name: ";
@@ -103,14 +99,15 @@ void EnterCourseData(Course* &firstCour)
     getline(cin,firstCour->thisCourseInfo.CourseDate.session);
 }
 
-void InitSemester(Semester* &Sem, int semester, string year)
+void InitSemester(Semester* &Sem,int index)
 {
-    Semester* tmp = Sem;
-    Sem = new Semester;
-    Sem->nextSemester = tmp;
-    Sem->semester = semester;
-    Sem->year = year;
-    cout << "\nThe system created semester " << Sem->semester << " in year " <<Sem->year << endl;
+    Sem->index = index;
+    cout<<"Enter schoolyear for this semester: ";
+    cin.ignore();
+    getline(cin,Sem->year);
+    cout<<"Enter semester number: ";
+    cin >> Sem->semester;
+    cin.ignore();
     cout<<"Enter starting date for semester "<< Sem->semester <<": ";
     getline(cin, Sem->start);
     cout<<"Enter ending date for semester "<< Sem->semester <<": ";
@@ -222,4 +219,3 @@ void LinkAndInit(Semester* &curSemester, StudyClass* firstClass){
     }
     if(i == 4) cout<<"All 3 semesters have been added."<<endl;
 }
-

@@ -2,7 +2,9 @@
 #define _FIND_OBJECT_H_
 #include "structlist.h"
 #include "displayfunction.h"
-#include "InitSemester.h"
+
+void EnterCourseData(Course* &firstCour);
+void InitSemester(Semester* &Sem, int semester, string year);
 void viewInfoOfCourse(CourseInfo infoThisCourse);
 void viewListOfCoursesIn1Semester(Semester* curSemester);
 void viewAllListOfCourses(Semester* curSemester);
