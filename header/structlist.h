@@ -85,7 +85,7 @@ struct CourseStudent {
 };
 struct Course {
     int        courseIndex;
-    int        numCurStudents;
+    int        numCurStudents = 0;
     string     year;
     string     semester;
     CourseInfo thisCourseInfo;

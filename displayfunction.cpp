@@ -192,7 +192,7 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
         if (selection == 2)
         {
             BridgingList(DB);
-            SemesterManager(DB,curYear);
+            //SemesterManager(DB,curYear);
         }
             
     } while (true);

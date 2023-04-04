@@ -127,6 +127,7 @@ void InitSemester(Semester* &Sem,int index)
     getline(cin,Sem->year);
     cout<<"Enter semester number: ";
     cin >> Sem->semester;
+    cin.ignore();
     cout<<"Enter starting date for semester "<< Sem->semester <<": ";
     getline(cin, Sem->start);
     cout<<"Enter ending date for semester "<< Sem->semester <<": ";
@@ -239,4 +240,3 @@ void LinkAndInit(Semester* &curSemester, Schoolyear* listYear)
     }
     if(i == 4) cout<<"All 3 semesters have been added."<<endl;
 }
-
