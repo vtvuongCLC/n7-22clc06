@@ -354,6 +354,7 @@ void removeEnrollCourse(Student* removedStudent, Course* pCourse){
         if(tmp->ptoCourse == pCourse) break;
         tmp = tmp->nextCourse;
     }
+    if(!tmp->nextCourse) removedStudent->lastEnrolledCourse = tmp->prevCourse;
     if(tmp->prevCourse){
        tmp->prevCourse->nextCourse = tmp->nextCourse;
        tmp->nextCourse->prevCourse = tmp->prevCourse; 
