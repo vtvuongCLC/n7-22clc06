@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Admin/Desktop/TESTZONE/C++/Project/TeamProject/New folder",
-      "program": "c:/Users/Admin/Desktop/TESTZONE/C++/Project/TeamProject/New folder/build/Debug/outDebug",
+      "cwd": "d:/groupproject/n7-22clc06",
+      "program": "d:/groupproject/n7-22clc06/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
