@@ -125,7 +125,7 @@ void LoadSemesterFromFile(string yearName, Semester* &listSemester)
                 curSem = curSem->nextSemester;
             }
             i++;
-            curSem->semester = tempData;
+            curSem->semester = stoi(tempData);
             getline(SemesterIn,tempData,',');
             curSem->start = tempData;
             getline(SemesterIn,tempData,'\n');
