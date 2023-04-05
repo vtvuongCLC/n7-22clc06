@@ -167,6 +167,7 @@ void ClassesManager(Schoolyear* curYear)
             break;
         if (selection == "n" || selection == "N") {
             AddClass(curYear->listClass);
+            continue;
         }
         if (curYear->listClass != nullptr) {
             int intSelection = stoi(selection);
@@ -194,8 +195,8 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
             ClassesManager(curYear);
         if (selection == 2)
         {
-            // BridgingList(DB);
-            // LoadSemesterSector(DB);
+            QuickPtrBinder(DB);
+            LoadSemesterSector(DB);
             //SemesterManager(DB,curYear);
         }
     } while (true);

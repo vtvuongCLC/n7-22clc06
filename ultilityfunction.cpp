@@ -297,30 +297,29 @@ void QuickPtrBinder(DataBase &DB)
         }
     }
 }
-void BridgingList(DataBase &DB)
-{
-    if (DB.SemesterList == nullptr)
-        return;
-    QuickPtrBinder(DB);
-    Semester* curSem = DB.SemesterList;
-    Course* curCourse = nullptr;
-    CourseStudent* curCourseStudent = nullptr;
-    while (curSem != nullptr)
-    {
-        curCourse = curSem->CourseList;
-        while (curCourse != nullptr) {
-            if (curCourse->listStudent != nullptr) {
-                if (curCourse->listStudent->ptoStudent == nullptr)
-                {
-                    curCourseStudent = curCourse->listStudent;
-                    while (curCourseStudent != nullptr) {
-                        curCourseStudent->ptoStudent = DB.quickSchoolPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
-                        curCourseStudent = curCourseStudent->nextStudent;
-                    }
-                }
-            }
-            curCourse = curCourse->nextCourse;
-        }
-        curSem = curSem->nextSemester;
-    }
-}
+// void BridgingList(DataBase &DB)
+// {
+//     if (DB.SemesterList == nullptr)
+//         return;
+//     Semester* curSem = DB.SemesterList;
+//     Course* curCourse = nullptr;
+//     CourseStudent* curCourseStudent = nullptr;
+//     while (curSem != nullptr)
+//     {
+//         curCourse = curSem->CourseList;
+//         while (curCourse != nullptr) {
+//             if (curCourse->listStudent != nullptr) {
+//                 if (curCourse->listStudent->ptoStudent == nullptr)
+//                 {
+//                     curCourseStudent = curCourse->listStudent;
+//                     while (curCourseStudent != nullptr) {
+//                         curCourseStudent->ptoStudent = DB.quickSchoolPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
+//                         curCourseStudent = curCourseStudent->nextStudent;
+//                     }
+//                 }
+//             }
+//             curCourse = curCourse->nextCourse;
+//         }
+//         curSem = curSem->nextSemester;
+//     }
+// }

@@ -5,16 +5,10 @@
 
 int main()
 {
-    int usertype;
-    cout << "You are :" << endl;
-    cout << "1. Student" << endl;
-    cout << "2. Staff" << endl;
-    cout << "Enter another number to exit" << endl;
-    cout << ">> ";
-    cin >> usertype;
     string YearFile = "Listyear";
     DataBase DB;
     LoadSchoolData(DB);
+    LoadSemesterSector(DB);
     int key = login(DB.YearList);
     // if (key == 1)
     // {

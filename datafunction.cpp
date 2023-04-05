@@ -229,6 +229,8 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
 }
 void LoadSemesterSector(DataBase &DB)
 {
+    if (DB.SemesterList != nullptr)
+        return;
     Semester* curSem = nullptr;
     Course* curCourse = nullptr;
     LoadSemesterFromFile(DB.SemesterFile,DB.SemesterList);
@@ -237,7 +239,7 @@ void LoadSemesterSector(DataBase &DB)
             LoadCourseInfoFromFile(curSem);
             curCourse = curSem->CourseList;
             while (curCourse != nullptr) {
-                LoadCourseStudentFromFile(curCourse);
+                LoadCourseStudentFromFile(curCourse,DB.quickSchoolPtr);
                 curCourse = curCourse->nextCourse;
             }
             curSem = curSem->nextSemester;
@@ -338,33 +340,39 @@ void SaveSemesterToFile(string SemesterFile, Semester* listSemester)
 
 void SaveData(DataBase DB)
 {
-    SaveYearToFile(DB.YearFile,DB.YearList);
-    Schoolyear* curYear = DB.YearList;
-    StudyClass* curClass = nullptr;
-    
-    while (curYear != nullptr) {
-        SaveClassToFile(curYear->year,curYear->listClass);
-        curClass = curYear->listClass;
-        while (curClass != nullptr) {
-            SaveStudentListToFile(curClass->className,curClass->listStudent);
-            curClass = curClass->nextClass;
+    if (DB.YearList != nullptr) {
+        SaveYearToFile(DB.YearFile,DB.YearList);
+        Schoolyear* curYear = DB.YearList;
+        StudyClass* curClass = nullptr;
+        
+        while (curYear != nullptr) {
+            SaveClassToFile(curYear->year,curYear->listClass);
+            curClass = curYear->listClass;
+            while (curClass != nullptr) {
+                SaveStudentListToFile(curClass->className,curClass->listStudent);
+                curClass = curClass->nextClass;
+            }
+            curYear = curYear->nextYear;
         }
-        curYear = curYear->nextYear;
     }
 
-    SaveSemesterToFile(DB.SemesterFile, DB.SemesterList);
-    Semester* curSemester = DB.SemesterList;
-    Course* curCourse = nullptr;
+    if (DB.SemesterList != nullptr)
+    {
+        SaveSemesterToFile(DB.SemesterFile, DB.SemesterList);
+        Semester* curSemester = DB.SemesterList;
+        Course* curCourse = nullptr;
 
-    while (curSemester != nullptr) {
-        SaveCourseInfoToFile(curSemester);
-        curCourse = curSemester->CourseList;
-        while (curCourse != nullptr) {
-            SaveCourseStudentToFile(curCourse);
-            curCourse = curCourse->nextCourse;
+        while (curSemester != nullptr) {
+            SaveCourseInfoToFile(curSemester);
+            curCourse = curSemester->CourseList;
+            while (curCourse != nullptr) {
+                SaveCourseStudentToFile(curCourse);
+                curCourse = curCourse->nextCourse;
+            }
+            curSemester = curSemester->nextSemester;
         }
-        curSemester = curSemester->nextSemester;
     }
+
 
 }
 void ClearData(DataBase &DB)
