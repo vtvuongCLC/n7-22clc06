@@ -1,6 +1,6 @@
 #include "header/findObject.h"
 
-void EnterCourseData(Course* &firstCour)
+/*void EnterCourseData(Course* &firstCour)
 {
     system("cls");
     Course* tmp = firstCour;
@@ -25,7 +25,7 @@ void EnterCourseData(Course* &firstCour)
     getline(cin,firstCour->thisCourseInfo.CourseDate.day);
     cout<<"=> Session for that day: ";
     getline(cin,firstCour->thisCourseInfo.CourseDate.session);
-}
+}*/
 
 void InitSemester(Semester* &Sem, int semester, string year)
 {

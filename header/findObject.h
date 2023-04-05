@@ -3,7 +3,7 @@
 #include "structlist.h"
 #include "displayfunction.h"
 
-void EnterCourseData(Course* &firstCour);
+//void EnterCourseData(Course* &firstCour);
 void InitSemester(Semester* &Sem, int semester, string year);
 void viewInfoOfCourse(CourseInfo infoThisCourse);
 void viewListOfCoursesIn1Semester(Semester* curSemester);
