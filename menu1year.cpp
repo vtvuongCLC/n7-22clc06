@@ -1,9 +1,9 @@
 #include "header/findObject.h"
 #include "header/InitSemester.h"
 void menu1Year(DataBase* DB){
-    DB = new DataBase;
-    int numSemester = 1;
-    cout << "There are 3 semesters in a school year: Semester 1 (Fall), Semester 2 (Summer), and Semester 3 (Autumn)." << endl;
+    int numSemester;
+    if(!DB->SemesterList || DB->YearList->year != DB->SemesterList->year) numSemester = 1;
+    else numSemester = DB->SemesterList->semester + 1;
     while(numSemester != 4){
         InitSemester(DB->SemesterList, numSemester, DB->YearList->year);
         bool checkEndSemester = false;

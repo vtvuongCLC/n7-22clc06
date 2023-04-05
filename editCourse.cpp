@@ -239,7 +239,7 @@ void addStudentToCourse(Semester* curSemester, Schoolyear* curYear){
     }
     int numYears;
     string studentName, studentID, nameStudyClass, year;
-    DisplayYearList(curYear, numYears);
+    // DisplayYearList(curYear, numYears);
 
     cout << "Enter the year number when a student start in system: ";
     getline(cin, year);
@@ -377,7 +377,7 @@ void removeCourse(Semester* curSemester){
 
     if(pCourse == curSemester->CourseList){
         curSemester->CourseList = curSemester->CourseList->nextCourse;
-        curSemester->CourseList->prevCourse = nullptr;
+        if(curSemester->CourseList) curSemester->CourseList->prevCourse = nullptr;
     }
     else {
         pCourse->prevCourse->nextCourse = pCourse->nextCourse;

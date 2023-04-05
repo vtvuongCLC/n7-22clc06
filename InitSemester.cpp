@@ -12,6 +12,7 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* 
     EnrolledCourse* temp = curStudent->CourseList;
     curStudent->CourseList = new EnrolledCourse;
     curStudent->CourseList->nextCourse = temp;
+    curStudent->CourseList->Score = &(curCourseStudent->savedScore);
     if(temp) temp->prevCourse = curStudent->CourseList;
     else curStudent->lastEnrolledCourse = curStudent->CourseList;
     curStudent->CourseList->ptoCourse = curCourse;
@@ -50,6 +51,7 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
         cout << "This student hasn't existed in the system\n";
         return false;
     }
+    CourseStud->ptoStudent = curStudent;
     CourseStud->yearIndex = x;
     CourseStud->classIndex = y;
     CourseStud->studentIndex = z;
