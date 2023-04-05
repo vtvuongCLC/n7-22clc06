@@ -165,11 +165,10 @@ void ClassesManager(Schoolyear* curYear)
         cin >> selection;
         if (selection == "0")
             break;
-        if (selection == "n" || selection == "N") {
+        else if (selection == "n" || selection == "N") {
             AddClass(curYear->listClass);
-            continue;
         }
-        if (curYear->listClass != nullptr) {
+        else if (curYear->listClass != nullptr) {
             int intSelection = stoi(selection);
             if (intSelection > 0 && intSelection <= maxSelection) {
                 chosenClass = navigateClass(curYear->listClass,stoi(selection));

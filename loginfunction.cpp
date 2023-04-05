@@ -63,7 +63,7 @@ bool login_staff(string AccountStaff, string passStaff) {
 }
 int login(Schoolyear *DataBase) {
     int tmp;
-    cout<<"You are :"<<endl;
+	cout<<"You are :"<<endl;
     cout<<"1. Student"<<endl;
     cout<<"2. Staff"<<endl;
     cout<<"Enter another number to exit"<<endl;
@@ -112,6 +112,6 @@ int login(Schoolyear *DataBase) {
         cout<<"Successful to login"<<endl;
 		system("pause");
         return 2;
-    }   
+    }
 	return -1; 
 }
