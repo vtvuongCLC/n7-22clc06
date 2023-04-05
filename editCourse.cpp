@@ -1,45 +1,6 @@
 #include "header/findObject.h"
 
-void EnterCourseData(Course* &firstCour)
-{
-    system("cls");
-    Course* tmp = firstCour;
-    firstCour = new Course;
-    firstCour->nextCourse = tmp;
-    if(tmp) tmp->prevCourse = firstCour;
-    cout<<"Enter course ID: ";
-    getline(cin,firstCour->thisCourseInfo.courseID);
-    cout<<"Enter course name: ";
-    getline(cin,firstCour->thisCourseInfo.courseName);
-    cout<<"Enter class name: ";
-    getline(cin,firstCour->thisCourseInfo.className);
-    cout<<"Enter teacher name: ";
-    getline(cin,firstCour->thisCourseInfo.Teacher);
-    cout<<"Enter number of credits: ";
-    cin>>firstCour->thisCourseInfo.credit;
-    cout<<"Enter max number of students: ";
-    cin>>firstCour->thisCourseInfo.maxStudent;
-    cin.ignore();
-    cout<<"Enter session for course"<<endl;
-    cout<<"=> Day of the week: ";
-    getline(cin,firstCour->thisCourseInfo.CourseDate.day);
-    cout<<"=> Session for that day: ";
-    getline(cin,firstCour->thisCourseInfo.CourseDate.session);
-}
 
-void InitSemester(Semester* &Sem, int semester, string year)
-{
-    Semester* tmp = Sem;
-    Sem = new Semester;
-    Sem->nextSemester = tmp;
-    Sem->semester = semester;
-    Sem->year = year;
-    cout << "\nThe system created semester " << Sem->semester << " in year " <<Sem->year << endl;
-    cout<<"Enter starting date for semester "<< Sem->semester <<": ";
-    getline(cin, Sem->start);
-    cout<<"Enter ending date for semester "<< Sem->semester <<": ";
-    getline(cin,Sem->end );
-}
 void viewInfoOfCourse(CourseInfo infoThisCourse){
 
     cout    << left << setw(15) << infoThisCourse.courseID 
@@ -257,55 +218,6 @@ CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID){
     return listStudent;
 }
 
-void LinkEnrolledCourseToCourse(Student *curStudent, Course *curCourse)
-{
-    EnrolledCourse* temp = curStudent->CourseList;
-    curStudent->CourseList = new EnrolledCourse;
-    curStudent->CourseList->nextCourse = temp;
-    if(temp) temp->prevCourse = curStudent->CourseList;
-    else curStudent->lastEnrolledCourse = curStudent->CourseList;
-    curStudent->CourseList->ptoCourse = curCourse;
-}
-
-bool FindStudentIndexInStudyClass(Schoolyear* curYear, CourseStudent* newStudent, string year, string className, string StudID,Course* curCourse){
-    while(curYear){
-        if(curYear->year == year) break;
-        curYear = curYear->nextYear;
-    }
-    if(!curYear) {
-        cout << "This year hasn't existed in system!!!\n";
-        return false;
-    }
-    StudyClass* pClass = curYear->listClass;
-    int idxClass = 0;
-    while(pClass){
-        if(pClass->className == className) break;
-        idxClass++;
-        pClass = pClass->nextClass;
-    }
-    if(!pClass){
-        cout << "This study class hasn't existed in system!!!\n";
-        return false;
-    }
-    Student* pStudent = pClass->listStudent;
-    int idxStudent = 0;
-    while(pStudent){
-        if(pStudent->dInfo.StudentID == StudID) break;
-        idxStudent++;
-        pStudent = pStudent->nextStudent;
-    }
-    if(!pStudent){
-        cout << "This student hasn't existed in system!!!\n";
-        return false;
-    }
-
-    newStudent->studentIndex = idxStudent;
-    newStudent->classIndex = idxClass;
-    newStudent->ptoStudent = pStudent;
-    LinkEnrolledCourseToCourse(newStudent->ptoStudent, curCourse);
-    return true;
-}
-
 void addStudentToCourse(Semester* curSemester, Schoolyear* curYear){
     string courseName, courseID, className;
     cout << "Enter the course name you want to add student: ";
@@ -345,7 +257,7 @@ void addStudentToCourse(Semester* curSemester, Schoolyear* curYear){
         return;
     }
     newStudent = new CourseStudent;
-    if(!FindStudentIndexInStudyClass(curYear, newStudent, year ,nameStudyClass, studentID, pCourse)){
+    if(!FindStudentIndex(curYear, newStudent, year ,nameStudyClass, studentID, pCourse)){
         delete newStudent;
         return;
     }

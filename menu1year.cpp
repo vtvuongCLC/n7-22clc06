@@ -9,7 +9,7 @@ void menu1Year(DataBase* DB){
         bool checkEndSemester = false;
         while(!checkEndSemester){
             system("cls");
-            cout << "Menu At The Beginning Of The Semester" 
+            cout << "Menu At The Beginning Of The Semester"
                                      << numSemester << endl
                  << "1.Add New Course"              << endl 
                  << "2.Upload File List Of Student" << endl
