@@ -1,6 +1,7 @@
 #include "header/ultilityfunction.h"
 #include "header/displayfunction.h"
 #include "header/InitSemester.h"
+#include "header/datafunction.h"
 
 // Semester* navigateSemester(Semester* listSemester, int userindex)
 // {
@@ -123,11 +124,12 @@ void StudyClassManager(StudyClass* curClass, string yearName)
             cout << left << setw(25) << "Social ID" << endl;
             if (curClass->listStudent == nullptr) {
                 cout << "No students found" << endl;
+                cout << endl;
+                cout << "n. Add student" << endl;
             } else {
                 DisplayStudentList(curClass->listStudent);
+                cout << endl;
             }
-            cout << endl;
-            cout << "n. Add student" << endl;
             cout << "0. Back" << endl;
             cout << ">> ";
             cin >> selection;
@@ -151,12 +153,13 @@ void ClassesManager(Schoolyear* curYear)
         cout << "List of classes: " << endl;
         if (curYear->listClass == nullptr) {
             cout << "No classes found" << endl;
+            cout << endl;
+            cout << "n. New class" << endl;
             maxSelection = 0;
         } else {
             DisplayClassList(curYear->listClass,maxSelection);
+            cout << endl;
         }
-        cout << endl;
-        cout << "n. New class" << endl;
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
@@ -191,10 +194,10 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
             ClassesManager(curYear);
         if (selection == 2)
         {
-            BridgingList(DB);
+            // BridgingList(DB);
+            // LoadSemesterSector(DB);
             //SemesterManager(DB,curYear);
         }
-            
     } while (true);
 }
 
@@ -218,7 +221,7 @@ void StaffGUI(DataBase &DB)
         cout << endl << ">> ";
         cin >> selection;
         if (selection == "n" || selection == "N") {
-            AddYear(DB.YearList);
+            AddYear(DB);
             continue;
         }
         if (selection == "0")

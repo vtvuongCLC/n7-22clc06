@@ -43,32 +43,41 @@ void AddStudentManual(Student* &listStudent, string yearName, string className, 
         cout << "Enter student Social ID: ";
         getline(cin,tempInfo.SocialID,'\n');
         if (validInfo(tempInfo,gender) == true) {
-            if (listStudent == nullptr) {
-                listStudent = new Student;
-                curStudent = listStudent;
+            char key;
+            cout << "Confirm input data ? (y: yes | n: no) >> ";
+            cin >> key;
+            if (key == 'y' || key == 'Y') {
+                if (listStudent == nullptr) {
+                    listStudent = new Student;
+                    curStudent = listStudent;
+                } else {
+                    curStudent->nextStudent = new Student;
+                    curStudent = curStudent->nextStudent;
+                }
+                numStudent++;
+                curStudent->yearName = yearName;
+                curStudent->className = className;
+                curStudent->password = className;
+                curStudent->No = numStudent;
+                curStudent->dInfo.StudentID = tempInfo.StudentID;
+                curStudent->dInfo.FirstName = tempInfo.FirstName;
+                curStudent->dInfo.LastName = tempInfo.LastName;
+                if (gender == 'm' || gender == 'M') {
+                    curStudent->dInfo.Gender = "male";
+                } else {
+                    curStudent->dInfo.Gender = "female";
+                }
+                curStudent->dInfo.Birth.day = tempInfo.Birth.day;
+                curStudent->dInfo.Birth.month = tempInfo.Birth.month;
+                curStudent->dInfo.Birth.year = tempInfo.Birth.year;
+                curStudent->dInfo.SocialID = tempInfo.SocialID;
             } else {
-                curStudent->nextStudent = new Student;
-                curStudent = curStudent->nextStudent;
+                cout << "Discarded input data." << endl;
+                system("pause");
             }
-            numStudent++;
-            curStudent->yearName = yearName;
-            curStudent->className = className;
-            curStudent->password = className;
-            curStudent->No = numStudent;
-            curStudent->dInfo.StudentID = tempInfo.StudentID;
-            curStudent->dInfo.FirstName = tempInfo.FirstName;
-            curStudent->dInfo.LastName = tempInfo.LastName;
-            if (gender == 'm' || gender == 'M') {
-                curStudent->dInfo.Gender = "male";
-            } else {
-                curStudent->dInfo.Gender = "female";
-            }
-            curStudent->dInfo.Birth.day = tempInfo.Birth.day;
-            curStudent->dInfo.Birth.month = tempInfo.Birth.month;
-            curStudent->dInfo.Birth.year = tempInfo.Birth.year;
-            curStudent->dInfo.SocialID = tempInfo.SocialID;
+
         } else {
-            cout << "Some information is invalid...";
+            cout << "Some information may not be correct...";
             system("pause"); 
         }
     } while (true);
@@ -198,12 +207,21 @@ string getYearData(Schoolyear* listYear)
     } while (exist == true && listYear != nullptr);
     return schoolyear;
 }
-void AddYear(Schoolyear* &listYear)
+void AddYear(DataBase &DB)
 {
-    Schoolyear* newYear = new Schoolyear;
-    newYear->year = getYearData(listYear);
-    newYear->nextYear = listYear;
-    listYear = newYear;
+    if (DB.YearList == nullptr)
+    {
+        DB.YearList = new Schoolyear;
+        DB.YearList->year = getYearData(DB.YearList);
+    } else {
+        Schoolyear* curYear = DB.YearList;
+        while (curYear->nextYear != nullptr) {
+            curYear = curYear->nextYear;
+        }
+        curYear->nextYear = new Schoolyear;
+        curYear->nextYear->year = getYearData(DB.YearList);
+    }
+    DB.numYear++;
 }
 
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex)
@@ -235,6 +253,10 @@ StudyClass* navigateClass(StudyClass* listClass, int userindex)
 void QuickPtrBinder(DataBase &DB)
 {
     if (DB.YearList != nullptr) {
+        if (DB.quickSchoolPtr != nullptr) {
+            delete []DB.quickSchoolPtr;
+            DB.quickSchoolPtr = nullptr;
+        } 
         DB.quickSchoolPtr = new Schoolyear*[DB.numYear];
         Schoolyear* curYear = DB.YearList;
         StudyClass* curClass = nullptr;
@@ -243,29 +265,33 @@ void QuickPtrBinder(DataBase &DB)
         while (curYear != nullptr)
         {
             DB.quickSchoolPtr[i] = curYear;
+            i++;
             if (curYear->listClass != nullptr)
             {
-                curClass = curYear->listClass;
-                curYear->quickClassPtr = new StudyClass*[curYear->numClass];
-                int j = 0;
-                while (curClass != nullptr)
-                {
-                    curYear->quickClassPtr[j] = curClass;
-                    j++;
-                    if (curClass->listStudent != nullptr)
+                if (curYear->quickClassPtr == nullptr) {
+                    curYear->quickClassPtr = new StudyClass*[curYear->numClass];
+                    curClass = curYear->listClass;
+                    int j = 0;
+                    while (curClass != nullptr)
                     {
-                        curStudent = curClass->listStudent;
-                        curClass->quickStudentPtr = new Student*[curClass->numStudent];
-                        int k = 0;
-                        while (curStudent != nullptr)
+                        curYear->quickClassPtr[j] = curClass;
+                        j++;
+                        if (curClass->listStudent != nullptr)
                         {
-                            curClass->quickStudentPtr[k] = curStudent;
-                            k++;
-                            curStudent = curStudent->nextStudent;
+                            curStudent = curClass->listStudent;
+                            curClass->quickStudentPtr = new Student*[curClass->numStudent];
+                            int k = 0;
+                            while (curStudent != nullptr)
+                            {
+                                curClass->quickStudentPtr[k] = curStudent;
+                                k++;
+                                curStudent = curStudent->nextStudent;
+                            }
                         }
+                        curClass = curClass->nextClass;
                     }
-                    curClass = curClass->nextClass;
                 }
+                
             }
             curYear = curYear->nextYear;
         }

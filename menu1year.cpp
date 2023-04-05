@@ -1,5 +1,5 @@
 #include "header/findObject.h"
-
+#include "header/InitSemester.h"
 void menu1Year(DataBase* DB){
     DB = new DataBase;
     int numSemester = 1;
@@ -9,7 +9,7 @@ void menu1Year(DataBase* DB){
         bool checkEndSemester = false;
         while(!checkEndSemester){
             system("cls");
-            cout << "Menu At The Beginning Of The Semester" 
+            cout << "Menu At The Beginning Of The Semester"
                                      << numSemester << endl
                  << "1.Add New Course"              << endl 
                  << "2.Upload File List Of Student" << endl
@@ -19,7 +19,7 @@ void menu1Year(DataBase* DB){
                  << "6.Remove A Student"            << endl
                  << "7.Delete A Course"             << endl
                  << "8.Display List"                << endl
-                 << "9.To End Semester"             << endl;
+                 << "9.To End Semester"             << endl << endl;
             int selection;
             cout << "Enter a selection: "; cin >> selection;
             cin.ignore();

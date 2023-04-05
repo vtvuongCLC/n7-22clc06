@@ -1,5 +1,5 @@
 #include "header/datafunction.h"
-
+#include "header/InitSemester.h"
 
 bool IsemptyFile(string fileName)
 {
@@ -190,7 +190,7 @@ void LoadCourseInfoFromFile(Semester* curSemester)
     }
     CourseInfoIn.close();
 }
-void LoadCourseStudentFromFile(Course* aCourse)
+void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
 {
     string fileName = aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className;
     if (IsemptyFile(fileName) == true)
@@ -210,6 +210,8 @@ void LoadCourseStudentFromFile(Course* aCourse)
                 curCourseStudent->nextStudent->prevStudent = curCourseStudent;
                 curCourseStudent = curCourseStudent->nextStudent;
             }
+            curCourseStudent->yearIndex = stoi(tempData);
+            getline(CourseStudentIn,tempData,',');
             curCourseStudent->classIndex = stoi(tempData);
             getline(CourseStudentIn,tempData,',');
             curCourseStudent->studentIndex = stoi(tempData);
@@ -221,6 +223,7 @@ void LoadCourseStudentFromFile(Course* aCourse)
             curCourseStudent->savedScore.otherMark = stod(tempData);
             getline(CourseStudentIn,tempData,'\n');
             curCourseStudent->savedScore.totalMark = stod(tempData);
+            LinkEnrolledCourse(quickPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex],aCourse,curCourseStudent);
         }
     }
 }
@@ -287,6 +290,7 @@ void SaveCourseStudentToFile(Course* aCourse)
     CourseStudent* curStudent = aCourse->listStudent;
     Scoreboard thisCourseBoard;
     while (curStudent != nullptr) {
+        out << curStudent->yearIndex << ',';
         out << curStudent->classIndex << ',';
         out << curStudent->studentIndex << ',';
         out << thisCourseBoard.midtermMark << ',';
@@ -368,7 +372,8 @@ void ClearData(DataBase &DB)
     Schoolyear* curYear = nullptr;
     StudyClass* curClass = nullptr;
     Student* curStudent = nullptr;
-
+    delete []DB.quickSchoolPtr;
+    DB.quickSchoolPtr = nullptr;
     while (DB.YearList != nullptr) {
         curYear = DB.YearList;
         delete []curYear->quickClassPtr;
