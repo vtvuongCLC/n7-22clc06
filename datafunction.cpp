@@ -368,7 +368,8 @@ void ClearData(DataBase &DB)
     Schoolyear* curYear = nullptr;
     StudyClass* curClass = nullptr;
     Student* curStudent = nullptr;
-
+    delete []DB.quickSchoolPtr;
+    DB.quickSchoolPtr = nullptr;
     while (DB.YearList != nullptr) {
         curYear = DB.YearList;
         delete []curYear->quickClassPtr;

@@ -9,7 +9,7 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className, int
 void AddStudent(Student* &listStudent, string yearName, string className, int &numStudent);
 void AddClass(StudyClass* &listClass);
 string getYearData(Schoolyear* listYear);
-void AddYear(Schoolyear* &listYear);
+void AddYear(DataBase &DB);
 
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex);
 StudyClass* navigateClass(StudyClass* listClass, int userindex);

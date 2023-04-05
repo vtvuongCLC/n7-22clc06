@@ -1,5 +1,5 @@
 #include "header/findObject.h"
-
+#include "header/InitSemester.h"
 void menu1Year(DataBase* DB){
     DB = new DataBase;
     int numSemester = 1;
