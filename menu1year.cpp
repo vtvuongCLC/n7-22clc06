@@ -19,7 +19,7 @@ void menu1Year(DataBase* DB){
                  << "6.Remove A Student"            << endl
                  << "7.Delete A Course"             << endl
                  << "8.Display List"                << endl
-                 << "9.To End Semester"             << endl;
+                 << "9.To End Semester"             << endl << endl;
             int selection;
             cout << "Enter a selection: "; cin >> selection;
             cin.ignore();
