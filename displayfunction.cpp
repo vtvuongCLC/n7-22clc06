@@ -1,6 +1,7 @@
 #include "header/ultilityfunction.h"
 #include "header/displayfunction.h"
 #include "header/InitSemester.h"
+#include "header/datafunction.h"
 
 // Semester* navigateSemester(Semester* listSemester, int userindex)
 // {
@@ -193,7 +194,8 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
             ClassesManager(curYear);
         if (selection == 2)
         {
-            BridgingList(DB);
+            // BridgingList(DB);
+            // LoadSemesterSector(DB);
             //SemesterManager(DB,curYear);
         }
     } while (true);
