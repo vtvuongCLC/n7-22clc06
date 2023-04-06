@@ -1,6 +1,6 @@
 #include "header/ultilityfunction.h"
 #include "header/displayfunction.h"
-#include "header/InitSemester.h"
+#include "header/semesterAndCourse.h"
 #include "header/datafunction.h"
 
 // Semester* navigateSemester(Semester* listSemester, int userindex)

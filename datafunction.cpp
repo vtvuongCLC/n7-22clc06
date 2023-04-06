@@ -1,5 +1,4 @@
 #include "header/datafunction.h"
-#include "header/InitSemester.h"
 
 bool IsemptyFile(string fileName)
 {

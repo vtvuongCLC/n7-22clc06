@@ -1,5 +1,4 @@
-#include "header/findObject.h"
-#include "header/InitSemester.h"
+#include "header/semesterAndCourse.h"
 void menu1Year(DataBase* DB){
     int numSemester;
     if(!DB->SemesterList || DB->YearList->year != DB->SemesterList->year) numSemester = 1;
