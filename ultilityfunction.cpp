@@ -1,5 +1,5 @@
 #include "header/ultilityfunction.h"
-
+#include "header/datafunction.h"
 bool validInfo(Info infoparam,char gender)
 {
     if (gender != 'm' && gender != 'M')
@@ -250,6 +250,86 @@ StudyClass* navigateClass(StudyClass* listClass, int userindex)
     }
     return nullptr;
 }
+Course* navigateCourse(Course* listCourse, int userindex)
+{
+    if (listCourse == nullptr)
+        return nullptr;
+    int i = 0;
+    while (listCourse != nullptr)
+    {
+        i++;
+        if (i == userindex)
+            return listCourse;
+        listCourse = listCourse->nextCourse;
+    }
+    return nullptr;
+}
+bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string yearName,string className, string StudID,Course* curCourse)
+{
+    Schoolyear* curYear = listYear;
+    int x = 0;
+    while (listYear && listYear->year != yearName) {
+        curYear = curYear->nextYear;
+        x++;
+    }
+    if (curYear == nullptr){
+        cout << "This year hasn't existed in the system\n";
+        return false;
+    }
+    StudyClass* curClass = curYear->listClass;
+    int y = 0;
+    while(curClass && curClass->className != className) {
+        curClass = curClass->nextClass;
+        y++;
+    }
+    if(curClass == nullptr){
+        cout << "This study class hasn't existed in the system\n";
+        return false;
+    }
+    Student* curStudent = curClass->listStudent;
+    int z = 0;
+    while(curStudent->dInfo.StudentID != StudID) {
+        curStudent = curStudent->nextStudent;
+        z++;
+    }
+    if(curStudent == nullptr){
+        cout << "This student hasn't existed in the system\n";
+        return false;
+    }
+    CourseStud->ptoStudent = curStudent;
+    CourseStud->yearIndex = x;
+    CourseStud->classIndex = y;
+    CourseStud->studentIndex = z;
+    LinkEnrolledCourse(curStudent,curCourse, CourseStud);
+    return true;
+}
+CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID)
+{
+    while(listStudent){
+        if(listStudent->ptoStudent->dInfo.StudentID == studID) break;
+        listStudent = listStudent->nextStudent;
+    }
+    return listStudent;
+}
+Course* findTheCourse(Semester* pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass)
+{
+    while(pSemester){
+        if(pSemester->year == year && pSemester->semester == semester) break;
+        pSemester = pSemester->nextSemester;
+    }
+    if(pSemester == nullptr) return nullptr;
+
+    Course* pCourse = pSemester->CourseList;
+    while(pCourse){
+        if(NameCourse  == pCourse->thisCourseInfo.courseName 
+          && IDCourse  == pCourse->thisCourseInfo.courseID 
+          && NameClass == pCourse->thisCourseInfo.className) 
+        break;
+        pCourse = pCourse->nextCourse;
+    }
+    return pCourse;
+} 
+
 void QuickPtrBinder(DataBase &DB)
 {
     if (DB.YearList != nullptr) {
@@ -297,29 +377,359 @@ void QuickPtrBinder(DataBase &DB)
         }
     }
 }
-// void BridgingList(DataBase &DB)
-// {
-//     if (DB.SemesterList == nullptr)
-//         return;
-//     Semester* curSem = DB.SemesterList;
-//     Course* curCourse = nullptr;
-//     CourseStudent* curCourseStudent = nullptr;
-//     while (curSem != nullptr)
-//     {
-//         curCourse = curSem->CourseList;
-//         while (curCourse != nullptr) {
-//             if (curCourse->listStudent != nullptr) {
-//                 if (curCourse->listStudent->ptoStudent == nullptr)
-//                 {
-//                     curCourseStudent = curCourse->listStudent;
-//                     while (curCourseStudent != nullptr) {
-//                         curCourseStudent->ptoStudent = DB.quickSchoolPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
-//                         curCourseStudent = curCourseStudent->nextStudent;
-//                     }
-//                 }
-//             }
-//             curCourse = curCourse->nextCourse;
-//         }
-//         curSem = curSem->nextSemester;
-//     }
-// }
+void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent)
+{
+    EnrolledCourse* temp = curStudent->CourseList;
+    curStudent->CourseList = new EnrolledCourse;
+    curStudent->CourseList->nextCourse = temp;
+    curStudent->CourseList->Score = &(curCourseStudent->savedScore);
+    if(temp) temp->prevCourse = curStudent->CourseList;
+    else curStudent->lastEnrolledCourse = curStudent->CourseList;
+    curStudent->CourseList->ptoCourse = curCourse;
+    curStudent->CourseList->Score = &curCourseStudent->savedScore;
+}
+
+void UpdateCourseInfo(CourseInfo &curCourseInfo)
+{   
+    int selection;
+    do {
+        system("cls");
+        cout << "1. Course ID: " << curCourseInfo.courseID << endl;
+        cout << "2. Course Name: " << curCourseInfo.courseName << endl;
+        cout << "3. Class Name: " << curCourseInfo.className << endl;
+        cout << "4. Maximum number of Students: " << curCourseInfo.maxStudent << endl;
+        cout << "5. Course Day: " << curCourseInfo.CourseDate.day << endl;
+        cout << "6. Course Session: " <<  curCourseInfo.CourseDate.session << endl;
+        cout << "7. Teacher: " << curCourseInfo.Teacher << endl;
+        cout << "8. Number of Credits: " << curCourseInfo.credit << endl;
+        cout << "0. Back";
+        cout << ">> ";
+        cin >> selection;
+        if (selection == 0)
+            break;
+        cin.ignore(1000,'\n');
+        switch(selection) {
+                
+                case 1:
+                    cout << "Enter the new course ID: ";
+                    getline(cin, curCourseInfo.courseID);
+                break;
+
+                case 2:
+                    cout << "Enter the new course name: ";
+                    getline(cin, curCourseInfo.courseName);
+                break;
+
+                case 3:
+                    cout << "Enter the new class name: ";
+                    getline(cin, curCourseInfo.className);
+                break;
+                
+                case 4:
+                    int numMaxStudents;
+                    cout << "Enter the number of max students (must bigger than current): ";
+                    do{
+                        cin >> numMaxStudents;
+                    } while(numMaxStudents < curCourseInfo.maxStudent);
+
+                    curCourseInfo.maxStudent = numMaxStudents;
+                break;
+                
+                case 5:
+                    int day;
+                    cout << "2. Monday"    << endl
+                         << "3. Tueday"    << endl
+                         << "4. Wednesday" << endl
+                         << "5. Thursday"  << endl
+                         << "6. Friday"    << endl
+                         << "7. Saturday"  << endl
+                         << "0. Cancel"    << endl
+                         << "Enter the selection of day of the week: ";
+                        cin >> day;
+
+                        switch(day){
+                            case 2: curCourseInfo.CourseDate.day = "MON"; break;
+                            case 3: curCourseInfo.CourseDate.day = "TUE"; break;
+                            case 4: curCourseInfo.CourseDate.day = "WED"; break;
+                            case 5: curCourseInfo.CourseDate.day = "THU"; break;
+                            case 6: curCourseInfo.CourseDate.day = "FRI"; break;
+                            case 7: curCourseInfo.CourseDate.day = "SAT"; break;
+                            default: 
+                                cout << "Cancel change" << endl;
+                                system("pause");
+                            break;
+                        }
+                break;
+                
+                case 6:
+                    int session;
+                    cout << "1. S1 (07:30)" << endl
+                         << "2. S2 (09:30)" << endl
+                         << "3. S3 (13:30)" << endl
+                         << "4. S4 (15:30)" << endl
+                         << "0. Cancel"     << endl
+                         << "Enter the selection of the session: "; 
+                        cin >> session;
+
+                         switch(session){
+                            case 1: curCourseInfo.CourseDate.session = "S1 (07:30)"; break;
+                            case 2: curCourseInfo.CourseDate.session = "S2 (09:30)"; break;
+                            case 3: curCourseInfo.CourseDate.session = "S3 (13:30)"; break;
+                            case 4: curCourseInfo.CourseDate.session = "S4 (15:30)"; break;
+                            default:
+                                cout << "Cancel change" << endl;
+                                system("pause");
+                            break;
+                         }
+                break;
+                
+                case 7:
+                    cout << "Enter the new Teacher of the course: ";
+                    getline(cin,curCourseInfo.Teacher);
+                break;
+                
+                case 8:
+                    cout << "Enter the new credit: ";
+                    do{
+                        cin >> curCourseInfo.credit;
+                        if(curCourseInfo.credit <= 0)
+                            cout << "The number of credits must > 0" << endl;
+                    }while(curCourseInfo.credit <= 0);
+                break;
+                default: return;
+            }
+    } while (true);
+}
+bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
+{
+    if(curCourse->listStudent)
+        return false;
+    CourseStudent* temp = nullptr;
+    string yearName, className, StudID;
+    ifstream in;
+    int i = 0;
+    in.open(curCourse->thisCourseInfo.courseID+".csv");
+    if(!in.is_open()){
+        return false;
+    }
+    while (i < curCourse->thisCourseInfo.maxStudent && !in.eof())
+    {
+        in.ignore(100,',');
+        getline(in,yearName,',');
+        getline(in,className,',');
+        getline(in,StudID);
+        if(!curCourse->listStudent){
+            curCourse->listStudent = new CourseStudent;
+            temp = curCourse->listStudent;
+        }
+        else{
+            temp->nextStudent = new CourseStudent;
+            temp->nextStudent->prevStudent = temp;
+            temp = temp->nextStudent;
+        }
+    
+        while(!FindStudentIndex(listYear,temp,yearName,className,StudID,curCourse)){
+             getline(in,className,',');
+             getline(in,StudID);
+        }
+        i++;
+    }
+    if(i <= curCourse->thisCourseInfo.maxStudent) 
+        cout<<"No student left to add.";
+    else 
+        cout<<"Maximum number of students added.";
+    in.close();
+    curCourse->numCurStudents = i;
+    return true;
+}
+void NewCourse(Course* &firstCour)
+{
+    Course* tmp = firstCour;
+    firstCour = new Course;
+    firstCour->nextCourse = tmp;
+    if(tmp) tmp->prevCourse = firstCour;
+    cout<<"Enter course ID: ";
+    getline(cin,firstCour->thisCourseInfo.courseID);
+    cout<<"Enter course name: ";
+    getline(cin,firstCour->thisCourseInfo.courseName);
+    cout<<"Enter class name: ";
+    getline(cin,firstCour->thisCourseInfo.className);
+    cout<<"Enter teacher name: ";
+    getline(cin,firstCour->thisCourseInfo.Teacher);
+    cout<<"Enter number of credits: ";
+    cin>>firstCour->thisCourseInfo.credit;
+    cout<<"Enter max number of students: ";
+    cin>>firstCour->thisCourseInfo.maxStudent;
+    cin.ignore();
+    cout<<"Enter session for course"<<endl;
+    cout<<"=> Day of the week: ";
+    getline(cin,firstCour->thisCourseInfo.CourseDate.day);
+    cout<<"=> Session for that day: ";
+    getline(cin,firstCour->thisCourseInfo.CourseDate.session);
+}
+void InitSemester(Semester* &Sem, int semester, string year)
+{
+    Semester* tmp = Sem;
+    Sem = new Semester;
+    Sem->nextSemester = tmp;
+    Sem->semester = semester;
+    Sem->year = year;
+    cout << "\nThe system created semester " << Sem->semester << " in year " <<Sem->year << endl;
+    cin.ignore(1000,'\n');
+    cout<<"Enter starting date for semester "<< Sem->semester <<": ";
+    getline(cin, Sem->start);
+    cout<<"Enter ending date for semester "<< Sem->semester <<": ";
+    getline(cin,Sem->end );
+}
+void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
+{
+    // string courseName, courseID, className;
+    // cout << "Enter the course name you want to add student: ";
+    // getline(cin, courseName);
+    // cout << "Enter the course ID you want to add student: ";
+    // getline(cin, courseID);
+    // cout << "Enter the class name of course you want to add student: ";
+    // getline(cin, className);
+
+    // Course* pCourse = findTheCourse(curSemester, curSemester->year, curSemester->semester, courseName, courseID, className);
+    // if(!pCourse) {
+    //     cout << "This course doesn't exist!\n";
+    //     return;
+    // }
+
+    // if(pCourse->numCurStudents >= pCourse->thisCourseInfo.maxStudent ){
+    //     cout << "The course is having maximum student!!! You cannot add student to this course.\n";
+    //     return;
+    // }
+    int numYears;
+    string studentName, studentID, nameStudyClass, year;
+    // DisplayYearList(curYear, numYears);
+
+    cout << "Enter the year number when a student start in system: ";
+    getline(cin, year);
+    cout << "Enter the student name you want to add: ";
+    getline(cin, studentName);
+    cout << "Enter the student ID you want to add: ";
+    getline(cin, studentID);
+    cout << "Enter the name of study class of student you want to add: ";
+    getline(cin, nameStudyClass);
+
+    CourseStudent* newStudent = findStudentInCourse(curCourse->listStudent, studentID);
+        
+    if(newStudent != nullptr){
+        cout << "This student has enrolled to this course!\n";
+        return;
+    }
+    newStudent = new CourseStudent;
+    if(!FindStudentIndex(curYear, newStudent, year ,nameStudyClass, studentID, curCourse)){
+        delete newStudent;
+        return;
+    }
+
+
+    newStudent->nextStudent = curCourse->listStudent;
+    if(curCourse->listStudent){
+        curCourse->listStudent-> prevStudent= newStudent;
+    }
+    curCourse->listStudent = newStudent;
+    curCourse->numCurStudents++;
+}
+
+void removeEnrollCourse(Student* removedStudent, Course* pCourse)
+{
+    EnrolledCourse* tmp = removedStudent->CourseList;
+    while(tmp){
+        if(tmp->ptoCourse == pCourse) break;
+        tmp = tmp->nextCourse;
+    }
+    if(!tmp->nextCourse) removedStudent->lastEnrolledCourse = tmp->prevCourse;
+    if(tmp->prevCourse){
+       tmp->prevCourse->nextCourse = tmp->nextCourse;
+       tmp->nextCourse->prevCourse = tmp->prevCourse; 
+    }
+    else {
+        removedStudent->CourseList = tmp->nextCourse;
+        removedStudent->CourseList->prevCourse = nullptr;
+    }
+    delete tmp;
+
+}
+void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
+{
+    // string courseName, courseID, className;
+    // cout << "Enter the course name you want to remove a student: ";
+    // getline(cin, courseName);
+    // cout << "Enter the course ID you want to remove a student: ";
+    // getline(cin, courseID);
+    // cout << "Enter the class name of course you want to add student: ";
+    // getline(cin, className);
+
+    // Course* pCourse = findTheCourse(curSemester, curSemester->year, curSemester->semester, courseName, courseID, className);
+    // if(!pCourse) {
+    //     cout << "This course doesn't exist!\n";
+    //     return;
+    // }
+
+    //displayStudentInCourse(pCourse);
+
+    string studentName, studentID, nameStudyClass;
+    cout << "Enter the student name you want to remove: ";
+    getline(cin, studentName);
+    cout << "Enter the student ID you want to remove: ";
+    getline(cin, studentID);
+
+    CourseStudent* removedStudent = findStudentInCourse(curCourse->listStudent, studentID);
+
+    if(removedStudent == nullptr){
+        cout << "The student hasn't enrolled to this course\n";
+        return;
+    }
+
+    removeEnrollCourse(removedStudent->ptoStudent, curCourse);
+    
+    if(removedStudent->prevStudent){
+        removedStudent->prevStudent->nextStudent = removedStudent->nextStudent;
+        removedStudent->nextStudent->prevStudent = removedStudent->prevStudent;
+    }
+    else {
+        curCourse->listStudent = removedStudent->nextStudent;
+        curCourse->listStudent->prevStudent = nullptr;
+    }
+    delete removedStudent;
+}
+void removeCourse(Semester* curSemester)
+{
+    string courseName, courseID, className;
+    cout << "Enter the course name you want to remove: ";
+    getline(cin, courseName);
+    cout << "Enter the course ID you want to remove: ";
+    getline(cin, courseID);
+    cout << "Enter the class name of course you want to remove: ";
+    getline(cin, className);
+
+    Course* pCourse = findTheCourse(curSemester,curSemester->year, curSemester->semester, courseName, courseID, className);
+    if(!pCourse) {
+        cout << "This course doesn't exist!\n";
+        return;
+    }
+
+    if(pCourse == curSemester->CourseList){
+        curSemester->CourseList = curSemester->CourseList->nextCourse;
+        if(curSemester->CourseList) curSemester->CourseList->prevCourse = nullptr;
+    }
+    else {
+        pCourse->prevCourse->nextCourse = pCourse->nextCourse;
+        pCourse->nextCourse->prevCourse = pCourse->prevCourse;
+    }
+
+    while(pCourse->listStudent){
+        CourseStudent* tmp = pCourse->listStudent;
+        pCourse->listStudent = pCourse->listStudent->nextStudent;
+        removeEnrollCourse(tmp->ptoStudent, pCourse);
+        delete tmp;
+    }
+    SaveCourseStudentToFile(pCourse);
+    delete pCourse;
+    cout << "The program removed this course.\n";
+    system("pause");
+}

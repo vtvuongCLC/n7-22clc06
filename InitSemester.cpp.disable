@@ -1,0 +1,10 @@
+#include "header/InitSemester.h"
+
+// Semester* FindUninitSem(Semester* curSem){
+//     if(!year->SemesterList) return nullptr;
+//     Semester* temp = year->SemesterList;
+//     while(temp->nextSemester) temp = temp->nextSemester;
+//     return temp;
+// }
+
+

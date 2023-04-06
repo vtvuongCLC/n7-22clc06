@@ -20,6 +20,6 @@ int main()
         StaffGUI(DB);
     }
     cout << "Closing program..." << endl;
-    SaveData(DB);
+    //SaveData(DB);
     ClearData(DB);
 }
