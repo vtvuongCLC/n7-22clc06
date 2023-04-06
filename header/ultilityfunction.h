@@ -23,7 +23,7 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* 
 
 void UpdateCourseInfo(CourseInfo &curCourseInfo);
 bool UploadListofStud(Course* &curCourse, Schoolyear* listYear);
-void NewCourse(Course* &firstCour);
+void NewCourse(Course* &firstCour, int semester, string year);
 void InitSemester(Semester* &Sem, int semester, string year);
 void addStudentToCourse(Course* curCourse, Schoolyear* curYear);
 

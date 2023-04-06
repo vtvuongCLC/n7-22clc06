@@ -92,6 +92,31 @@ void DisplayCourseList(Course* listCourse, int &max)
     listCourse->numCurStudents = i;
     max = i;
 }
+void DisplayCourseList1Student(Student* pStudent, int semester, string year){
+    EnrolledCourse* firstCourse = pStudent->CourseList;
+    while(firstCourse){
+        if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
+        firstCourse = firstCourse->nextCourse;
+    }
+    if(firstCourse == nullptr) cout << "Student hasn't enrroled course!!!\n";
+
+    int i = 0;
+    string temp;
+    while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
+        i++;
+        // firstCourse->ptoCourse->courseIndex = i;
+        cout << left << setw(5)  << i;//firstCourse->ptoCourse->courseIndex;
+        cout << left << setw(15) << firstCourse->ptoCourse->thisCourseInfo.courseID;
+        cout << left << setw(20) << firstCourse->ptoCourse->thisCourseInfo.courseName;
+        cout << left << setw(10) << firstCourse->ptoCourse->thisCourseInfo.className;
+        temp = firstCourse->ptoCourse->numCurStudents + '/' + firstCourse->ptoCourse->thisCourseInfo.maxStudent;
+        cout << left << setw(20) << temp;
+        temp = firstCourse->ptoCourse->thisCourseInfo.CourseDate.day + ", " + firstCourse->ptoCourse->thisCourseInfo.CourseDate.session;
+        cout << left << setw(10) << temp;
+        cout << left << setw(30) << firstCourse->ptoCourse->thisCourseInfo.Teacher << endl;
+        firstCourse = firstCourse->nextCourse;
+    }
+}
 bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string yearName, int &max)
 {
     if (SemesterList == nullptr)
@@ -237,7 +262,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         if (selection == "0")
             break;
         if (selection == "n" || selection == "N") {
-            NewCourse(curSemester->CourseList);
+            NewCourse(curSemester->CourseList, curSemester->semester, curSemester->year);
             SaveCourseInfoToFile(curSemester);
         }
             

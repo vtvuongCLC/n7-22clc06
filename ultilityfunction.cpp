@@ -542,14 +542,16 @@ bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
     curCourse->numCurStudents = i;
     return true;
 }
-void NewCourse(Course* &firstCour)
+void NewCourse(Course* &firstCour, int semester, string year)
 {
     system("cls");
     Course* tmp = firstCour;
     firstCour = new Course;
     firstCour->nextCourse = tmp;
+    firstCour->year = year;
+    firstCour->semester = semester;
     if(tmp) tmp->prevCourse = firstCour;
-    
+
     cin.ignore(1000,'\n');
     cout<<"Enter course ID: ";
     getline(cin,firstCour->thisCourseInfo.courseID);

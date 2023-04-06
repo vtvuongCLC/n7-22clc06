@@ -9,6 +9,7 @@ void DisplayYearList(Schoolyear* listYear, int &max);
 
 void DisplayCourseStudentList(CourseStudent* listCourseStudent);
 void DisplayCourseList(Course* listCourse, int &max);
+void DisplayCourseList1Student(Student* pStudent, int semester, string year);
 bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string yearName, int &max);
 
 void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester);
