@@ -544,10 +544,13 @@ bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
 }
 void NewCourse(Course* &firstCour)
 {
+    system("cls");
     Course* tmp = firstCour;
     firstCour = new Course;
     firstCour->nextCourse = tmp;
     if(tmp) tmp->prevCourse = firstCour;
+    
+    cin.ignore(1000,'\n');
     cout<<"Enter course ID: ";
     getline(cin,firstCour->thisCourseInfo.courseID);
     cout<<"Enter course name: ";
@@ -557,15 +560,57 @@ void NewCourse(Course* &firstCour)
     cout<<"Enter teacher name: ";
     getline(cin,firstCour->thisCourseInfo.Teacher);
     cout<<"Enter number of credits: ";
-    cin>>firstCour->thisCourseInfo.credit;
+    do{
+        cin >> firstCour->thisCourseInfo.credit;
+        if(firstCour->thisCourseInfo.credit <= 0) cout << "The number of credits must > 0\n Re-enter number of credits: ";
+    }while(firstCour->thisCourseInfo.credit <= 0);
     cout<<"Enter max number of students: ";
-    cin>>firstCour->thisCourseInfo.maxStudent;
-    cin.ignore();
-    cout<<"Enter session for course"<<endl;
-    cout<<"=> Day of the week: ";
-    getline(cin,firstCour->thisCourseInfo.CourseDate.day);
-    cout<<"=> Session for that day: ";
-    getline(cin,firstCour->thisCourseInfo.CourseDate.session);
+    do{
+        cin >> firstCour->thisCourseInfo.maxStudent;
+    } while(firstCour->thisCourseInfo.maxStudent <= 0);
+    cout <<"Enter session for course"<<endl;
+    cout << "Enter the selection of day of the week: \n\n";
+    cout << "2. Monday"    << endl
+         << "3. Tueday"    << endl
+         << "4. Wednesday" << endl
+         << "5. Thursday"  << endl
+         << "6. Friday"    << endl
+         << "7. Saturday"  << endl << endl;
+    int day;
+    bool checkInvalid = true;
+    while(checkInvalid){
+        cout<<"=> Enter day of the week: "; cin >> day;
+        switch(day){
+            case 2: firstCour->thisCourseInfo.CourseDate.day = "MON"; break;
+            case 3: firstCour->thisCourseInfo.CourseDate.day = "TUE"; break;
+            case 4: firstCour->thisCourseInfo.CourseDate.day = "WED"; break;
+            case 5: firstCour->thisCourseInfo.CourseDate.day = "THU"; break;
+            case 6: firstCour->thisCourseInfo.CourseDate.day = "FRI"; break;
+            case 7: firstCour->thisCourseInfo.CourseDate.day = "SAT"; break;
+            default: cout << "Day must be from 2 to 7\n";
+        }
+        if(day >= 2 && day <= 7) checkInvalid = false;
+    }
+    int session;
+    checkInvalid = true;
+    cout << "Enter the selection of the session: \n";
+    cout << "1. S1(07:30)" << endl
+         << "2. S2(09:30)" << endl
+         << "3. S3(13:30)" << endl
+         << "4. S4(15:30)" << endl << endl;
+    while(checkInvalid){   
+        cout << "=> Session for that day: "; cin >> session;
+        switch(session){
+            case 1: firstCour->thisCourseInfo.CourseDate.session = "S1(07:30)"; break;
+            case 2: firstCour->thisCourseInfo.CourseDate.session = "S2(09:30)"; break;
+            case 3: firstCour->thisCourseInfo.CourseDate.session = "S3(13:30)"; break;
+            case 4: firstCour->thisCourseInfo.CourseDate.session = "S4(15:30)"; break;
+            default: cout << "Session must be from 1 to 4\n";
+        }
+        if(session >= 1 && session <= 4) checkInvalid = false;
+    }
+    cout << "The system create a new course successfully!!!\n";
+    system("pause");
 }
 void InitSemester(Semester* &Sem, int semester, string year)
 {
