@@ -1,8 +1,6 @@
 #include "header/ultilityfunction.h"
 #include "header/displayfunction.h"
-// #include "header/InitSemester.h"
 #include "header/datafunction.h"
-//#include "header/findObject.h"
 
 void DisplayBirth(BirthDate InputBirth)
 {
@@ -131,7 +129,7 @@ bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string 
     return true;   
 }
 
-void CourseManager(DataBase &DB ,Course* curCourse)
+void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
 {
     int selection;
     do {
@@ -178,11 +176,13 @@ void CourseManager(DataBase &DB ,Course* curCourse)
                 system("pause");
             } else {
                 addStudentToCourse(curCourse,DB.YearList);
+                SaveCourseStudentToFile(curCourse);
             } 
             
             break;
         case 2:
             removeStudentFromCourse(curCourse,DB.YearList);
+            SaveCourseStudentToFile(curCourse);
             break;
         case 3:
             if (curCourse->numCurStudents == curCourse->thisCourseInfo.maxStudent) {
@@ -190,10 +190,12 @@ void CourseManager(DataBase &DB ,Course* curCourse)
                 system("pause");
             } else {
                 UploadListofStud(curCourse,DB.YearList);
+                SaveCourseStudentToFile(curCourse);
             } 
             break;
         case 4:
                 UpdateCourseInfo(curCourse->thisCourseInfo);
+                SaveCourseInfoToFile(curSemester);
             break;
         default: break;
         }
@@ -248,7 +250,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
             int intSelection = stoi(selection);
             if (intSelection > 0 && intSelection <= maxSelection) {
                 Course* curCourse = navigateCourse(curSemester->CourseList,intSelection);
-                CourseManager(DB,curCourse);
+                CourseManager(DB,curCourse,curSemester);
             }
         }
     } while (true);
