@@ -782,3 +782,52 @@ void removeCourse(Semester* curSemester)
     cout << "The program removed this course.\n";
     system("pause");
 }
+
+void ExportCourseStudent(Course* curCourse){
+    ofstream out;
+    out.open("Data\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
+    CourseStudent* curStudent = curCourse->listStudent;
+    Scoreboard thisCourseBoard = curStudent->savedScore;
+    Student* temp = curStudent->ptoStudent;
+    while (curStudent != nullptr) {
+        out << curStudent->no << ',';
+        out << temp->dInfo.StudentID << ',';
+        out << temp->dInfo.LastName + " " + temp->dInfo.FirstName << ',';
+        out << thisCourseBoard.midtermMark << ',';
+        out << thisCourseBoard.finalMark << ',';
+        out << thisCourseBoard.otherMark << ',';
+        out << thisCourseBoard.totalMark << endl;
+        curStudent = curStudent->nextStudent;
+        thisCourseBoard = curStudent->savedScore;
+        temp = curStudent->ptoStudent;
+    }
+    out.close();
+}
+bool importCourseScore(Course* &curCourse){
+    if(!curCourse->listStudent) return false;
+    ifstream in;
+    CourseStudent* temp = curCourse->listStudent;
+    Student* StudTemp = temp->ptoStudent;
+    string No, ID, Name, TotalMark, FinalMark, MidtermMark, OtherMark;
+    in.open("Data\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
+    if(!in.is_open()) return false;
+    while(temp && !in.eof()){
+        getline(in,No,',');
+        getline(in,ID,',');
+        getline(in,Name,',');
+        getline(in,TotalMark,',');
+        getline(in,FinalMark,',');
+        getline(in,MidtermMark,',');
+        getline(in,OtherMark,',');
+        if(temp->no == stoi(No) && StudTemp->dInfo.StudentID == ID && StudTemp->dInfo.LastName + " " + StudTemp->dInfo.FirstName == Name){
+            temp->savedScore.totalMark = stod(TotalMark);
+            temp->savedScore.finalMark = stod(FinalMark);
+            temp->savedScore.midtermMark = stod(MidtermMark);
+            temp->savedScore.otherMark = stod(OtherMark);
+        }
+        temp = temp->nextStudent;
+        StudTemp = temp->ptoStudent;
+    }
+    in.close();
+    return true;
+}
