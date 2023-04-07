@@ -86,8 +86,8 @@ struct CourseStudent {
 struct Course {
     int        courseIndex;
     int        numCurStudents = 0;
+    int        semester;
     string     year;
-    string     semester;
     CourseInfo thisCourseInfo;
     
     CourseStudent* listStudent = nullptr;

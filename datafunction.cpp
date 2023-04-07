@@ -1,5 +1,5 @@
 #include "header/datafunction.h"
-#include "header/InitSemester.h"
+#include "header/ultilityfunction.h"
 
 bool IsemptyFile(string fileName)
 {
@@ -45,7 +45,7 @@ void LoadYearFromFile(string YearFile, Schoolyear* &listYear, int &numYear)
 }
 void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass)
 {
-    if (IsemptyFile(yearName) == true)
+    if (IsemptyFile(yearName+"StdyCls") == true)
         return;
     ifstream ClassIn;
     ClassIn.open("Data\\" + yearName + "StdyCls.txt");
@@ -223,12 +223,27 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
             curCourseStudent->savedScore.otherMark = stod(tempData);
             getline(CourseStudentIn,tempData,'\n');
             curCourseStudent->savedScore.totalMark = stod(tempData);
-            LinkEnrolledCourse(quickPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex],aCourse,curCourseStudent);
+
+            curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
+            Student* curStudent = curCourseStudent->ptoStudent;
+            if(!curStudent->lastEnrolledCourse){
+                curStudent->CourseList = new EnrolledCourse;
+                curStudent->lastEnrolledCourse = curStudent->CourseList;
+            }
+            else {
+                curStudent->lastEnrolledCourse->nextCourse = new EnrolledCourse;
+                curStudent->lastEnrolledCourse->nextCourse->prevCourse = curStudent->lastEnrolledCourse;
+                curStudent->lastEnrolledCourse = curStudent->lastEnrolledCourse->nextCourse;
+            }
+            curStudent->lastEnrolledCourse->ptoCourse = aCourse;
+            curStudent->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
         }
     }
 }
 void LoadSemesterSector(DataBase &DB)
 {
+    if (DB.SemesterList != nullptr)
+        return;
     Semester* curSem = nullptr;
     Course* curCourse = nullptr;
     LoadSemesterFromFile(DB.SemesterFile,DB.SemesterList);
@@ -237,7 +252,7 @@ void LoadSemesterSector(DataBase &DB)
             LoadCourseInfoFromFile(curSem);
             curCourse = curSem->CourseList;
             while (curCourse != nullptr) {
-                LoadCourseStudentFromFile(curCourse);
+                LoadCourseStudentFromFile(curCourse,DB.quickSchoolPtr);
                 curCourse = curCourse->nextCourse;
             }
             curSem = curSem->nextSemester;
@@ -305,7 +320,7 @@ void SaveCourseInfoToFile(Semester* curSemester)
 {
     ofstream out;
     string fileName = curSemester->year;
-    fileName += '_' + ('0' + curSemester->semester);
+    fileName += '_'+ "HK" + ('0' + curSemester->semester);
     out.open("Data\\" + fileName + "_CourseInfo.txt");
     Course* curCourse = curSemester->CourseList;
     while (curCourse != nullptr) {
@@ -336,42 +351,68 @@ void SaveSemesterToFile(string SemesterFile, Semester* listSemester)
     out.close();
 }
 
-void SaveData(DataBase DB)
-{
-    SaveYearToFile(DB.YearFile,DB.YearList);
-    Schoolyear* curYear = DB.YearList;
-    StudyClass* curClass = nullptr;
-    
-    while (curYear != nullptr) {
-        SaveClassToFile(curYear->year,curYear->listClass);
-        curClass = curYear->listClass;
-        while (curClass != nullptr) {
-            SaveStudentListToFile(curClass->className,curClass->listStudent);
-            curClass = curClass->nextClass;
-        }
-        curYear = curYear->nextYear;
-    }
+// void SaveData(DataBase DB)
+// {
+//     if (DB.YearList != nullptr) {
+//         SaveYearToFile(DB.YearFile,DB.YearList);
+//         Schoolyear* curYear = DB.YearList;
+//         StudyClass* curClass = nullptr;
+        
+//         while (curYear != nullptr) {
+//             SaveClassToFile(curYear->year,curYear->listClass);
+//             curClass = curYear->listClass;
+//             while (curClass != nullptr) {
+//                 SaveStudentListToFile(curClass->className,curClass->listStudent);
+//                 curClass = curClass->nextClass;
+//             }
+//             curYear = curYear->nextYear;
+//         }
+//     }
 
-    SaveSemesterToFile(DB.SemesterFile, DB.SemesterList);
-    Semester* curSemester = DB.SemesterList;
-    Course* curCourse = nullptr;
+//     if (DB.SemesterList != nullptr)
+//     {
+//         SaveSemesterToFile(DB.SemesterFile, DB.SemesterList);
+//         Semester* curSemester = DB.SemesterList;
+//         Course* curCourse = nullptr;
 
-    while (curSemester != nullptr) {
-        SaveCourseInfoToFile(curSemester);
-        curCourse = curSemester->CourseList;
-        while (curCourse != nullptr) {
-            SaveCourseStudentToFile(curCourse);
-            curCourse = curCourse->nextCourse;
-        }
-        curSemester = curSemester->nextSemester;
-    }
+//         while (curSemester != nullptr) {
+//             SaveCourseInfoToFile(curSemester);
+//             curCourse = curSemester->CourseList;
+//             while (curCourse != nullptr) {
+//                 SaveCourseStudentToFile(curCourse);
+//                 curCourse = curCourse->nextCourse;
+//             }
+//             curSemester = curSemester->nextSemester;
+//         }
+//     }
 
-}
+
+// }
 void ClearData(DataBase &DB)
 {
+    Semester* curSemester = nullptr;
+    Course* curCourse = nullptr;
+    CourseStudent* curCourseStudent = nullptr;
+    while (DB.SemesterList != nullptr) {
+            curSemester = DB.SemesterList;
+            while (curSemester->CourseList != nullptr) {
+                curCourse = curSemester->CourseList;
+                while (curCourse->listStudent != nullptr) {
+                    curCourseStudent = curCourse->listStudent;
+                    curCourse->listStudent = curCourseStudent->nextStudent; 
+                    delete curCourseStudent;
+                }
+                curSemester->CourseList = curCourse->nextCourse;
+                delete curCourse;
+            }
+            DB.SemesterList = curSemester->nextSemester;
+            delete curSemester;
+    }
+
     Schoolyear* curYear = nullptr;
     StudyClass* curClass = nullptr;
     Student* curStudent = nullptr;
+    EnrolledCourse* curEnrolCourse = nullptr;
     delete []DB.quickSchoolPtr;
     DB.quickSchoolPtr = nullptr;
     while (DB.YearList != nullptr) {
@@ -385,6 +426,11 @@ void ClearData(DataBase &DB)
             while (curClass->listStudent != nullptr) {
                 curStudent = curClass->listStudent;
                 curClass->listStudent = curStudent->nextStudent;
+                while (curStudent->CourseList != nullptr) {
+                    curEnrolCourse = curStudent->CourseList;
+                    curStudent->CourseList = curEnrolCourse->nextCourse;
+                    delete curEnrolCourse;
+                }
                 delete curStudent;
             }
             curYear->listClass = curClass->nextClass;
@@ -394,24 +440,5 @@ void ClearData(DataBase &DB)
         delete curYear;
     }
 
-    Semester* curSemester = nullptr;
-    Course* curCourse = nullptr;
-    CourseStudent* curCourseStudent = nullptr;
-
-    while (DB.SemesterList != nullptr) {
-            curSemester = DB.SemesterList;
-            while (curSemester->CourseList != nullptr) {
-                curCourse = curSemester->CourseList;
-                while (curCourse->listStudent != nullptr) {
-                    curCourseStudent = curCourse->listStudent;
-                    curCourse->listStudent = curCourseStudent->nextStudent;
-                    delete curCourseStudent;
-                }
-                curSemester->CourseList = curCourse->nextCourse;
-                delete curCourse;
-            }
-            DB.SemesterList = curSemester->nextSemester;
-            delete curSemester;
-        }
 }
 
