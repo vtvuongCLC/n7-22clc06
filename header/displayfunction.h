@@ -11,6 +11,7 @@ void DisplayCourseStudentList(CourseStudent* listCourseStudent);
 void DisplayCourseList(Course* listCourse, int &max);
 void DisplayCourseList1Student(Student* pStudent, int semester, string year);
 bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string yearName, int &max);
+void DisplayScoreboard1Student(Student* pStudent, int semester, string year);
 
 void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester);
 void SpecificSemesterManager(DataBase &DB, Semester* curSemester);
