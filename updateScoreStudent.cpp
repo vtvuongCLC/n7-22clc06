@@ -1,4 +1,4 @@
-#include"header/viewScore.h"
+#include"header/updateScoreStudent.h"
 
 
 void ChangeScoreStudent(Scoreboard* &pScore){
