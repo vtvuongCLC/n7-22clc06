@@ -307,7 +307,7 @@ void SaveCourseStudentToFile(Course* aCourse)
     ofstream out;
     out.open("Data\\" + aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className + ".txt");
     CourseStudent* curStudent = aCourse->listStudent;
-    Scoreboard thisCourseBoard;
+    Scoreboard thisCourseBoard = curStudent->savedScore;
     while (curStudent != nullptr) {
         out << curStudent->yearIndex << ',';
         out << curStudent->classIndex << ',';
@@ -317,6 +317,7 @@ void SaveCourseStudentToFile(Course* aCourse)
         out << thisCourseBoard.otherMark << ',';
         out << thisCourseBoard.totalMark << endl;
         curStudent = curStudent->nextStudent;
+        thisCourseBoard = curStudent->savedScore;
     }
     out.close();
 }

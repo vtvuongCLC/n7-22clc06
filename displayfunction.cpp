@@ -136,6 +136,61 @@ void DisplayCourseList1Student(Student* pStudent, int semester, string year){
         firstCourse = firstCourse->nextCourse;
     }
 }
+
+void DisplayScoreboard1Student(Student* pStudent, int semester, string year){
+    EnrolledCourse* firstCourse = pStudent->CourseList;
+    while(firstCourse){
+        if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
+        firstCourse = firstCourse->nextCourse;
+    }
+    if(firstCourse == nullptr) cout << "Student hasn't enrroled course!!!\n";
+    int i = 0;
+    cout << left << setw(5)  << "No";
+    cout << left << setw(25) << "Course Name";
+    cout << left << setw(10) << "Other";
+    cout << left << setw(12) << "Midterm";
+    cout << left << setw(10) << "Final";
+    cout << left << setw(10) << "Total" << endl;
+    cout << "--------------------------------------------------------------------" << endl;
+    while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
+        i++;
+        cout << left << setw(5)   << i;
+        cout << left << setw(27)  << firstCourse->ptoCourse->thisCourseInfo.courseName;
+        cout << left << setw(11) << firstCourse->Score->otherMark;
+        cout << left << setw(11) << firstCourse->Score->midtermMark;
+        cout << left << setw(10) << firstCourse->Score->finalMark;
+        cout << left << setw(8) << firstCourse->Score->totalMark << endl;
+        firstCourse = firstCourse->nextCourse;
+    }
+
+}
+
+void DisplayScoreboardCourse(Course* pCourse){
+    cout << left << setw(5)  << "No";
+    cout << left << setw(15) << "Student ID";
+    cout << left << setw(25) << "Student Name";
+    cout << left << setw(10) << "Other";
+    cout << left << setw(12) << "Midterm"; 
+    cout << left << setw(10) << "Final";
+    cout << left << setw(10) << "Total" << endl;
+    cout << "-----------------------------------------------------------------------------" << endl;
+    int i = 0;
+    string temp;
+    while(pCourse->listStudent){
+        i++;
+        pCourse->listStudent->no = i;
+        temp = pCourse->listStudent->ptoStudent->dInfo.LastName + " " + pCourse->listStudent->ptoStudent->dInfo.FirstName;
+        cout << left << setw(5)  << pCourse->listStudent->no;
+        cout << left << setw(15) << pCourse->listStudent->ptoStudent->dInfo.StudentID;
+        cout << left << setw(27) << temp;
+        cout << left << setw(11) << pCourse->listStudent->savedScore.otherMark;
+        cout << left << setw(11) << pCourse->listStudent->savedScore.midtermMark;
+        cout << left << setw(10) << pCourse->listStudent->savedScore.finalMark;
+        cout << left << setw(8)  << pCourse->listStudent->savedScore.totalMark << endl;
+        pCourse->listStudent = pCourse->listStudent->nextStudent;
+    }
+}
+
 bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string yearName, int &max)
 {
     if (SemesterList == nullptr)
