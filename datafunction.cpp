@@ -69,7 +69,7 @@ void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass)
 }
 void LoadStudentListFromFile(string yearName, string className, Student* &listStudent, int &numStudent)
 {
-    if (IsemptyFile(className) == true)
+    if (IsemptyFile(className+"StdyCls") == true)
         return;
     ifstream StudentIn;
     StudentIn.open("Data\\" + className + "StdyCls.txt");
@@ -153,8 +153,9 @@ void LoadSemesterFromFile(string SemesterFile, Semester* &listSemester)
 void LoadCourseInfoFromFile(Semester* curSemester)
 {
     string fileName = curSemester->year;
-    fileName += '_' + ('0' + curSemester->semester);
-    if (IsemptyFile(fileName) == true)
+    fileName += "_HK";
+    fileName += ('0' + curSemester->semester);
+    if (IsemptyFile(fileName+"_CourseInfo") == true)
         return;
     ifstream CourseInfoIn;
     CourseInfoIn.open("Data\\" + fileName + "_CourseInfo.txt");;
@@ -171,6 +172,8 @@ void LoadCourseInfoFromFile(Semester* curSemester)
                 curCourse->nextCourse->prevCourse = curCourse;
                 curCourse = curCourse->nextCourse;
             }
+            curCourse->year = curSemester->year;
+            curCourse->semester = curSemester->semester;
             curCourse->thisCourseInfo.courseID = tempData;
             getline(CourseInfoIn,tempData,',');
             curCourse->thisCourseInfo.courseName = tempData;
@@ -242,6 +245,7 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
 }
 void LoadSemesterSector(DataBase &DB)
 {
+    QuickPtrBinder(DB);
     if (DB.SemesterList != nullptr)
         return;
     Semester* curSem = nullptr;
@@ -320,7 +324,8 @@ void SaveCourseInfoToFile(Semester* curSemester)
 {
     ofstream out;
     string fileName = curSemester->year;
-    fileName += '_'+ "HK" + ('0' + curSemester->semester);
+    fileName += "_HK";
+    fileName += ('0' + curSemester->semester);
     out.open("Data\\" + fileName + "_CourseInfo.txt");
     Course* curCourse = curSemester->CourseList;
     while (curCourse != nullptr) {

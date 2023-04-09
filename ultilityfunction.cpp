@@ -268,12 +268,14 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
 {
     Schoolyear* curYear = listYear;
     int x = 0;
-    while (listYear && listYear->year != yearName) {
+        listYear->year.find(yearName);
+    while (listYear && listYear->year.find(yearName) == string::npos) {
         curYear = curYear->nextYear;
         x++;
     }
     if (curYear == nullptr){
         cout << "This year hasn't existed in the system\n";
+        system("pause");
         return false;
     }
     StudyClass* curClass = curYear->listClass;
@@ -284,6 +286,7 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
     }
     if(curClass == nullptr){
         cout << "This study class hasn't existed in the system\n";
+        system("pause");
         return false;
     }
     Student* curStudent = curClass->listStudent;
@@ -294,6 +297,7 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
     }
     if(curStudent == nullptr){
         cout << "This student hasn't existed in the system\n";
+        system("pause");
         return false;
     }
     CourseStud->ptoStudent = curStudent;
@@ -349,6 +353,11 @@ void QuickPtrBinder(DataBase &DB)
             if (curYear->listClass != nullptr)
             {
                 if (curYear->quickClassPtr == nullptr) {
+                    if (curYear->quickClassPtr != nullptr)
+                    {
+                        delete []curYear->quickClassPtr;
+                        curYear->quickClassPtr = nullptr;
+                    }
                     curYear->quickClassPtr = new StudyClass*[curYear->numClass];
                     curClass = curYear->listClass;
                     int j = 0;
@@ -359,6 +368,11 @@ void QuickPtrBinder(DataBase &DB)
                         if (curClass->listStudent != nullptr)
                         {
                             curStudent = curClass->listStudent;
+                            if (curClass->quickStudentPtr != nullptr)
+                            {
+                                delete []curClass->quickStudentPtr;
+                                curClass->quickStudentPtr = nullptr;
+                            }
                             curClass->quickStudentPtr = new Student*[curClass->numStudent];
                             int k = 0;
                             while (curStudent != nullptr)
@@ -561,14 +575,19 @@ void NewCourse(Course* &firstCour, int semester, string year)
     getline(cin,firstCour->thisCourseInfo.className);
     cout<<"Enter teacher name: ";
     getline(cin,firstCour->thisCourseInfo.Teacher);
-    cout<<"Enter number of credits: ";
     do{
+        cout<<"Enter number of credits: ";
         cin >> firstCour->thisCourseInfo.credit;
-        if(firstCour->thisCourseInfo.credit <= 0) cout << "The number of credits must > 0\n Re-enter number of credits: ";
+        if(firstCour->thisCourseInfo.credit <= 0){
+             cout << "The number of credits must be greater than 0" << endl;
+        }
     }while(firstCour->thisCourseInfo.credit <= 0);
-    cout<<"Enter max number of students: ";
     do{
+        cout<<"Enter max number of students: ";
         cin >> firstCour->thisCourseInfo.maxStudent;
+        if (firstCour->thisCourseInfo.maxStudent <= 0) {
+           cout << "The number of students must be greater than 0" << endl;
+        }
     } while(firstCour->thisCourseInfo.maxStudent <= 0);
     cout <<"Enter session for course"<<endl;
     cout << "Enter the selection of day of the week: \n\n";
@@ -616,17 +635,27 @@ void NewCourse(Course* &firstCour, int semester, string year)
 }
 void InitSemester(Semester* &Sem, int semester, string year)
 {
-    Semester* tmp = Sem;
-    Sem = new Semester;
-    Sem->nextSemester = tmp;
-    Sem->semester = semester;
-    Sem->year = year;
-    cout << "\nThe system created semester " << Sem->semester << " in year " <<Sem->year << endl;
+    Semester* tmp = new Semester;
+
+    if (Sem == nullptr)
+        Sem = tmp;
+    else {
+        Semester* cur = Sem;
+        while(cur->nextSemester != nullptr)
+        {
+            cur = cur->nextSemester;
+        }
+        cur->nextSemester = tmp;
+    }
+    tmp->semester = semester;
+    tmp->year = year;
+
+    cout << "\nThe system created semester " << tmp->semester << " in year " <<tmp->year << endl;
     cin.ignore(1000,'\n');
-    cout<<"Enter starting date for semester "<< Sem->semester <<": ";
+    cout<<"Enter starting date for semester "<< tmp->semester <<": ";
     getline(cin, Sem->start);
-    cout<<"Enter ending date for semester "<< Sem->semester <<": ";
-    getline(cin,Sem->end );
+    cout<<"Enter ending date for semester "<< tmp->semester <<": ";
+    getline(cin,Sem->end);
 }
 void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
 {
@@ -649,13 +678,11 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
     //     return;
     // }
     int numYears;
-    string studentName, studentID, nameStudyClass, year;
+    string  studentID, nameStudyClass, year;
     // DisplayYearList(curYear, numYears);
-
+    cin.ignore(1000,'\n');
     cout << "Enter the year number when a student start in system: ";
     getline(cin, year);
-    cout << "Enter the student name you want to add: ";
-    getline(cin, studentName);
     cout << "Enter the student ID you want to add: ";
     getline(cin, studentID);
     cout << "Enter the name of study class of student you want to add: ";
@@ -665,6 +692,7 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
         
     if(newStudent != nullptr){
         cout << "This student has enrolled to this course!\n";
+        system("pause");
         return;
     }
     newStudent = new CourseStudent;
@@ -729,6 +757,7 @@ void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
 
     if(removedStudent == nullptr){
         cout << "The student hasn't enrolled to this course\n";
+        system("pause");
         return;
     }
 
@@ -744,20 +773,23 @@ void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
     }
     delete removedStudent;
 }
-void removeCourse(Semester* curSemester)
+bool removeCourse(Semester* curSemester)
 {
     string courseName, courseID, className;
-    cout << "Enter the course name you want to remove: ";
-    getline(cin, courseName);
+    cin.ignore(1000,'\n');
+
     cout << "Enter the course ID you want to remove: ";
     getline(cin, courseID);
+    cout << "Enter the course name you want to remove: ";
+    getline(cin, courseName);
     cout << "Enter the class name of course you want to remove: ";
     getline(cin, className);
 
     Course* pCourse = findTheCourse(curSemester,curSemester->year, curSemester->semester, courseName, courseID, className);
     if(!pCourse) {
         cout << "This course doesn't exist!\n";
-        return;
+        system("pause");
+        return false;
     }
 
     if(pCourse == curSemester->CourseList){
@@ -781,4 +813,5 @@ void removeCourse(Semester* curSemester)
     delete pCourse;
     cout << "The program removed this course.\n";
     system("pause");
+    return true;
 }

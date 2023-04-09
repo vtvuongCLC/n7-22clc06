@@ -29,5 +29,5 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear);
 
 void removeEnrollCourse(Student* removedStudent, Course* pCourse);
 void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear);
-void removeCourse(Semester* curSemester);
+bool removeCourse(Semester* curSemester);
 #endif

@@ -17,7 +17,10 @@ void DisplayBirth(BirthDate InputBirth)
 } 
 void DisplayStudentList(Student* listStudent)
 {
+    int i = 0;
     while (listStudent != nullptr) {
+        i++;
+        listStudent->No = i;
         cout << left << setw(5) << listStudent->No;
         cout << left << setw(15) << listStudent->dInfo.StudentID;
         cout << left << setw(25) << listStudent->dInfo.FirstName;
@@ -54,12 +57,16 @@ void DisplayYearList(Schoolyear* listYear, int &max)
 void DisplayCourseStudentList(CourseStudent* listCourseStudent)
 {
     int i = 0;
+    string temp;
     while(listCourseStudent != nullptr){
         i++;
         listCourseStudent->no = i;
+        temp = listCourseStudent->ptoStudent->dInfo.FirstName;
+        temp += ' ';
+        temp += listCourseStudent->ptoStudent->dInfo.LastName;
         cout << left << setw(5)  << listCourseStudent->no
              << left << setw(15) << listCourseStudent->ptoStudent->dInfo.StudentID
-             << left << setw(40) << listCourseStudent->ptoStudent->dInfo.FirstName + ' ' + listCourseStudent->ptoStudent->dInfo.LastName
+             << left << setw(40) << temp
              << left << setw(10) << listCourseStudent->savedScore.midtermMark
              << left << setw(10) << listCourseStudent->savedScore.finalMark
              << left << setw(10) << listCourseStudent->savedScore.otherMark
@@ -70,26 +77,30 @@ void DisplayCourseStudentList(CourseStudent* listCourseStudent)
 }
 void DisplayCourseList(Course* listCourse, int &max)
 {
-    if (listCourse == nullptr)
-        return;
     int i = 0;
     string temp;
     while (listCourse != nullptr)
     {
         i++;
         listCourse->courseIndex = i;
-        cout << left << setw(5) << listCourse->courseIndex;
+        cout << left << setw(10) << listCourse->courseIndex;
         cout << left << setw(15) << listCourse->thisCourseInfo.courseID;
         cout << left << setw(20) << listCourse->thisCourseInfo.courseName;
-        cout << left << setw(10) << listCourse->thisCourseInfo.className;
-        temp = listCourse->numCurStudents + '/' + listCourse->thisCourseInfo.maxStudent;
+        cout << left << setw(20) << listCourse->thisCourseInfo.className;
+        if (listCourse->numCurStudents == 0)
+            temp = "0";
+        else
+            temp = listCourse->numCurStudents;
+        temp+= '/';
+        temp+= to_string(listCourse->thisCourseInfo.maxStudent);
+        cout << left << setw(25) << temp;
+        temp = listCourse->thisCourseInfo.CourseDate.day;
+        temp += ',';
+        temp += listCourse->thisCourseInfo.CourseDate.session;
         cout << left << setw(20) << temp;
-        temp = listCourse->thisCourseInfo.CourseDate.day + ", " + listCourse->thisCourseInfo.CourseDate.session;
-        cout << left << setw(10) << temp;
         cout << left << setw(30) << listCourse->thisCourseInfo.Teacher << endl;
         listCourse =listCourse->nextCourse;
     }
-    listCourse->numCurStudents = i;
     max = i;
 }
 void DisplayCourseList1Student(Student* pStudent, int semester, string year){
@@ -105,14 +116,22 @@ void DisplayCourseList1Student(Student* pStudent, int semester, string year){
     while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
         i++;
         // firstCourse->ptoCourse->courseIndex = i;
-        cout << left << setw(5)  << i;//firstCourse->ptoCourse->courseIndex;
+        cout << left << setw(10)  << i;//firstCourse->ptoCourse->courseIndex;
         cout << left << setw(15) << firstCourse->ptoCourse->thisCourseInfo.courseID;
         cout << left << setw(20) << firstCourse->ptoCourse->thisCourseInfo.courseName;
         cout << left << setw(10) << firstCourse->ptoCourse->thisCourseInfo.className;
-        temp = firstCourse->ptoCourse->numCurStudents + '/' + firstCourse->ptoCourse->thisCourseInfo.maxStudent;
+        if (firstCourse->ptoCourse->numCurStudents == 0)
+            temp = "0";
+        else
+            temp = firstCourse->ptoCourse->numCurStudents;
+        temp += firstCourse->ptoCourse->numCurStudents;
+        temp += '/';
+        temp += to_string(firstCourse->ptoCourse->thisCourseInfo.maxStudent);
         cout << left << setw(20) << temp;
-        temp = firstCourse->ptoCourse->thisCourseInfo.CourseDate.day + ", " + firstCourse->ptoCourse->thisCourseInfo.CourseDate.session;
-        cout << left << setw(10) << temp;
+        temp = firstCourse->ptoCourse->thisCourseInfo.CourseDate.day;
+        temp += ", ";
+        temp += firstCourse->ptoCourse->thisCourseInfo.CourseDate.session;
+        cout << left << setw(20) << temp;
         cout << left << setw(30) << firstCourse->ptoCourse->thisCourseInfo.Teacher << endl;
         firstCourse = firstCourse->nextCourse;
     }
@@ -138,8 +157,8 @@ bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string 
             exist = true;
             SemesterList->index = i;
             SemesterList->semester = i;
-            cout << left << setw(5) << SemesterList->index;
-            cout << left << setw(10) << "HK" + SemesterList->semester;
+            cout << left << setw(10) << SemesterList->index;
+            cout << left << setw(10) << SemesterList->semester;
             cout << left << setw(10) << SemesterList->start;
             cout << left << setw(10) << SemesterList->end;
             cout << endl;
@@ -160,11 +179,11 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
     do {
         system("cls");
         cout << "Year: " << curCourse->year << endl;
-        cout << "Year: " << curCourse->semester << endl;
+        cout << "Semester: " << curCourse->semester << endl;
         cout << "Course ID: " << curCourse->thisCourseInfo.courseID << endl;
         cout << "Course Name: " << curCourse->thisCourseInfo.courseName << endl;
         cout << "Class Name: " << curCourse->thisCourseInfo.className << endl;
-        cout << "Number of Students: " << curCourse->numCurStudents + '/' + curCourse->thisCourseInfo.maxStudent << endl;
+        cout << "Number of Students: " << curCourse->numCurStudents  << '/' << curCourse->thisCourseInfo.maxStudent << endl;
         cout << "Course Date: " << curCourse->thisCourseInfo.CourseDate.day + ", " + curCourse->thisCourseInfo.CourseDate.session << endl;
         cout << "Teacher: " << curCourse->thisCourseInfo.Teacher << endl;
         cout << "Number of Credits: " << curCourse->thisCourseInfo.credit << endl;
@@ -178,6 +197,7 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
         cout << left << setw(10) << "Final";
         cout << left << setw(10) << "Other";
         cout << left << setw(10) << "Total";
+        cout << endl;
         if (curCourse->listStudent == nullptr) {
             cout << "No students found" << endl;
         } else {
@@ -234,16 +254,16 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         maxSelection = 0;
         system("cls");
         cout << "Current Year: " << curSemester->year << endl;
-        cout << "Semester: " << "HK" + curSemester->semester << endl;
+        cout << "Semester: " << curSemester->semester << endl;
         cout << "Start date: " << curSemester->start << endl;
         cout << "End date: " << curSemester->end << endl;
         cout << endl;
-        cout << left << setw(5) << "Index";
+        cout << left << setw(10) << "Index";
         cout << left << setw(15) << "Course ID";
         cout << left << setw(20) << "Course Name";
-        cout << left << setw(10) << "Class Name";
-        cout << left << setw(20) << "Number of Students";
-        cout << left << setw(10) << "Course Date";
+        cout << left << setw(20) << "Class Name";
+        cout << left << setw(25) << "Number of Students";
+        cout << left << setw(20) << "Course Date";
         cout << left << setw(30) << "Teacher";
         cout << endl;
         if (curSemester->CourseList == nullptr)
@@ -264,11 +284,18 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         if (selection == "n" || selection == "N") {
             NewCourse(curSemester->CourseList, curSemester->semester, curSemester->year);
             SaveCourseInfoToFile(curSemester);
+            continue;
         }
             
         if (selection == "x" || selection == "X") {
+            if (curSemester->CourseList == nullptr)
+            {
+                cout << "No Courses to remove now" << endl;
+                system("pause");
+            }
             removeCourse(curSemester);
             SaveCourseInfoToFile(curSemester);
+            continue;
         }
             
         if (curSemester->CourseList != nullptr) {
@@ -290,7 +317,7 @@ void SemestersListManager(DataBase &DB, string yearName)
         maxSelection = 0;
         system("cls");
         cout << "Current Year: " << yearName << endl;
-        cout << left << setw(5) << "Index";
+        cout << left << setw(10) << "Index";
         cout << left << setw(10) << "Semester";
         cout << left << setw(10) << "Start";
         cout << left << setw(10) << "End";
