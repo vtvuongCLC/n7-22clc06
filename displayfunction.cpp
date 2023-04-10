@@ -128,6 +128,7 @@ void DisplayScoreboard1Student(Student* pStudent, int semester, string year){
     int i = 0;
     cout << left << setw(5)  << "No";
     cout << left << setw(25) << "Course Name";
+    cout << left << setw(15) << "Course ID";
     cout << left << setw(10) << "Other";
     cout << left << setw(12) << "Midterm";
     cout << left << setw(10) << "Final";
@@ -135,8 +136,9 @@ void DisplayScoreboard1Student(Student* pStudent, int semester, string year){
     cout << "--------------------------------------------------------------------" << endl;
     while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
         i++;
-        cout << left << setw(5)   << i;
-        cout << left << setw(27)  << firstCourse->ptoCourse->thisCourseInfo.courseName;
+        cout << left << setw(5)  << i;
+        cout << left << setw(25) << firstCourse->ptoCourse->thisCourseInfo.courseName;
+        cout << left << setw(17) << firstCourse->ptoCourse->thisCourseInfo.courseID;
         cout << left << setw(11) << firstCourse->Score->otherMark;
         cout << left << setw(11) << firstCourse->Score->midtermMark;
         cout << left << setw(10) << firstCourse->Score->finalMark;
