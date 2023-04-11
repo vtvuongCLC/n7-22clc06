@@ -230,6 +230,7 @@ bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string 
     return true;   
 }
 
+
 void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
 {
     int selection;
@@ -265,6 +266,9 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
         cout << "2. Remove a Student" << endl;
         cout << "3. Upload a CSV file of enrolled student" << endl;
         cout << "4. Update Course Information" << endl;
+        cout << "5. Export students list to CSV file" << endl;
+        cout << "6. Import students scores from CSV file" << endl;
+        cout << "7. Update scores of a student" << endl;
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
@@ -298,6 +302,17 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
         case 4:
                 UpdateCourseInfo(curCourse->thisCourseInfo);
                 SaveCourseInfoToFile(curSemester);
+            break;
+        case 5:
+                ExportCourseStudent(curCourse);
+            break;
+        case 6:
+                importCourseScore(curCourse);
+                SaveCourseStudentToFile(curCourse);
+            break;
+        case 7:
+                ChangeStudentScore(curCourse->listStudent);
+                SaveCourseStudentToFile(curCourse);
             break;
         default: break;
         }

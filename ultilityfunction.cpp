@@ -269,7 +269,6 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
 {
     Schoolyear* curYear = listYear;
     int x = 0;
-        listYear->year.find(yearName);
     while (listYear && listYear->year.find(yearName) == string::npos) {
         curYear = curYear->nextYear;
         x++;
@@ -397,11 +396,12 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* 
     EnrolledCourse* temp = curStudent->CourseList;
     curStudent->CourseList = new EnrolledCourse;
     curStudent->CourseList->nextCourse = temp;
-    curStudent->CourseList->Score = &(curCourseStudent->savedScore);
-    if(temp) temp->prevCourse = curStudent->CourseList;
-    else curStudent->lastEnrolledCourse = curStudent->CourseList;
+    if(temp)
+        temp->prevCourse = curStudent->CourseList;
+    else
+        curStudent->lastEnrolledCourse = curStudent->CourseList;
     curStudent->CourseList->ptoCourse = curCourse;
-    curStudent->CourseList->Score = &curCourseStudent->savedScore;
+    curStudent->CourseList->Score = &(curCourseStudent->savedScore);
 }
 
 void UpdateCourseInfo(CourseInfo &curCourseInfo)
@@ -636,48 +636,35 @@ void NewCourse(Course* &firstCour, int semester, string year)
 }
 void InitSemester(Semester* &Sem, int semester, string year)
 {
-    Semester* tmp = new Semester;
-
-    if (Sem == nullptr)
-        Sem = tmp;
-    else {
-        Semester* cur = Sem;
-        while(cur->nextSemester != nullptr)
+    Semester* curSem = nullptr;
+    if (Sem == nullptr) {
+        Sem = new Semester;
+        curSem = Sem;
+    } else {
+        curSem = Sem;
+        while(curSem->nextSemester != nullptr)
         {
-            cur = cur->nextSemester;
+            curSem = curSem->nextSemester;
         }
-        cur->nextSemester = tmp;
+        curSem->nextSemester = new Semester;
+        curSem = curSem->nextSemester;
     }
-    tmp->semester = semester;
-    tmp->year = year;
+    curSem->semester = semester;
+    curSem->year = year;
 
-    cout << "\nThe system created semester " << tmp->semester << " in year " <<tmp->year << endl;
+    cout << "\nThe system created semester " << curSem->semester << " in year " <<curSem->year << endl;
     cin.ignore(1000,'\n');
-    cout<<"Enter starting date for semester "<< tmp->semester <<": ";
-    getline(cin, Sem->start);
-    cout<<"Enter ending date for semester "<< tmp->semester <<": ";
-    getline(cin,Sem->end);
+    cout<<"Enter starting date for semester "<< curSem->semester <<": ";
+    getline(cin, curSem->start);
+    cout<<"Enter ending date for semester "<< curSem->semester <<": ";
+    getline(cin,curSem->end);
 }
 void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
 {
-    // string courseName, courseID, className;
-    // cout << "Enter the course name you want to add student: ";
-    // getline(cin, courseName);
-    // cout << "Enter the course ID you want to add student: ";
-    // getline(cin, courseID);
-    // cout << "Enter the class name of course you want to add student: ";
-    // getline(cin, className);
-
-    // Course* pCourse = findTheCourse(curSemester, curSemester->year, curSemester->semester, courseName, courseID, className);
-    // if(!pCourse) {
-    //     cout << "This course doesn't exist!\n";
-    //     return;
-    // }
-
-    // if(pCourse->numCurStudents >= pCourse->thisCourseInfo.maxStudent ){
-    //     cout << "The course is having maximum student!!! You cannot add student to this course.\n";
-    //     return;
-    // }
+    if(curCourse->numCurStudents >= curCourse->thisCourseInfo.maxStudent ){
+        cout << "The course is having maximum student!!! You cannot add student to this course.\n";
+        return;
+    }
     int numYears;
     string  studentID, nameStudyClass, year;
     // DisplayYearList(curYear, numYears);
@@ -709,6 +696,7 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
     }
     curCourse->listStudent = newStudent;
     curCourse->numCurStudents++;
+
 }
 
 void removeEnrollCourse(Student* removedStudent, Course* pCourse)
@@ -718,39 +706,27 @@ void removeEnrollCourse(Student* removedStudent, Course* pCourse)
         if(tmp->ptoCourse == pCourse) break;
         tmp = tmp->nextCourse;
     }
-    if(!tmp->nextCourse) removedStudent->lastEnrolledCourse = tmp->prevCourse;
-    if(tmp->prevCourse){
+    if(!tmp->nextCourse)
+        removedStudent->lastEnrolledCourse = tmp->prevCourse;
+    if(tmp->prevCourse) {
        tmp->prevCourse->nextCourse = tmp->nextCourse;
-       tmp->nextCourse->prevCourse = tmp->prevCourse; 
     }
     else {
         removedStudent->CourseList = tmp->nextCourse;
         removedStudent->CourseList->prevCourse = nullptr;
+    }
+    if (tmp->nextCourse) {
+        tmp->nextCourse->prevCourse = tmp->prevCourse; 
     }
     delete tmp;
 
 }
 void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
 {
-    // string courseName, courseID, className;
-    // cout << "Enter the course name you want to remove a student: ";
-    // getline(cin, courseName);
-    // cout << "Enter the course ID you want to remove a student: ";
-    // getline(cin, courseID);
-    // cout << "Enter the class name of course you want to add student: ";
-    // getline(cin, className);
-
-    // Course* pCourse = findTheCourse(curSemester, curSemester->year, curSemester->semester, courseName, courseID, className);
-    // if(!pCourse) {
-    //     cout << "This course doesn't exist!\n";
-    //     return;
-    // }
-
-    //displayStudentInCourse(pCourse);
-
     string studentName, studentID, nameStudyClass;
-    cout << "Enter the student name you want to remove: ";
-    getline(cin, studentName);
+    cin.ignore(1000,'\n');
+    // cout << "Enter the student name you want to remove: ";
+    // getline(cin, studentName);
     cout << "Enter the student ID you want to remove: ";
     getline(cin, studentID);
 
@@ -816,30 +792,48 @@ void removeCourse(Semester* curSemester)
 }
 
 void ExportCourseStudent(Course* curCourse){
+    if (curCourse->listStudent == nullptr) {
+        cout << "No students found in this Course" << endl;
+        system("pause");
+        return;
+    }
     ofstream out;
     out.open("StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
     CourseStudent* curStudent = curCourse->listStudent;
-    Scoreboard thisCourseBoard = curStudent->savedScore;
-    Student* temp = curStudent->ptoStudent;
+    Scoreboard thisCourseBoard;
+    Student* temp = nullptr;
+    bool successflag = false;
     while (curStudent != nullptr) {
+        successflag = true;
+        temp = curStudent->ptoStudent;
+        thisCourseBoard = curStudent->savedScore;
         out << curStudent->no << ',';
         out << temp->dInfo.StudentID << ',';
-        out << temp->dInfo.LastName + " " + temp->dInfo.FirstName << ',';
+        out << temp->dInfo.FirstName + " " + temp->dInfo.LastName<< ',';
         out << thisCourseBoard.midtermMark << ',';
         out << thisCourseBoard.finalMark << ',';
         out << thisCourseBoard.otherMark << ',';
         out << thisCourseBoard.totalMark << endl;
         curStudent = curStudent->nextStudent;
-        thisCourseBoard = curStudent->savedScore;
-        temp = curStudent->ptoStudent;
     }
     out.close();
+    if (successflag == true) {
+        cout << "Students list exported successfully" << endl;
+    } else {
+        cout << "Error occurred while exporting" << endl;
+    }
+    system("pause");
 }
 bool importCourseScore(Course* &curCourse){
-    if(!curCourse->listStudent) return false;
+    if(!curCourse->listStudent) {
+        cout << "No students found in this Course" << endl;
+        system("pause");
+        return false;
+    }
+    
     ifstream in;
     CourseStudent* temp = curCourse->listStudent;
-    Student* StudTemp = temp->ptoStudent;
+    Student* StudTemp = nullptr;
     string No, ID, Name, TotalMark, FinalMark, MidtermMark, OtherMark;
     string filepath;
     cin.ignore(1000,'\n');
@@ -847,119 +841,73 @@ bool importCourseScore(Course* &curCourse){
     getline(cin,filepath);
     in.open(filepath);
     if(!in.is_open()) return false;
-    while(temp && !in.eof()){
+    while(temp != nullptr && in.eof() == false){
+        StudTemp = temp->ptoStudent;
         getline(in,No,',');
         getline(in,ID,',');
         getline(in,Name,',');
-        getline(in,TotalMark,',');
-        getline(in,FinalMark,',');
         getline(in,MidtermMark,',');
+        getline(in,FinalMark,',');
         getline(in,OtherMark,',');
+        getline(in,TotalMark,'\n');
         if(temp->no == stoi(No) && StudTemp->dInfo.StudentID == ID && StudTemp->dInfo.LastName + " " + StudTemp->dInfo.FirstName == Name){
-            temp->savedScore.totalMark = stod(TotalMark);
-            temp->savedScore.finalMark = stod(FinalMark);
             temp->savedScore.midtermMark = stod(MidtermMark);
+            temp->savedScore.finalMark = stod(FinalMark);
             temp->savedScore.otherMark = stod(OtherMark);
+            temp->savedScore.totalMark = stod(TotalMark);
         }
         temp = temp->nextStudent;
-        StudTemp = temp->ptoStudent;
     }
     in.close();
     return true;
 }
-void ChangeScoreStudent(Scoreboard &pScore){
-    int choice;
+
+void ChangeStudentScore(CourseStudent* listCourseStudent)
+{
+    if(listCourseStudent == nullptr) {
+        cout << "No students found in this Course" << endl;
+        system("pause");
+        return;
+    }
+    string StudentID;
+    cin.ignore();
+    cout << "Enter the ID of the student: ";
+    cin >> StudentID;
+    CourseStudent* curStudent = findStudentInCourse(listCourseStudent,StudentID);
+        int choice;
     do{
         cout << "Which of Score Updating: " << endl;
-        cout << "1. Current Total Score: " << pScore.totalMark << endl;
-        cout << "2. Current Other Score: " << pScore.otherMark << endl;
-        cout << "3. Current Midterm Score: " << pScore.midtermMark << endl;
-        cout << "4. Current Final Score: " << pScore.finalMark << endl;
+        cout << "1. Current Midterm Score: " << curStudent->savedScore.midtermMark << endl;
+        cout << "2. Current Final Score: " << curStudent->savedScore.finalMark << endl;
+        cout << "3. Current Other Score: " << curStudent->savedScore.otherMark << endl;
+        cout << "4. Current Total Score: " << curStudent->savedScore.totalMark << endl;
         cout << "5. Exit" << endl;
         cout << "Enter the selection: "; cin >> choice;
         switch(choice){
             case 1:
                 do{
                     cout << "Total Score: ";
-                    cin >> pScore.totalMark;
-                }while(pScore.totalMark < 0 || pScore.totalMark > 10);
+                    cin >> curStudent->savedScore.totalMark;
+                }while(curStudent->savedScore.totalMark < 0 || curStudent->savedScore.totalMark > 10);
                 break;
             case 2:    
                 do{
                     cout << "Other Score: ";
-                    cin >> pScore.otherMark;
-                }while(pScore.otherMark < 0 || pScore.otherMark > 10);
+                    cin >> curStudent->savedScore.otherMark;
+                }while(curStudent->savedScore.otherMark < 0 || curStudent->savedScore.otherMark > 10);
                 break;
             case 3:
                 do{
                     cout << "Midterm Score: ";
-                    cin >> pScore.midtermMark;
-                }while(pScore.midtermMark < 0 || pScore.midtermMark > 10);
+                    cin >> curStudent->savedScore.midtermMark;
+                }while(curStudent->savedScore.midtermMark < 0 || curStudent->savedScore.midtermMark > 10);
                 break;
             case 4:
                 do{
                     cout << "Final Score: ";
-                    cin >> pScore.finalMark;
-                }while(pScore.finalMark < 0 || pScore.finalMark > 10);
+                    cin >> curStudent->savedScore.finalMark;
+                }while(curStudent->savedScore.finalMark < 0 || curStudent->savedScore.finalMark > 10);
                 break;
         }
     }while(choice != 5);
-}
-// menu hiện danh sách course sau đó cho ng dùng chọn course muốn sửa r dùng hàm UpdateScoreOf1Student bên dưới
-void UpdateScoreOf1Course(Course* pCourse){
-    CourseStudent* tmpStudent = nullptr;
-    int selection;
-    string idStudent;
-    do{
-        system("cls");
-        cout<<"Update Score Course Student!"<<endl;
-        cout<<"=================================="<<endl;
-        DisplayScoreboardCourse(pCourse);
-        cout << endl;
-        cout << "0. Back" << endl;
-        cout << "1. Update score of 1 student" << endl;
-        cout << "Enter a selection: "; cin >> selection;
-        if(selection == 1){
-        cout << "Enter ID Student To Update Score: ";
-        cin >> idStudent;
-        tmpStudent = findStudentInCourse(pCourse->listStudent, idStudent);
-        ChangeScoreStudent(tmpStudent->savedScore);
-        }
-        
-    }while(selection);
-}
-
-void UpdateScoreOf1Student(Student* pStudent, int semester, string year){
-    int selection;
-    EnrolledCourse* pCourse = pStudent->CourseList;
-    string courseName, courseID;
-    do{
-        system("cls");
-        cout << "Update Score Of 1 Student!" << endl;
-        cout << "====================================" << endl;
-        DisplayScoreboard1Student(pStudent, semester, year);
-        cout << endl;
-        cout << "0. Back" << endl;
-        cout << "1. Update score of 1 course" << endl;
-        cout << "Enter a selection: "; cin >> selection;
-        if(selection == 1){
-            cin.ignore(1000, '\n');
-            cout << "Enter the course name you want to update score: ";
-            getline(cin, courseName);
-            cout << "Enter the course ID you want to update score: ";
-            getline(cin, courseID);
-            while(pCourse){
-                if(pCourse->ptoCourse->year == year && pCourse->ptoCourse->semester == semester) break;
-                pCourse = pCourse->nextCourse;
-            }
-            if(!pCourse) cout << "Student hasn't enrroled this semester!\n";
-            while(pCourse->ptoCourse->year == year && pCourse->ptoCourse->semester == semester){
-                if(pCourse->ptoCourse->thisCourseInfo.courseName == courseName && pCourse->ptoCourse->thisCourseInfo.courseID == courseID) break;
-                pCourse = pCourse->nextCourse;
-            }
-            if(!pCourse) cout << "Student hasn't enrroled this course!\n";
-
-            ChangeScoreStudent(*pCourse->Score);
-        }
-    }while(selection);
 }

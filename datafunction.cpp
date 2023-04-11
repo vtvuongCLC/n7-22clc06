@@ -265,6 +265,8 @@ void LoadSemesterSector(DataBase &DB)
 
 void SaveYearToFile(string YearFile, Schoolyear* ListYear)
 {
+    if (ListYear == nullptr)
+        return;
     ofstream out;
     out.open("Data\\" + YearFile + ".txt");
     while (ListYear != nullptr) {
@@ -275,6 +277,8 @@ void SaveYearToFile(string YearFile, Schoolyear* ListYear)
 }
 void SaveClassToFile(string yearName, StudyClass* listClass)
 {
+    if (listClass == nullptr)
+        return;
     ofstream out;
     out.open("Data\\" + yearName + "StdyCls.txt");
         while (listClass != nullptr) {
@@ -285,6 +289,8 @@ void SaveClassToFile(string yearName, StudyClass* listClass)
 }
 void SaveStudentListToFile(string className, Student* listStudent)
 {
+    if (listStudent == nullptr)
+        return;
     ofstream out;
     out.open("Data\\" + className + "StdyCls.txt");
     while (listStudent != nullptr) {
@@ -304,11 +310,14 @@ void SaveStudentListToFile(string className, Student* listStudent)
 
 void SaveCourseStudentToFile(Course* aCourse)
 {
+    if (aCourse->listStudent == nullptr)
+        return;
     ofstream out;
     out.open("Data\\" + aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className + ".txt");
     CourseStudent* curStudent = aCourse->listStudent;
-    Scoreboard thisCourseBoard = curStudent->savedScore;
+    Scoreboard thisCourseBoard;
     while (curStudent != nullptr) {
+        thisCourseBoard = curStudent->savedScore;
         out << curStudent->yearIndex << ',';
         out << curStudent->classIndex << ',';
         out << curStudent->studentIndex << ',';
@@ -317,12 +326,13 @@ void SaveCourseStudentToFile(Course* aCourse)
         out << thisCourseBoard.otherMark << ',';
         out << thisCourseBoard.totalMark << endl;
         curStudent = curStudent->nextStudent;
-        thisCourseBoard = curStudent->savedScore;
     }
     out.close();
 }
 void SaveCourseInfoToFile(Semester* curSemester)
 {
+    if (curSemester->CourseList == nullptr)
+        return;
     ofstream out;
     string fileName = curSemester->year;
     fileName += "_HK";
@@ -345,6 +355,8 @@ void SaveCourseInfoToFile(Semester* curSemester)
 }
 void SaveSemesterToFile(string SemesterFile, Semester* listSemester)
 {
+    if (listSemester == nullptr)
+        return;
     ofstream out;
     out.open("Data\\" + SemesterFile + ".txt");
     while (listSemester != nullptr) {
