@@ -1,5 +1,6 @@
 #include "header/ultilityfunction.h"
 #include "header/datafunction.h"
+#include "header/displayfunction.h"
 bool validInfo(Info infoparam,char gender)
 {
     if (gender != 'm' && gender != 'M')
@@ -816,7 +817,7 @@ void removeCourse(Semester* curSemester)
 
 void ExportCourseStudent(Course* curCourse){
     ofstream out;
-    out.open("Data\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
+    out.open("StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
     CourseStudent* curStudent = curCourse->listStudent;
     Scoreboard thisCourseBoard = curStudent->savedScore;
     Student* temp = curStudent->ptoStudent;
@@ -840,7 +841,11 @@ bool importCourseScore(Course* &curCourse){
     CourseStudent* temp = curCourse->listStudent;
     Student* StudTemp = temp->ptoStudent;
     string No, ID, Name, TotalMark, FinalMark, MidtermMark, OtherMark;
-    in.open("Data\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
+    string filepath;
+    cin.ignore(1000,'\n');
+    cout << "Enter filepath: ";
+    getline(cin,filepath);
+    in.open(filepath);
     if(!in.is_open()) return false;
     while(temp && !in.eof()){
         getline(in,No,',');
@@ -861,53 +866,100 @@ bool importCourseScore(Course* &curCourse){
     }
     in.close();
     return true;
+}
+void ChangeScoreStudent(Scoreboard &pScore){
+    int choice;
+    do{
+        cout << "Which of Score Updating: " << endl;
+        cout << "1. Current Total Score: " << pScore.totalMark << endl;
+        cout << "2. Current Other Score: " << pScore.otherMark << endl;
+        cout << "3. Current Midterm Score: " << pScore.midtermMark << endl;
+        cout << "4. Current Final Score: " << pScore.finalMark << endl;
+        cout << "5. Exit" << endl;
+        cout << "Enter the selection: "; cin >> choice;
+        switch(choice){
+            case 1:
+                do{
+                    cout << "Total Score: ";
+                    cin >> pScore.totalMark;
+                }while(pScore.totalMark < 0 || pScore.totalMark > 10);
+                break;
+            case 2:    
+                do{
+                    cout << "Other Score: ";
+                    cin >> pScore.otherMark;
+                }while(pScore.otherMark < 0 || pScore.otherMark > 10);
+                break;
+            case 3:
+                do{
+                    cout << "Midterm Score: ";
+                    cin >> pScore.midtermMark;
+                }while(pScore.midtermMark < 0 || pScore.midtermMark > 10);
+                break;
+            case 4:
+                do{
+                    cout << "Final Score: ";
+                    cin >> pScore.finalMark;
+                }while(pScore.finalMark < 0 || pScore.finalMark > 10);
+                break;
+        }
+    }while(choice != 5);
+}
+// menu hiện danh sách course sau đó cho ng dùng chọn course muốn sửa r dùng hàm UpdateScoreOf1Student bên dưới
+void UpdateScoreOf1Course(Course* pCourse){
+    CourseStudent* tmpStudent = nullptr;
+    int selection;
+    string idStudent;
+    do{
+        system("cls");
+        cout<<"Update Score Course Student!"<<endl;
+        cout<<"=================================="<<endl;
+        DisplayScoreboardCourse(pCourse);
+        cout << endl;
+        cout << "0. Back" << endl;
+        cout << "1. Update score of 1 student" << endl;
+        cout << "Enter a selection: "; cin >> selection;
+        if(selection == 1){
+        cout << "Enter ID Student To Update Score: ";
+        cin >> idStudent;
+        tmpStudent = findStudentInCourse(pCourse->listStudent, idStudent);
+        ChangeScoreStudent(tmpStudent->savedScore);
+        }
+        
+    }while(selection);
 }
 
-void ExportCourseStudent(Course* curCourse){
-    ofstream out;
-    out.open("Data\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
-    CourseStudent* curStudent = curCourse->listStudent;
-    Scoreboard thisCourseBoard = curStudent->savedScore;
-    Student* temp = curStudent->ptoStudent;
-    while (curStudent != nullptr) {
-        out << curStudent->no << ',';
-        out << temp->dInfo.StudentID << ',';
-        out << temp->dInfo.LastName + " " + temp->dInfo.FirstName << ',';
-        out << thisCourseBoard.midtermMark << ',';
-        out << thisCourseBoard.finalMark << ',';
-        out << thisCourseBoard.otherMark << ',';
-        out << thisCourseBoard.totalMark << endl;
-        curStudent = curStudent->nextStudent;
-        thisCourseBoard = curStudent->savedScore;
-        temp = curStudent->ptoStudent;
-    }
-    out.close();
-}
-bool importCourseScore(Course* &curCourse){
-    if(!curCourse->listStudent) return false;
-    ifstream in;
-    CourseStudent* temp = curCourse->listStudent;
-    Student* StudTemp = temp->ptoStudent;
-    string No, ID, Name, TotalMark, FinalMark, MidtermMark, OtherMark;
-    in.open("Data\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
-    if(!in.is_open()) return false;
-    while(temp && !in.eof()){
-        getline(in,No,',');
-        getline(in,ID,',');
-        getline(in,Name,',');
-        getline(in,TotalMark,',');
-        getline(in,FinalMark,',');
-        getline(in,MidtermMark,',');
-        getline(in,OtherMark,',');
-        if(temp->no == stoi(No) && StudTemp->dInfo.StudentID == ID && StudTemp->dInfo.LastName + " " + StudTemp->dInfo.FirstName == Name){
-            temp->savedScore.totalMark = stod(TotalMark);
-            temp->savedScore.finalMark = stod(FinalMark);
-            temp->savedScore.midtermMark = stod(MidtermMark);
-            temp->savedScore.otherMark = stod(OtherMark);
+void UpdateScoreOf1Student(Student* pStudent, int semester, string year){
+    int selection;
+    EnrolledCourse* pCourse = pStudent->CourseList;
+    string courseName, courseID;
+    do{
+        system("cls");
+        cout << "Update Score Of 1 Student!" << endl;
+        cout << "====================================" << endl;
+        DisplayScoreboard1Student(pStudent, semester, year);
+        cout << endl;
+        cout << "0. Back" << endl;
+        cout << "1. Update score of 1 course" << endl;
+        cout << "Enter a selection: "; cin >> selection;
+        if(selection == 1){
+            cin.ignore(1000, '\n');
+            cout << "Enter the course name you want to update score: ";
+            getline(cin, courseName);
+            cout << "Enter the course ID you want to update score: ";
+            getline(cin, courseID);
+            while(pCourse){
+                if(pCourse->ptoCourse->year == year && pCourse->ptoCourse->semester == semester) break;
+                pCourse = pCourse->nextCourse;
+            }
+            if(!pCourse) cout << "Student hasn't enrroled this semester!\n";
+            while(pCourse->ptoCourse->year == year && pCourse->ptoCourse->semester == semester){
+                if(pCourse->ptoCourse->thisCourseInfo.courseName == courseName && pCourse->ptoCourse->thisCourseInfo.courseID == courseID) break;
+                pCourse = pCourse->nextCourse;
+            }
+            if(!pCourse) cout << "Student hasn't enrroled this course!\n";
+
+            ChangeScoreStudent(*pCourse->Score);
         }
-        temp = temp->nextStudent;
-        StudTemp = temp->ptoStudent;
-    }
-    in.close();
-    return true;
+    }while(selection);
 }

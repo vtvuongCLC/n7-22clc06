@@ -33,4 +33,7 @@ void removeCourse(Semester* curSemester);
 
 void ExportCourseStudent(Course* curCourse);
 bool importCourseScore(Course* &curCourse);
+void ChangeScoreStudent(Scoreboard &pScore);
+void UpdateScoreOf1Course(Course* pCourse);
+void UpdateScoreOf1Student(Student* pStudent, int semester, string year);
 #endif
