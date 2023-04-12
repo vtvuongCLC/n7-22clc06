@@ -320,6 +320,8 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
 }
 void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
 {
+    if (curSemester == nullptr)
+        return;
     int maxSelection;
     string selection;
     do {
@@ -419,7 +421,8 @@ void SemestersListManager(DataBase &DB, string yearName)
             int intSelection = stoi(selection);
             if (intSelection > 0 && intSelection <= 3)
             {
-                SpecificSemesterManager(DB, handlingArr[intSelection]);
+
+                SpecificSemesterManager(DB, handlingArr[intSelection-1]);
             }
         }
     } while (true);

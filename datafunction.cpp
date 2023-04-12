@@ -229,17 +229,18 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
 
             curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
             Student* curStudent = curCourseStudent->ptoStudent;
-            if(!curStudent->lastEnrolledCourse){
-                curStudent->CourseList = new EnrolledCourse;
-                curStudent->lastEnrolledCourse = curStudent->CourseList;
-            }
-            else {
-                curStudent->lastEnrolledCourse->nextCourse = new EnrolledCourse;
-                curStudent->lastEnrolledCourse->nextCourse->prevCourse = curStudent->lastEnrolledCourse;
-                curStudent->lastEnrolledCourse = curStudent->lastEnrolledCourse->nextCourse;
-            }
-            curStudent->lastEnrolledCourse->ptoCourse = aCourse;
-            curStudent->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
+            LinkEnrolledCourse(curStudent,aCourse,curCourseStudent);
+            // if(!curStudent->lastEnrolledCourse){
+            //     curStudent->CourseList = new EnrolledCourse;
+            //     curStudent->lastEnrolledCourse = curStudent->CourseList;
+            // }
+            // else {
+            //     curStudent->lastEnrolledCourse->nextCourse = new EnrolledCourse;
+            //     curStudent->lastEnrolledCourse->nextCourse->prevCourse = curStudent->lastEnrolledCourse;
+            //     curStudent->lastEnrolledCourse = curStudent->lastEnrolledCourse->nextCourse;
+            // }
+            // curStudent->lastEnrolledCourse->ptoCourse = aCourse;
+            // curStudent->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
         }
     }
 }

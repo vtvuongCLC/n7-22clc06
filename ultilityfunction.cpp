@@ -269,7 +269,7 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
 {
     Schoolyear* curYear = listYear;
     int x = 0;
-    while (listYear && listYear->year.find(yearName) == string::npos) {
+    while (curYear && curYear->year.find(yearName) == string::npos) {
         curYear = curYear->nextYear;
         x++;
     }
