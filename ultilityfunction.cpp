@@ -773,15 +773,13 @@ void removeEnrollCourse(Student* removedStudent, Course* pCourse)
     }
     if(!tmp->nextCourse)
         removedStudent->lastEnrolledCourse = tmp->prevCourse;
-    if(tmp->prevCourse) {
+    if(tmp->prevCourse && tmp->nextCourse) {
        tmp->prevCourse->nextCourse = tmp->nextCourse;
+       tmp->nextCourse->prevCourse = tmp->prevCourse;
     }
     else {
         removedStudent->CourseList = tmp->nextCourse;
-        removedStudent->CourseList->prevCourse = nullptr;
-    }
-    if (tmp->nextCourse) {
-        tmp->nextCourse->prevCourse = tmp->prevCourse; 
+        if(removedStudent->CourseList) removedStudent->CourseList->prevCourse = nullptr;
     }
     delete tmp;
 

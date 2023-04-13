@@ -323,7 +323,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
     if (curSemester == nullptr)
         return;
     int maxSelection;
-    string selection;
+    char selection;
     do {
         maxSelection = 0;
         system("cls");
@@ -354,15 +354,15 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
-        if (selection == "0")
+        if (selection == '0')
             break;
-        if (selection == "n" || selection == "N") {
+        if (selection == 'n' || selection == 'N') {
             NewCourse(curSemester->CourseList, curSemester->semester, curSemester->year);
             SaveCourseInfoToFile(curSemester);
             continue;
         }
             
-        if (selection == "x" || selection == "X") {
+        if (selection == 'x' || selection == 'X') {
             if (curSemester->CourseList == nullptr)
             {
                 cout << "No Courses to remove now" << endl;
@@ -374,7 +374,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         }
             
         if (curSemester->CourseList != nullptr) {
-            int intSelection = stoi(selection);
+            int intSelection = int(selection) - '0';
             if (intSelection > 0 && intSelection <= maxSelection) {
                 Course* curCourse = navigateCourse(curSemester->CourseList,intSelection);
                 CourseManager(DB,curCourse,curSemester);
@@ -385,7 +385,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
 void SemestersListManager(DataBase &DB, string yearName)
 {
     int maxSelection;
-    string selection;
+    char selection;
     Semester** handlingArr = nullptr;
 
     do {
@@ -411,15 +411,15 @@ void SemestersListManager(DataBase &DB, string yearName)
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
-        if (selection == "0")
+        if (selection == '0')
             break;
-        if ( (maxSelection < 3) && (selection == "n" || selection == "N")) {
+        if ( (maxSelection < 3) && (selection == 'n' || selection == 'N')) {
             InitSemester(DB.SemesterList,maxSelection+1,yearName);
             SaveSemesterToFile(DB.SemesterFile,DB.SemesterList);
         }
             
         else {
-            int intSelection = stoi(selection);
+            int intSelection = int(selection) - '0';
             if (intSelection > 0 && intSelection <= 3)
             {
 
@@ -532,7 +532,7 @@ void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSeme
 {
     Semester** HandlingArr = nullptr;
     calculateGPA(curClass,yearName,listSemester,HandlingArr);
-    string selection;
+    char selection;
     do {
         system("cls");
             cout << "Student Management" << endl;
@@ -560,13 +560,13 @@ void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSeme
             cout << "0. Back" << endl;
             cout << ">> ";
             cin >> selection;
-            if (selection == "0")
+            if (selection == '0')
                 break;
-            if ((curClass->listStudent == nullptr) && (selection == "n" || selection == "N")) {
+            if ((curClass->listStudent == nullptr) && (selection == 'n' || selection == 'N')) {
                 AddStudent(curClass->listStudent,yearName,curClass->className,curClass->numStudent);
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
-            if (selection == "s" || selection == "S") {
+            if (selection == 's' || selection == 'S') {
                 StudyClassScoreBoardManager(curClass,yearName,HandlingArr);
             }
     } while (true);
@@ -580,7 +580,7 @@ void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSeme
 }
 void ClassesManager(Schoolyear* curYear, Semester* listSemester)
 {
-    string selection;
+    char selection;
     int maxSelection;
     StudyClass* chosenClass = nullptr;
     do {
@@ -602,16 +602,16 @@ void ClassesManager(Schoolyear* curYear, Semester* listSemester)
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
-        if (selection == "0")
+        if (selection == '0')
             break;
-        else if (selection == "n" || selection == "N") {
+        else if (selection == 'n' || selection == 'N') {
             AddClass(curYear->listClass);
             SaveClassToFile(curYear->year,curYear->listClass);
         }
         else if (curYear->listClass != nullptr) {
-            int intSelection = stoi(selection);
+            int intSelection = int(selection) - '0';
             if (intSelection > 0 && intSelection <= maxSelection) {
-                chosenClass = navigateClass(curYear->listClass,stoi(selection));
+                chosenClass = navigateClass(curYear->listClass, intSelection);
                 StudyClassManager(chosenClass, curYear->year, listSemester);
             }
         }
@@ -648,7 +648,7 @@ void StaffGUI(DataBase &DB)
 {   
     int maxSelection;
     Schoolyear* chosenYear = nullptr;
-    string selection;
+    char selection;
     do {
         maxSelection = 0;
         system("cls");
@@ -663,17 +663,17 @@ void StaffGUI(DataBase &DB)
         cout << "0. Back" << endl;
         cout << endl << ">> ";
         cin >> selection;
-        if (selection == "n" || selection == "N") {
+        if (selection == 'n' || selection == 'N') {
             AddYear(DB);
             SaveYearToFile(DB.YearFile,DB.YearList);
             continue;
         }
-        if (selection == "0")
+        if (selection == '0')
             break;
         if (DB.YearList != nullptr) {
-            int intselection = stoi(selection);
-            if (intselection > 0 && intselection <= maxSelection) {
-                chosenYear = navigateYear(DB.YearList,intselection);
+            int intSelection = int(selection) - '0';
+            if (intSelection > 0 && intSelection <= maxSelection) {
+                chosenYear = navigateYear(DB.YearList,intSelection);
                 SchoolYearManager(DB,chosenYear);
             }
         }
