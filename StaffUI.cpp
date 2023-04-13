@@ -28,7 +28,8 @@ void DisplayStudentList(Student* listStudent)
         listStudent->dInfo.Gender[0] = toupper(listStudent->dInfo.Gender[0]);
         cout << left << setw(11) << listStudent->dInfo.Gender;
         DisplayBirth(listStudent->dInfo.Birth);
-        cout << left << setw(25) << listStudent->dInfo.SocialID << endl;
+        cout << left << setw(25) << listStudent->dInfo.SocialID;
+        cout << left << setw(15) << listStudent->ovrGPA << endl;
         listStudent = listStudent->nextStudent;
     }
 }
@@ -90,7 +91,7 @@ void DisplayCourseList(Course* listCourse, int &max)
         if (listCourse->numCurStudents == 0)
             temp = "0";
         else
-            temp = listCourse->numCurStudents;
+            temp = to_string(listCourse->numCurStudents);
         temp+= '/';
         temp+= to_string(listCourse->thisCourseInfo.maxStudent);
         cout << left << setw(25) << temp;
@@ -230,7 +231,6 @@ bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string 
     return true;   
 }
 
-
 void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
 {
     int selection;
@@ -347,6 +347,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         } else {
             DisplayCourseList(curSemester->CourseList,maxSelection);
         }
+        curSemester->numCourse = maxSelection;
         cout << endl;
         cout << "n. Add Course" << endl;
         cout << "x. Remove Course" << endl;
@@ -428,9 +429,170 @@ void SemestersListManager(DataBase &DB, string yearName)
     } while (true);
     delete []handlingArr;
 }
-
-void StudyClassManager(StudyClass* curClass, string yearName)
+void DisplayScoreBoardUI(Course* listCourse, bool &nextStep)
 {
+        cout << left << setw(5) << "No";
+        cout << left << setw(15) << "Student ID";
+        cout << left << setw(25) << "First Name";
+        cout << left << setw(15) << "Last Name";
+        cout << left << setw(15) << "Courses ID: ";
+        bool noCourse = true;
+        while (listCourse != nullptr) {
+            noCourse = false;
+            cout << left << setw(15) << listCourse->thisCourseInfo.courseID;
+            listCourse = listCourse->nextCourse;
+        }
+        if (noCourse == true) {
+            cout << endl << "No Courses found" << endl;
+            nextStep = false;
+        } else {
+            cout << left << setw(15) << "GPA (4)" << endl;
+            nextStep = true;
+        }
+        
+}
+void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester)
+{
+    Student* curStudent = curClass->listStudent;
+    Course* curCourse = nullptr;
+    EnrolledCourse* curEnrolled = nullptr;
+    int i = 0;
+    while (curStudent != nullptr) {
+        i++;
+        int k = 0;
+        double TOTAL = 0;
+        cout << left << setw(5) << i;
+        cout << left << setw(15) << curStudent->dInfo.StudentID;
+        cout << left << setw(25) << curStudent->dInfo.FirstName;
+        cout << left << setw(30) << curStudent->dInfo.LastName;
+        curCourse = listCourse;
+        while (curCourse != nullptr) {
+            curEnrolled = curStudent->CourseList;
+            while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse) {
+                curEnrolled = curEnrolled->nextCourse;
+            }
+            if (curEnrolled == nullptr) {
+                cout << left << setw(15) << "N/A";
+            } else {
+                cout << left << setw(15) << (curEnrolled->Score->totalMark);
+                TOTAL += curEnrolled->Score->totalMark;
+                k++;
+            }
+            curCourse = curCourse->nextCourse;
+        }
+        cout << left << setw(15) << curStudent->GPA[semester];
+        curStudent = curStudent->nextStudent;
+        cout << endl;
+    }
+}
+void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester** HandlingArr)
+{
+    if (HandlingArr[0] == nullptr) {
+        cout << "No Semesters found for this year" << endl;
+        delete []HandlingArr;
+        system("pause");
+        return;
+    }
+
+    int i = 0;
+    char selection = '\0';
+    bool nextStep;
+    do {
+        system("cls");
+        cout << "Year: " << yearName << endl;
+        cout << "Semester: " << i+1 << endl;
+        
+        DisplayScoreBoardUI(HandlingArr[i]->CourseList,nextStep);
+        if (nextStep == true) {
+            DisplayScoreBoard(curClass,HandlingArr[i]->CourseList,i);
+            cout << endl;
+        } else {    
+            cout << endl;
+        }
+        if (i != 0) {
+                cout << "z. Previous Semester" << endl;
+            }
+        if (!(i == 2 || HandlingArr[i+1] == nullptr)) {
+                cout << "x. Next Semester" << endl;
+        }
+        cout << "0. Back" << endl;
+        cout << ">> ";
+        cin >> selection;
+        if (selection == '0')
+            break;
+        if (selection == 'z' || selection == 'Z') {
+            i--;
+        }
+        if (selection == 'x' || selection == 'X') {
+            i++;
+        }
+    } while(true);
+}
+void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSemester)
+{
+    Semester** HandlingArr = new Semester*[3];
+    int i;
+    for (i = 0; i < 3; i++) {
+        HandlingArr[i] = nullptr;
+    }
+    i = 0;
+    
+    while (listSemester != nullptr && i < 3) {
+        if (listSemester->year == yearName) {
+            HandlingArr[i] = listSemester;
+            i++;
+        }
+        listSemester = listSemester->nextSemester;
+    }
+    Student* curStudent = curClass->listStudent;
+    while (curStudent != nullptr) {
+        curStudent->ovrGPA = 0;
+        curStudent->GPA = new double[3];
+            for (int j = 0; j < 3; j++) {
+                curStudent->GPA[j] = -1;
+            }
+        curStudent = curStudent->nextStudent;
+    }
+    Course* curCourse = nullptr;
+    EnrolledCourse* curEnrolled = nullptr;
+    for (i = 0; i < 3; i++) {
+        if (HandlingArr[i] != nullptr) {
+            curStudent = curClass->listStudent;
+            while (curStudent != nullptr) {
+                int count = 0;
+                double totalscore = 0;
+                curCourse = HandlingArr[i]->CourseList;
+                while (curCourse != nullptr) {
+                    curEnrolled = curStudent->CourseList;
+                    while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse)
+                        curEnrolled = curEnrolled->nextCourse;
+                    if (curEnrolled != nullptr) {
+                        count++;
+                        totalscore+= curEnrolled->Score->totalMark;
+                    }
+                    curCourse = curCourse->nextCourse;
+                }
+                if (count != 0) {
+                    curStudent->GPA[i] = (totalscore*4)/(count*10.0);
+                }
+                curStudent = curStudent->nextStudent;
+            }
+        }
+    }
+    curStudent = curClass->listStudent;
+    while (curStudent != nullptr) {
+        double totalgpa = 0;
+        int count = 0;
+        for (int k = 0; k < 3; k++) {
+            if (curStudent->GPA[k] != -1) {
+                totalgpa+= curStudent->GPA[k];
+                count++;
+            }
+        }
+        curStudent->ovrGPA = totalgpa/(count*1.0);
+        curStudent = curStudent->nextStudent;
+    }
+
     string selection;
     do {
         system("cls");
@@ -445,7 +607,8 @@ void StudyClassManager(StudyClass* curClass, string yearName)
             cout << left << setw(15) << "Last Name";
             cout << left << setw(11) << "Gender";
             cout << left << setw(19) << "Date of Birth";
-            cout << left << setw(25) << "Social ID" << endl;
+            cout << left << setw(25) << "Social ID";
+            cout << left << setw(15) << "Overall GPA" << endl;
             if (curClass->listStudent == nullptr) {
                 cout << "No students found" << endl;
                 cout << endl;
@@ -453,19 +616,24 @@ void StudyClassManager(StudyClass* curClass, string yearName)
             } else {
                 DisplayStudentList(curClass->listStudent);
                 cout << endl;
+                cout << "s. View Scoreboard" << endl;
             }
             cout << "0. Back" << endl;
             cout << ">> ";
             cin >> selection;
             if (selection == "0")
                 break;
-            if (selection == "n" || selection == "N") {
+            if ((curClass->listStudent == nullptr) && (selection == "n" || selection == "N")) {
                 AddStudent(curClass->listStudent,yearName,curClass->className,curClass->numStudent);
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
+            if (selection == "s" || selection == "S") {
+                StudyClassScoreBoardManager(curClass,yearName,HandlingArr);
+            }
     } while (true);
+    delete []HandlingArr;
 }
-void ClassesManager(Schoolyear* curYear)
+void ClassesManager(Schoolyear* curYear, Semester* listSemester)
 {
     string selection;
     int maxSelection;
@@ -499,7 +667,7 @@ void ClassesManager(Schoolyear* curYear)
             int intSelection = stoi(selection);
             if (intSelection > 0 && intSelection <= maxSelection) {
                 chosenClass = navigateClass(curYear->listClass,stoi(selection));
-                StudyClassManager(chosenClass, curYear->year);
+                StudyClassManager(chosenClass, curYear->year, listSemester);
             }
         }
     } while (true);
@@ -518,7 +686,7 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
         if (selection == 0)
             break;
         if (selection == 1) {
-            ClassesManager(curYear);
+            ClassesManager(curYear,DB.SemesterList);
         }
             
         if (selection == 2)

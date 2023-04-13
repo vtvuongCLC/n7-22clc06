@@ -59,7 +59,8 @@ struct Student {
     string className;
     string password;
     Info   dInfo;
-
+    double ovrGPA;
+    double* GPA = nullptr;
     EnrolledCourse* CourseList  = nullptr;
     EnrolledCourse* lastEnrolledCourse  = nullptr;
     Student*        nextStudent = nullptr;
@@ -99,9 +100,10 @@ struct Semester {
     int    semester;
     string year;
     string start, end;
-
-    Course*   CourseList   = nullptr; 
-    Semester* nextSemester = nullptr;
+    int    numCourse = 0;
+    Course**  HandlingCourse = nullptr;
+    Course*   CourseList     = nullptr; 
+    Semester* nextSemester   = nullptr;
 };
 struct Schoolyear {
     int    index;

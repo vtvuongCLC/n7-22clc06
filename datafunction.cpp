@@ -100,6 +100,7 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
             getline(StudentIn,tempData,',');
             curStudent->dInfo.Birth.year = stoi(tempData);
             getline(StudentIn,curStudent->dInfo.SocialID,'\n');
+
         }
     }
     StudentIn.close();
@@ -160,18 +161,21 @@ void LoadCourseInfoFromFile(Semester* curSemester)
     ifstream CourseInfoIn;
     CourseInfoIn.open("Data\\" + fileName + "_CourseInfo.txt");;
     Course* curCourse = nullptr;
-    while (CourseInfoIn.eof() == false) {
-        string tempData;
-        getline(CourseInfoIn,tempData,',');
-        if (tempData.empty() == false) {
-            if (curSemester->CourseList == nullptr) {
-                curSemester->CourseList = new Course;
-                curCourse = curSemester->CourseList;
-            } else {
-                curCourse->nextCourse = new Course;
-                curCourse->nextCourse->prevCourse = curCourse;
-                curCourse = curCourse->nextCourse;
-            }
+    string tempData;
+    getline(CourseInfoIn,tempData,'\n');
+    if (tempData.empty() == false) {
+        curSemester->numCourse = stoi(tempData);
+        while (CourseInfoIn.eof() == false) {
+            getline(CourseInfoIn,tempData,',');
+            if (tempData.empty() == false) {
+                if (curSemester->CourseList == nullptr) {
+                    curSemester->CourseList = new Course;
+                    curCourse = curSemester->CourseList;
+                } else {
+                    curCourse->nextCourse = new Course;
+                    curCourse->nextCourse->prevCourse = curCourse;
+                    curCourse = curCourse->nextCourse;
+                }
             curCourse->year = curSemester->year;
             curCourse->semester = curSemester->semester;
             curCourse->thisCourseInfo.courseID = tempData;
@@ -189,8 +193,10 @@ void LoadCourseInfoFromFile(Semester* curSemester)
             curCourse->thisCourseInfo.CourseDate.day = tempData;
             getline(CourseInfoIn,tempData,'\n');
             curCourse->thisCourseInfo.CourseDate.session = tempData;
+            }
         }
     }
+    
     CourseInfoIn.close();
 }
 void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
@@ -205,6 +211,7 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
         string tempData;
         getline(CourseStudentIn,tempData,',');
         if (tempData.empty() == false) {
+            aCourse->numCurStudents+=1;
             if (aCourse->listStudent == nullptr) {
                 aCourse->listStudent = new CourseStudent;
                 curCourseStudent = aCourse->listStudent;
@@ -339,6 +346,7 @@ void SaveCourseInfoToFile(Semester* curSemester)
     fileName += "_HK";
     fileName += ('0' + curSemester->semester);
     out.open("Data\\" + fileName + "_CourseInfo.txt");
+    out << curSemester->numCourse << endl;
     Course* curCourse = curSemester->CourseList;
     while (curCourse != nullptr) {
         out << curCourse->thisCourseInfo.courseID << ',';
@@ -450,6 +458,7 @@ void ClearData(DataBase &DB)
                     curStudent->CourseList = curEnrolCourse->nextCourse;
                     delete curEnrolCourse;
                 }
+                delete []curStudent->GPA;
                 delete curStudent;
             }
             curYear->listClass = curClass->nextClass;

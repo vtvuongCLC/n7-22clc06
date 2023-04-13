@@ -740,15 +740,16 @@ void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
 
     removeEnrollCourse(removedStudent->ptoStudent, curCourse);
     
-    if(removedStudent->prevStudent){
-        removedStudent->prevStudent->nextStudent = removedStudent->nextStudent;
+    if (removedStudent->nextStudent) {
         removedStudent->nextStudent->prevStudent = removedStudent->prevStudent;
     }
-    else {
-        curCourse->listStudent = removedStudent->nextStudent;
-        curCourse->listStudent->prevStudent = nullptr;
+    if(removedStudent->prevStudent){
+        removedStudent->prevStudent->nextStudent = removedStudent->nextStudent;
+    } else {
+        curCourse->listStudent = curCourse->listStudent->nextStudent;
     }
     delete removedStudent;
+    curCourse->numCurStudents--;
 }
 void removeCourse(Semester* curSemester)
 {
@@ -886,27 +887,28 @@ void ChangeStudentScore(CourseStudent* listCourseStudent)
         switch(choice){
             case 1:
                 do{
-                    cout << "Total Score: ";
-                    cin >> curStudent->savedScore.totalMark;
-                }while(curStudent->savedScore.totalMark < 0 || curStudent->savedScore.totalMark > 10);
+                    cout << "Midterm Score: ";
+                    cin >> curStudent->savedScore.midtermMark;
+                }while(curStudent->savedScore.midtermMark < 0 || curStudent->savedScore.midtermMark > 10);
                 break;
-            case 2:    
+            case 2:
+                do{
+                    cout << "Final Score: ";
+                    cin >> curStudent->savedScore.finalMark;
+                }while(curStudent->savedScore.finalMark < 0 || curStudent->savedScore.finalMark > 10);
+                
+                break;
+            case 3:
                 do{
                     cout << "Other Score: ";
                     cin >> curStudent->savedScore.otherMark;
                 }while(curStudent->savedScore.otherMark < 0 || curStudent->savedScore.otherMark > 10);
                 break;
-            case 3:
-                do{
-                    cout << "Midterm Score: ";
-                    cin >> curStudent->savedScore.midtermMark;
-                }while(curStudent->savedScore.midtermMark < 0 || curStudent->savedScore.midtermMark > 10);
-                break;
             case 4:
                 do{
-                    cout << "Final Score: ";
-                    cin >> curStudent->savedScore.finalMark;
-                }while(curStudent->savedScore.finalMark < 0 || curStudent->savedScore.finalMark > 10);
+                    cout << "Total Score: ";
+                    cin >> curStudent->savedScore.totalMark;
+                }while(curStudent->savedScore.totalMark < 0 || curStudent->savedScore.totalMark > 10);
                 break;
         }
     }while(choice != 5);

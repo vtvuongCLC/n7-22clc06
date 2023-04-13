@@ -10,15 +10,21 @@ void DisplayYearList(Schoolyear* listYear, int &max);
 void DisplayCourseStudentList(CourseStudent* listCourseStudent);
 void DisplayCourseList(Course* listCourse, int &max);
 void DisplayCourseList1Student(Student* pStudent, int semester, string year);
+
 bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string yearName, int &max);
 void DisplayScoreboard1Student(Student* pStudent, int semester, string year);
 void DisplayScoreboardCourse(Course* pCourse);
+
 void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester);
 void SpecificSemesterManager(DataBase &DB, Semester* curSemester);
 void SemestersListManager(DataBase &DB, string yearName);
 
-void StudyClassManager(StudyClass* curClass, string yearName);
-void ClassesManager(Schoolyear* curYear);
+void DisplayScoreBoardUI(Course* listCourse, bool &nextStep);
+void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester);
+void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester** HandlingArr);
+
+void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSemester);
+void ClassesManager(Schoolyear* curYear, Semester* listSemester);
 void SchoolYearManager(DataBase &DB, Schoolyear* curYear);
 
 void StaffGUI(DataBase &DB);
