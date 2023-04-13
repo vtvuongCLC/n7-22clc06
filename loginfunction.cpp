@@ -3,6 +3,36 @@
 #include <fstream>
 #include <iostream>
 using namespace std;
+
+void ChangePasswordStudent(Student* curStudent){
+    int check;
+    string password, confirm;
+    while(true){
+        system("cls");
+        cout << "Do you want to continue changing password ? (1 to proceed | 0 to exit): "; cin >> check;
+        if(check == 0) return;
+        if(check != 1) continue;
+        system("cls");
+        cout << "Change Password\n\n";
+        cout << "Current Password: "; cin >> password;
+        if(password != curStudent->password){
+            cout << "You must enter a valid password\n";
+        }
+        else {
+            cout << "New Password: "; cin >> password;
+            cout << "Confirm Password: "; cin >> confirm;
+            if(password == confirm){
+                curStudent->password = confirm;
+                cout << "The password has been changed successfully!!!\n";
+            }
+            else{
+                cout << "The new password and confirmation password do not match. THe password hasn't been changed!!!\n";
+            }
+        }
+        system("pause");
+    }
+}
+
 int login_student(string id,string pass, Schoolyear* DataBase) {
 	if (DataBase == nullptr)
 		return -2;

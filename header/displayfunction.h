@@ -4,6 +4,7 @@
 
 void DisplayBirth(BirthDate InputBirth);
 void DisplayStudentList(Student* listStudent);
+void DisplayInfoStudent(Student* listStudent);
 void DisplayClassList(StudyClass* listClass, int &max);
 void DisplayYearList(Schoolyear* listYear, int &max);
 

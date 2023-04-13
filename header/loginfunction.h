@@ -3,6 +3,7 @@
 #include "structlist.h"
 using namespace std;
 
+	void ChangePasswordStudent(Student* curStudent);
 	int login_student(string id, string pass, Schoolyear* DataBase);
 	bool login_staff(string AccountStaff, string passStaff);
 	int login(Schoolyear *DataBase);

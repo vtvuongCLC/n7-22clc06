@@ -104,69 +104,6 @@ void DisplayCourseList(Course* listCourse, int &max)
     }
     max = i;
 }
-void DisplayCourseList1Student(Student* pStudent, int semester, string year){
-    EnrolledCourse* firstCourse = pStudent->CourseList;
-    while(firstCourse){
-        if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
-        firstCourse = firstCourse->nextCourse;
-    }
-    if(firstCourse == nullptr) cout << "Student hasn't enrroled course!!!\n";
-
-    int i = 0;
-    string temp;
-    while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
-        i++;
-        // firstCourse->ptoCourse->courseIndex = i;
-        cout << left << setw(10)  << i;//firstCourse->ptoCourse->courseIndex;
-        cout << left << setw(15) << firstCourse->ptoCourse->thisCourseInfo.courseID;
-        cout << left << setw(20) << firstCourse->ptoCourse->thisCourseInfo.courseName;
-        cout << left << setw(10) << firstCourse->ptoCourse->thisCourseInfo.className;
-        if (firstCourse->ptoCourse->numCurStudents == 0)
-            temp = "0";
-        else
-            temp = firstCourse->ptoCourse->numCurStudents;
-        temp += firstCourse->ptoCourse->numCurStudents;
-        temp += '/';
-        temp += to_string(firstCourse->ptoCourse->thisCourseInfo.maxStudent);
-        cout << left << setw(20) << temp;
-        temp = firstCourse->ptoCourse->thisCourseInfo.CourseDate.day;
-        temp += ", ";
-        temp += firstCourse->ptoCourse->thisCourseInfo.CourseDate.session;
-        cout << left << setw(20) << temp;
-        cout << left << setw(30) << firstCourse->ptoCourse->thisCourseInfo.Teacher << endl;
-        firstCourse = firstCourse->nextCourse;
-    }
-}
-
-void DisplayScoreboard1Student(Student* pStudent, int semester, string year){
-    EnrolledCourse* firstCourse = pStudent->CourseList;
-    while(firstCourse){
-        if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
-        firstCourse = firstCourse->nextCourse;
-    }
-    if(firstCourse == nullptr) cout << "Student hasn't enrroled course!!!\n";
-    int i = 0;
-    cout << left << setw(5)  << "No";
-    cout << left << setw(25) << "Course Name";
-    cout << left << setw(15) << "Course ID";
-    cout << left << setw(10) << "Other";
-    cout << left << setw(12) << "Midterm";
-    cout << left << setw(10) << "Final";
-    cout << left << setw(10) << "Total" << endl;
-    cout << "--------------------------------------------------------------------" << endl;
-    while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
-        i++;
-        cout << left << setw(5)  << i;
-        cout << left << setw(25) << firstCourse->ptoCourse->thisCourseInfo.courseName;
-        cout << left << setw(17) << firstCourse->ptoCourse->thisCourseInfo.courseID;
-        cout << left << setw(11) << firstCourse->Score->otherMark;
-        cout << left << setw(11) << firstCourse->Score->midtermMark;
-        cout << left << setw(10) << firstCourse->Score->finalMark;
-        cout << left << setw(8) << firstCourse->Score->totalMark << endl;
-        firstCourse = firstCourse->nextCourse;
-    }
-
-}
 
 void DisplayScoreboardCourse(Course* pCourse){
     cout << left << setw(5)  << "No";
@@ -679,8 +616,3 @@ void StaffGUI(DataBase &DB)
         }
     } while (true);
 }
-
-// void StudentGUI()
-// {
-    
-// }
