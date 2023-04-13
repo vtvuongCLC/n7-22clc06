@@ -20,6 +20,7 @@ Course* findTheCourse(Semester* pSemester, string year, int semester, string Nam
 
 void QuickPtrBinder(DataBase &DB);
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent);
+void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr);
 
 void UpdateCourseInfo(CourseInfo &curCourseInfo);
 bool UploadListofStud(Course* &curCourse, Schoolyear* listYear);

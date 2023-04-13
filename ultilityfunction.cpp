@@ -403,6 +403,71 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* 
     curStudent->CourseList->ptoCourse = curCourse;
     curStudent->CourseList->Score = &(curCourseStudent->savedScore);
 }
+void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr)
+{
+    HandlingArr = new Semester*[3];
+        int i;
+    for (i = 0; i < 3; i++) {
+        HandlingArr[i] = nullptr;
+    }
+    i = 0;
+    
+    while (listSemester != nullptr && i < 3) {
+        if (listSemester->year == yearName) {
+            HandlingArr[i] = listSemester;
+            i++;
+        }
+        listSemester = listSemester->nextSemester;
+    }
+    Student* curStudent = curClass->listStudent;
+    while (curStudent != nullptr) {
+        curStudent->ovrGPA = 0;
+        curStudent->GPA = new double[3];
+            for (int j = 0; j < 3; j++) {
+                curStudent->GPA[j] = -1;
+            }
+        curStudent = curStudent->nextStudent;
+    }
+    Course* curCourse = nullptr;
+    EnrolledCourse* curEnrolled = nullptr;
+    for (i = 0; i < 3; i++) {
+        if (HandlingArr[i] != nullptr) {
+            curStudent = curClass->listStudent;
+            while (curStudent != nullptr) {
+                int count = 0;
+                double totalscore = 0;
+                curCourse = HandlingArr[i]->CourseList;
+                while (curCourse != nullptr) {
+                    curEnrolled = curStudent->CourseList;
+                    while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse)
+                        curEnrolled = curEnrolled->nextCourse;
+                    if (curEnrolled != nullptr) {
+                        count++;
+                        totalscore+= curEnrolled->Score->totalMark;
+                    }
+                    curCourse = curCourse->nextCourse;
+                }
+                if (count != 0) {
+                    curStudent->GPA[i] = (totalscore*4)/(count*10.0);
+                }
+                curStudent = curStudent->nextStudent;
+            }
+        }
+    }
+    curStudent = curClass->listStudent;
+    while (curStudent != nullptr) {
+        double totalgpa = 0;
+        int count = 0;
+        for (int k = 0; k < 3; k++) {
+            if (curStudent->GPA[k] != -1) {
+                totalgpa+= curStudent->GPA[k];
+                count++;
+            }
+        }
+        curStudent->ovrGPA = totalgpa/(count*1.0);
+        curStudent = curStudent->nextStudent;
+    }
+}
 
 void UpdateCourseInfo(CourseInfo &curCourseInfo)
 {   
