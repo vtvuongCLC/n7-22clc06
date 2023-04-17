@@ -1,7 +1,7 @@
-#include "header/structlist.h"
 #include "header/datafunction.h"
 #include "header/loginfunction.h"
-#include "header/displayfunction.h"
+#include "header/staffui.h"
+#include "header/studentui.h"
 
 int main()
 {
@@ -9,16 +9,20 @@ int main()
     DataBase DB;
     LoadSchoolData(DB);
     LoadSemesterSector(DB);
-    int key = login(DB.YearList);
-    // if (key == 1)
-    // {
-        
-    // }
- 
-    if (key == 2)
-    {    
-        StaffGUI(DB);
-    }
+    Student* toStudent;
+    int key;
+    do {
+        key = login(DB.YearList,toStudent);
+        if (key == 1 || key == 2)
+            break;
+        if (key == 1) {
+            StudentUI(toStudent,DB);
+        }
+        if (key == 2) {    
+            StaffUI(DB);
+        }
+    } while (true);
+
     cout << "Closing program..." << endl;
     //SaveData(DB);
     ClearData(DB);

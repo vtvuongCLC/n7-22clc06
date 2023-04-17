@@ -4,8 +4,8 @@
 using namespace std;
 
 	void ChangePasswordStudent(Student* curStudent);
-	int login_student(string id, string pass, Schoolyear* DataBase);
+	int login_student(string id,string pass, Schoolyear* DataBase, Student* &toStudent);
 	bool login_staff(string AccountStaff, string passStaff);
-	int login(Schoolyear *DataBase);
+	int login(Schoolyear *DataBase, Student* &toStudent);
 
 #endif

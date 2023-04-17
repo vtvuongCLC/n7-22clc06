@@ -1,6 +1,6 @@
 #include "header/ultilityfunction.h"
 #include "header/datafunction.h"
-#include "header/displayfunction.h"
+
 bool validInfo(Info infoparam,char gender)
 {
     if (gender != 'm' && gender != 'M')
@@ -16,7 +16,7 @@ bool validInfo(Info infoparam,char gender)
         return false;
     return true;
 }
-
+ 
 void AddStudentManual(Student* &listStudent, string yearName, string className, int &numStudent)
 {
     Student* curStudent = nullptr;
