@@ -13,7 +13,7 @@ int main()
     int key;
     do {
         key = login(DB.YearList,toStudent);
-        if (key == 1 || key == 2)
+        if (key != 1 && key != 2)
             break;
         if (key == 1) {
             StudentUI(toStudent,DB);
@@ -24,6 +24,5 @@ int main()
     } while (true);
 
     cout << "Closing program..." << endl;
-    //SaveData(DB);
     ClearData(DB);
 }

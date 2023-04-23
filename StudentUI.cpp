@@ -1,7 +1,7 @@
 #include "header/displayfunction.h"
 #include "header/loginfunction.h"
 #include "header/studentui.h"
-
+#include "header/ultilityfunction.h"
 void StudentUI(Student* curStudent, DataBase DB){
     int selection;
     while(true){
