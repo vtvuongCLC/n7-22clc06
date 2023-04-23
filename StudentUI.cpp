@@ -2,8 +2,9 @@
 #include "header/loginfunction.h"
 #include "header/studentui.h"
 #include "header/ultilityfunction.h"
+#include "header/datafunction.h"
 
-void StudentUI(Student *curStudent, DataBase DB){
+void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
     int selection;
     while (true)
     {
@@ -25,6 +26,7 @@ void StudentUI(Student *curStudent, DataBase DB){
             break;
         case 2:
             ChangePasswordStudent(curStudent);
+            SaveStudentListToFile(curStudyClass->className, curStudyClass->listStudent);
             system("pause");
             break;
         case 3:

@@ -4,5 +4,5 @@
     void DisplayInfoStudent(Student* listStudent);
     void DisplayCourseList1Student(Student* pStudent, int semester, string year);
     void DisplayScoreboard1Student(Student* pStudent, int semester, string year);
-    void StudentUI(Student* curStudent, DataBase DB);
+    void StudentUI(Student* curStudent, StudyClass* curStudyClass, DataBase DB);
 #endif

@@ -235,7 +235,7 @@ void DisplayInfoStudent(Student* listStudent)
     cout << "Student ID: " << listStudent->dInfo.StudentID << endl;
     cout << "Student Name: " << listStudent->dInfo.FirstName << ' ' << listStudent->dInfo.LastName << endl;
     listStudent->dInfo.Gender[0] = toupper(listStudent->dInfo.Gender[0]);
-    cout << "Gender: " << listStudent->dInfo.Gender;
+    cout << "Gender: " << listStudent->dInfo.Gender << " ";
     cout << "Date of Birth: "; DisplayBirth(listStudent->dInfo.Birth);
     cout << "Social ID: " << listStudent->dInfo.SocialID << endl;
 }
@@ -247,25 +247,34 @@ void DisplayCourseList1Student(Student* pStudent, int semester, string year)
         if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
         firstCourse = firstCourse->nextCourse;
     }
-    if(firstCourse == nullptr) cout << "Student hasn't enrroled course!!!\n";
-
+    if(firstCourse == nullptr) {
+        cout << "Student hasn't enrroled course!!!\n";
+        return;
+    }
     int i = 0;
     string temp;
-    while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
+    cout << left << setw(10) << "Index";
+    cout << left << setw(15) << "Course ID";
+    cout << left << setw(20) << "Course Name";
+    cout << left << setw(20) << "Class Name";
+    cout << left << setw(25) << "Number of Students";
+    cout << left << setw(20) << "Course Date";
+    cout << left << setw(30) << "Teacher";
+    cout << endl;
+    while(firstCourse && firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
         i++;
         // firstCourse->ptoCourse->courseIndex = i;
         cout << left << setw(10)  << i;//firstCourse->ptoCourse->courseIndex;
         cout << left << setw(15) << firstCourse->ptoCourse->thisCourseInfo.courseID;
         cout << left << setw(20) << firstCourse->ptoCourse->thisCourseInfo.courseName;
-        cout << left << setw(10) << firstCourse->ptoCourse->thisCourseInfo.className;
+        cout << left << setw(20) << firstCourse->ptoCourse->thisCourseInfo.className;
         if (firstCourse->ptoCourse->numCurStudents == 0)
             temp = "0";
         else
-            temp = firstCourse->ptoCourse->numCurStudents;
-        temp += firstCourse->ptoCourse->numCurStudents;
+            temp = to_string(firstCourse->ptoCourse->numCurStudents);
         temp += '/';
         temp += to_string(firstCourse->ptoCourse->thisCourseInfo.maxStudent);
-        cout << left << setw(20) << temp;
+        cout << left << setw(25) << temp;
         temp = firstCourse->ptoCourse->thisCourseInfo.CourseDate.day;
         temp += ", ";
         temp += firstCourse->ptoCourse->thisCourseInfo.CourseDate.session;
@@ -282,7 +291,10 @@ void DisplayScoreboard1Student(Student* pStudent, int semester, string year)
         if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
         firstCourse = firstCourse->nextCourse;
     }
-    if(firstCourse == nullptr) cout << "Student hasn't enrroled course!!!\n";
+    if(firstCourse == nullptr) {
+        cout << "Student hasn't enrroled course!!!\n";
+        return;
+    }
     int i = 0;
     cout << left << setw(5)  << "No";
     cout << left << setw(15) << "Course ID";
@@ -292,8 +304,8 @@ void DisplayScoreboard1Student(Student* pStudent, int semester, string year)
     cout << left << setw(10) << "Final";
     cout << left << setw(10) << "Other";
     cout << left << setw(10) << "Total" << endl;
-    cout << "--------------------------------------------------------------------" << endl;
-    while(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
+    cout << "-------------------------------------------------------------------------------------------" << endl;
+    while(firstCourse && firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
         i++;
         cout << left << setw(5)  << i;
         cout << left << setw(15) << firstCourse->ptoCourse->thisCourseInfo.courseID;

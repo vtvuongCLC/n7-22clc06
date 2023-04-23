@@ -10,13 +10,14 @@ int main()
     LoadSchoolData(DB);
     LoadSemesterSector(DB);
     Student* toStudent;
+    StudyClass* toStudyClass;
     int key;
     do {
-        key = login(DB.YearList,toStudent);
-        if (key == 1 || key == 2)
+        key = login(DB.YearList,toStudent, toStudyClass);
+        if (key != 1 && key != 2)
             break;
         if (key == 1) {
-            StudentUI(toStudent,DB);
+            StudentUI(toStudent, toStudyClass, DB);
         }
         if (key == 2) {    
             StaffUI(DB);
