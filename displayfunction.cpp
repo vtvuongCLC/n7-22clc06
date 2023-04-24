@@ -37,10 +37,11 @@ void DisplayScoreBoardUI(Course* listCourse, bool &nextStep)
         
 }
 
-void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester)
+void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester, string year)
 {
     Student* curStudent = curClass->listStudent;
     Course* curCourse = nullptr;
+    SemesterEnrolledCourse* curSemEnrolled = nullptr;
     EnrolledCourse* curEnrolled = nullptr;
     int i = 0;
     while (curStudent != nullptr) {
@@ -52,8 +53,19 @@ void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester)
         cout << left << setw(25) << curStudent->dInfo.FirstName;
         cout << left << setw(30) << curStudent->dInfo.LastName;
         curCourse = listCourse;
+        curSemEnrolled = curStudent->pSemester;
+        while(curSemEnrolled != nullptr && (curSemEnrolled->semester != semester + 1 || curSemEnrolled->year != year)){
+            curSemEnrolled = curSemEnrolled->nextSemester;
+        }
+        if(curSemEnrolled == nullptr) {
+            while(curCourse != nullptr) {
+                cout << left << setw(15) << "N/A";
+                curCourse = curCourse->nextCourse;
+            }
+        }
+
         while (curCourse != nullptr) {
-            curEnrolled = curStudent->CourseList;
+            curEnrolled = curSemEnrolled->CourseList;
             while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse) {
                 curEnrolled = curEnrolled->nextCourse;
             }
@@ -244,22 +256,23 @@ void DisplayInfoStudent(Student* listStudent)
     cout << "Student ID: " << listStudent->dInfo.StudentID << endl;
     cout << "Student Name: " << listStudent->dInfo.FirstName << ' ' << listStudent->dInfo.LastName << endl;
     listStudent->dInfo.Gender[0] = toupper(listStudent->dInfo.Gender[0]);
-    cout << "Gender: " << listStudent->dInfo.Gender << " ";
+    cout << "Gender: " << listStudent->dInfo.Gender << "      ";
     cout << "Date of Birth: "; DisplayBirth(listStudent->dInfo.Birth);
     cout << "Social ID: " << listStudent->dInfo.SocialID << endl;
 }
 
 void DisplayCourseList1Student(Student* pStudent, int semester, string year)
 {
-    EnrolledCourse* firstCourse = pStudent->CourseList;
-    while(firstCourse){
-        if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
-        firstCourse = firstCourse->nextCourse;
+    SemesterEnrolledCourse* curSemester = pStudent->pSemester;
+    while(curSemester){
+        if(curSemester->semester == semester && curSemester->year == year) break;
+        curSemester = curSemester->nextSemester;
     }
-    if(firstCourse == nullptr) {
-        cout << "Student hasn't enrroled course!!!\n";
+    if(curSemester == nullptr) {
+        cout << "Student hasn't enrroled course in semester " << semester << " year " << year << endl;
         return;
     }
+    EnrolledCourse* firstCourse = curSemester->CourseList;
     int i = 0;
     string temp;
     cout << left << setw(10) << "Index";
@@ -270,7 +283,7 @@ void DisplayCourseList1Student(Student* pStudent, int semester, string year)
     cout << left << setw(20) << "Course Date";
     cout << left << setw(30) << "Teacher";
     cout << endl;
-    while(firstCourse && firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
+    while(firstCourse){
         i++;
         // firstCourse->ptoCourse->courseIndex = i;
         cout << left << setw(10)  << i;//firstCourse->ptoCourse->courseIndex;
@@ -295,15 +308,17 @@ void DisplayCourseList1Student(Student* pStudent, int semester, string year)
 
 void DisplayScoreboard1Student(Student* pStudent, int semester, string year)
 {
-    EnrolledCourse* firstCourse = pStudent->CourseList;
-    while(firstCourse){
-        if(firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester) break;
-        firstCourse = firstCourse->nextCourse;
+    SemesterEnrolledCourse* curSemester = pStudent->pSemester;
+    while(curSemester){
+        if(curSemester->semester == semester && curSemester->year == year) break;
+        curSemester = curSemester->nextSemester;
     }
-    if(firstCourse == nullptr) {
-        cout << "Student hasn't enrroled course!!!\n";
+    if(curSemester == nullptr) {
+        cout << "Student hasn't enrroled course in semester " << semester << " year " << year << endl;
         return;
     }
+    EnrolledCourse* firstCourse = curSemester->CourseList;
+
     int i = 0;
     cout << left << setw(5)  << "No";
     cout << left << setw(15) << "Course ID";
@@ -313,8 +328,8 @@ void DisplayScoreboard1Student(Student* pStudent, int semester, string year)
     cout << left << setw(10) << "Final";
     cout << left << setw(10) << "Other";
     cout << left << setw(10) << "Total" << endl;
-    cout << "-------------------------------------------------------------------------------------------" << endl;
-    while(firstCourse && firstCourse->ptoCourse->year == year && firstCourse->ptoCourse->semester == semester){
+    cout << "---------------------------------------------------------------------------------------------------------------" << endl;
+    while(firstCourse){
         i++;
         cout << left << setw(5)  << i;
         cout << left << setw(15) << firstCourse->ptoCourse->thisCourseInfo.courseID;
