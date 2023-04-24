@@ -45,38 +45,43 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
                     break;
                 if (choice > 0 && choice <= maxChoice)
                 {
-                    Schoolyear *chosenYear = navigateYear(DB.YearList, choice);
-                    system("cls");
-                    Semester **handlingArr = nullptr;
-                    cout << "Choose the semester of year " << chosenYear->year << " to view enrolled courses and scoreboard" << endl << endl;
-                    cout << left << setw(10) << "Index";
-                    cout << left << setw(10) << "Semester";
-                    cout << left << setw(10) << "Start";
-                    cout << left << setw(10) << "End";
-                    cout << endl;
-                    if (DisplaySemesterList(DB.SemesterList, handlingArr, chosenYear->year, maxChoice) == false)
-                        cout << "No semesters found." << endl;
-                    cout << endl;
-                    cout << "0. Back" << endl
-                         << ">> ";
-                    cin >> choice;
-                    if (choice == 0)
-                        continue;
-                    if (choice > 0 && choice <= maxChoice){
-                        Semester* chosenSemester = handlingArr[choice - 1];
-                        while (true){
-                            system("cls");
-                            cout << "Year: " << chosenYear->year << endl;
-                            cout << "Semester: " << chosenSemester->semester << endl;
-                            cout << "1. View enrolled courses" << endl;
-                            cout << "2. View scoreboard" << endl;
-                            cout << "0. Back" << endl
-                                 << ">> ";
-                            cin >> choice;
-                            if (choice == 0) break;
-                            if(choice == 1) DisplayCourseList1Student(curStudent, chosenSemester->semester, chosenYear->year);
-                            if(choice == 2) DisplayScoreboard1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                        Schoolyear *chosenYear = navigateYear(DB.YearList, choice);
+                        Semester **handlingArr = nullptr;
+                    while(true){
+                        system("cls");
+                        cout << "Choose the semester of year " << chosenYear->year << " to view enrolled courses and scoreboard" << endl << endl;
+                        cout << left << setw(10) << "Index";
+                        cout << left << setw(10) << "Semester";
+                        cout << left << setw(10) << "Start";
+                        cout << left << setw(10) << "End";
+                        cout << endl;
+                        if (DisplaySemesterList(DB.SemesterList, handlingArr, chosenYear->year, maxChoice) == false){
+                            cout << "No semesters found." << endl;
                             system("pause");
+                            break;
+                        }
+                        cout << endl;
+                        cout << "0. Back" << endl
+                             << ">> ";
+                        cin >> choice;
+                        if (choice == 0)
+                            break;
+                        if (choice > 0 && choice <= maxChoice){
+                            Semester* chosenSemester = handlingArr[choice - 1];
+                            while (true){
+                                system("cls");
+                                cout << "Year: " << chosenYear->year << endl;
+                                cout << "Semester: " << chosenSemester->semester << endl;
+                                cout << "1. View enrolled courses" << endl;
+                                cout << "2. View scoreboard" << endl;
+                                cout << "0. Back" << endl
+                                     << ">> ";
+                                cin >> choice;
+                                if (choice == 0) break;
+                                if(choice == 1) DisplayCourseList1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                                if(choice == 2) DisplayScoreboard1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                                system("pause");
+                            }
                         }
                     }
                 }

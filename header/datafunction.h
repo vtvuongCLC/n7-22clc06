@@ -13,7 +13,7 @@ void LoadSchoolData(DataBase &DB);
 
 void LoadSemesterFromFile(string SemesterFile, Semester* &listSemester);
 void LoadCourseInfoFromFile(Semester* curSemester);
-void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr);
+void LoadCourseStudentFromFile(Course* aCourse, int semester, string year, Schoolyear** quickPtr);
 void LoadSemesterSector(DataBase &DB);
 
 void SaveYearToFile(string YearFile, Schoolyear* ListYear);

@@ -176,8 +176,6 @@ void LoadCourseInfoFromFile(Semester* curSemester)
                     curCourse->nextCourse->prevCourse = curCourse;
                     curCourse = curCourse->nextCourse;
                 }
-            curCourse->year = curSemester->year;
-            curCourse->semester = curSemester->semester;
             curCourse->thisCourseInfo.courseID = tempData;
             getline(CourseInfoIn,tempData,',');
             curCourse->thisCourseInfo.courseName = tempData;
@@ -199,7 +197,7 @@ void LoadCourseInfoFromFile(Semester* curSemester)
     
     CourseInfoIn.close();
 }
-void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
+void LoadCourseStudentFromFile(Course* aCourse, int semester, string year, Schoolyear** quickPtr)
 {
     string fileName = aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className;
     if (IsemptyFile(fileName) == true)
@@ -236,18 +234,41 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
 
             curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
             Student* curStudent = curCourseStudent->ptoStudent;
-            LinkEnrolledCourse(curStudent,aCourse,curCourseStudent);
-            // if(!curStudent->lastEnrolledCourse){
-            //     curStudent->CourseList = new EnrolledCourse;
-            //     curStudent->lastEnrolledCourse = curStudent->CourseList;
-            // }
-            // else {
-            //     curStudent->lastEnrolledCourse->nextCourse = new EnrolledCourse;
-            //     curStudent->lastEnrolledCourse->nextCourse->prevCourse = curStudent->lastEnrolledCourse;
-            //     curStudent->lastEnrolledCourse = curStudent->lastEnrolledCourse->nextCourse;
-            // }
-            // curStudent->lastEnrolledCourse->ptoCourse = aCourse;
-            // curStudent->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
+
+
+            //link enrolled course below
+            if (curStudent->pSemester == nullptr)
+            {
+                curStudent->pSemester = new SemesterEnrolledCourse;
+                curStudent->pSemester->semester = semester;
+                curStudent->pSemester->year = year;
+            }
+            SemesterEnrolledCourse* curSemester = curStudent->pSemester;
+            while (curSemester)
+            {
+                if (curSemester->semester == semester && curSemester->year == year)
+                {
+                    if(!curSemester->lastEnrolledCourse){
+                        curSemester->CourseList = new EnrolledCourse;
+                        curSemester->lastEnrolledCourse = curSemester->CourseList;
+                    }
+                    else {
+                        curSemester->lastEnrolledCourse->nextCourse = new EnrolledCourse;
+                        curSemester->lastEnrolledCourse->nextCourse->prevCourse = curSemester->lastEnrolledCourse;
+                        curSemester->lastEnrolledCourse = curSemester->lastEnrolledCourse->nextCourse;
+                    }
+                    curSemester->lastEnrolledCourse->ptoCourse = aCourse;
+                    curSemester->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
+                    break;
+                }
+                if (curSemester->nextSemester == nullptr)
+                {
+                    curSemester->nextSemester = new SemesterEnrolledCourse;
+                    curSemester->nextSemester->semester = semester;
+                    curSemester->nextSemester->year = year;
+                }
+                curSemester = curSemester->nextSemester;
+            }
         }
     }
 }
@@ -264,7 +285,7 @@ void LoadSemesterSector(DataBase &DB)
             LoadCourseInfoFromFile(curSem);
             curCourse = curSem->CourseList;
             while (curCourse != nullptr) {
-                LoadCourseStudentFromFile(curCourse,DB.quickSchoolPtr);
+                LoadCourseStudentFromFile(curCourse, curSem->semester, curSem->year, DB.quickSchoolPtr);
                 curCourse = curCourse->nextCourse;
             }
             curSem = curSem->nextSemester;
@@ -439,6 +460,7 @@ void ClearData(DataBase &DB)
     Schoolyear* curYear = nullptr;
     StudyClass* curClass = nullptr;
     Student* curStudent = nullptr;
+    SemesterEnrolledCourse* curSemesterEnrolledCourse = nullptr;
     EnrolledCourse* curEnrolCourse = nullptr;
     delete []DB.quickSchoolPtr;
     DB.quickSchoolPtr = nullptr;
@@ -453,10 +475,15 @@ void ClearData(DataBase &DB)
             while (curClass->listStudent != nullptr) {
                 curStudent = curClass->listStudent;
                 curClass->listStudent = curStudent->nextStudent;
-                while (curStudent->CourseList != nullptr) {
-                    curEnrolCourse = curStudent->CourseList;
-                    curStudent->CourseList = curEnrolCourse->nextCourse;
-                    delete curEnrolCourse;
+                while(curStudent->pSemester != nullptr){
+                    curSemesterEnrolledCourse = curStudent->pSemester;
+                    curStudent->pSemester = curSemesterEnrolledCourse->nextSemester;
+                    while (curSemesterEnrolledCourse->CourseList != nullptr) {
+                        curEnrolCourse = curSemesterEnrolledCourse->CourseList;
+                        curSemesterEnrolledCourse->CourseList = curEnrolCourse->nextCourse;
+                        delete curEnrolCourse;
+                    }
+                    delete curSemesterEnrolledCourse;
                 }
                 delete []curStudent->GPA;
                 delete curStudent;

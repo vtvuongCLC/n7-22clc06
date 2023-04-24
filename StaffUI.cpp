@@ -7,8 +7,8 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
     int selection;
     do {
         system("cls");
-        cout << "Year: " << curCourse->year << endl;
-        cout << "Semester: " << curCourse->semester << endl;
+        cout << "Year: " << curSemester->year << endl;
+        cout << "Semester: " << curSemester->semester << endl;
         cout << "Course ID: " << curCourse->thisCourseInfo.courseID << endl;
         cout << "Course Name: " << curCourse->thisCourseInfo.courseName << endl;
         cout << "Class Name: " << curCourse->thisCourseInfo.className << endl;
@@ -52,13 +52,13 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
                 cout << "Maximum number of students in course exceeded" << endl;
                 system("pause");
             } else {
-                addStudentToCourse(curCourse,DB.YearList);
+                addStudentToCourse(curCourse,curSemester->semester, curSemester->year, DB.YearList);
                 SaveCourseStudentToFile(curCourse);
             } 
             
             break;
         case 2:
-            removeStudentFromCourse(curCourse,DB.YearList);
+            removeStudentFromCourse(curCourse, curSemester->semester, curSemester->year, DB.YearList);
             SaveCourseStudentToFile(curCourse);
             break;
         case 3:
@@ -66,7 +66,7 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
                 cout << "Maximum number of students in course exceeded" << endl;
                 system("pause");
             } else {
-                UploadListofStud(curCourse,DB.YearList);
+                UploadListofStud(curCourse, curSemester->semester, curSemester->year, DB.YearList);
                 SaveCourseStudentToFile(curCourse);
             } 
             break;
@@ -209,7 +209,6 @@ void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester
         system("pause");
         return;
     }
-
     int i = 0;
     char selection = '\0';
     bool nextStep;
@@ -217,10 +216,9 @@ void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester
         system("cls");
         cout << "Year: " << yearName << endl;
         cout << "Semester: " << i+1 << endl;
-        
         DisplayScoreBoardUI(HandlingArr[i]->CourseList,nextStep);
         if (nextStep == true) {
-            DisplayScoreBoard(curClass,HandlingArr[i]->CourseList,i);
+            DisplayScoreBoard(curClass,HandlingArr[i]->CourseList,i, yearName);
             cout << endl;
         } else {    
             cout << endl;
@@ -247,7 +245,7 @@ void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester
 void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSemester)
 {
     Semester** HandlingArr = nullptr;
-    calculateGPA(curClass,yearName,listSemester,HandlingArr);
+    calculateGPA(curClass, yearName,listSemester,HandlingArr);
     char selection;
     do {
         system("cls");

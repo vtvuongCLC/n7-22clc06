@@ -14,22 +14,22 @@ void AddYear(DataBase &DB);
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex);
 StudyClass* navigateClass(StudyClass* listClass, int userindex);
 Course* navigateCourse(Course* listCourse, int userindex);
-bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string yearName,string className, string StudID,Course* curCourse);
+bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string yearName,string className, string StudID,Course* curCourse, int semester, string year);
 CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID);
 Course* findTheCourse(Semester* pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass);
 
 void QuickPtrBinder(DataBase &DB);
-void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent);
+void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent, int semester, string year);
 void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr);
 
 void UpdateCourseInfo(CourseInfo &curCourseInfo);
-bool UploadListofStud(Course* &curCourse, Schoolyear* listYear);
+bool UploadListofStud(Course* &curCourse, int semester, string year, Schoolyear* listYear);
 void NewCourse(Course* &firstCour, int semester, string year);
 void InitSemester(Semester* &Sem, int semester, string year);
-void addStudentToCourse(Course* curCourse, Schoolyear* curYear);
+void addStudentToCourse(Course* curCourse, int semester, string year, Schoolyear* curYear);
 
-void removeEnrollCourse(Student* removedStudent, Course* pCourse);
-void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear);
+void removeEnrollCourse(Student* removedStudent, Course* pCourse, int semester, string year);
+void removeStudentFromCourse(Course* curCourse, int semester, string year, Schoolyear* curYear);
 void removeCourse(Semester* curSemester);
 
 void ExportCourseStudent(Course* curCourse);

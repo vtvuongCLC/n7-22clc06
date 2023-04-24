@@ -53,6 +53,13 @@ struct EnrolledCourse {
     EnrolledCourse* nextCourse = nullptr;
     EnrolledCourse* prevCourse = nullptr;
 };
+struct SemesterEnrolledCourse{
+    int semester;
+    string year;
+    SemesterEnrolledCourse* nextSemester = nullptr;
+    EnrolledCourse* CourseList           = nullptr;
+    EnrolledCourse* lastEnrolledCourse   = nullptr;
+};
 struct Student {
     int No;
     string yearName;
@@ -61,9 +68,9 @@ struct Student {
     Info   dInfo;
     double ovrGPA;
     double* GPA = nullptr;
-    EnrolledCourse* CourseList  = nullptr;
-    EnrolledCourse* lastEnrolledCourse  = nullptr;
-    Student*        nextStudent = nullptr;
+
+    SemesterEnrolledCourse* pSemester = nullptr;
+    Student* nextStudent              = nullptr;
 };
 struct StudyClass {
     string className;
@@ -87,8 +94,6 @@ struct CourseStudent {
 struct Course {
     int        courseIndex;
     int        numCurStudents = 0;
-    int        semester;
-    string     year;
     CourseInfo thisCourseInfo;
     
     CourseStudent* listStudent = nullptr;
