@@ -219,6 +219,8 @@ void LoadCourseInfoFromFile(Semester* curSemester)
                     curCourse->nextCourse->prevCourse = curCourse;
                     curCourse = curCourse->nextCourse;
                 }
+            curCourse->year = curSemester->year;
+            curCourse->semester = curSemester->semester;
             curCourse->thisCourseInfo.courseID = tempData;
             getline(CourseInfoIn,tempData,',');
             curCourse->thisCourseInfo.courseName = tempData;
@@ -240,7 +242,7 @@ void LoadCourseInfoFromFile(Semester* curSemester)
     
     CourseInfoIn.close();
 }
-void LoadCourseStudentFromFile(Course* aCourse, int semester, string year, Schoolyear** quickPtr)
+void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
 {
     string fileName = aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className;
     if (IsemptyFile(fileName) == true)
@@ -279,17 +281,6 @@ void LoadCourseStudentFromFile(Course* aCourse, int semester, string year, Schoo
             curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->qClassPtr[curCourseStudent->classtypeIndex][curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
             Student* curStudent = curCourseStudent->ptoStudent;
             LinkEnrolledCourse(curStudent,aCourse,curCourseStudent);
-            // if(!curStudent->lastEnrolledCourse){
-            //     curStudent->CourseList = new EnrolledCourse;
-            //     curStudent->lastEnrolledCourse = curStudent->CourseList;
-            // }
-            // else {
-            //     curStudent->lastEnrolledCourse->nextCourse = new EnrolledCourse;
-            //     curStudent->lastEnrolledCourse->nextCourse->prevCourse = curStudent->lastEnrolledCourse;
-            //     curStudent->lastEnrolledCourse = curStudent->lastEnrolledCourse->nextCourse;
-            // }
-            // curStudent->lastEnrolledCourse->ptoCourse = aCourse;
-            // curStudent->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
         }
     }
 }
@@ -306,7 +297,7 @@ void LoadSemesterSector(DataBase &DB)
             LoadCourseInfoFromFile(curSem);
             curCourse = curSem->CourseList;
             while (curCourse != nullptr) {
-                LoadCourseStudentFromFile(curCourse, curSem->semester, curSem->year, DB.quickSchoolPtr);
+                LoadCourseStudentFromFile(curCourse,DB.quickSchoolPtr);
                 curCourse = curCourse->nextCourse;
             }
             curSem = curSem->nextSemester;
@@ -492,32 +483,15 @@ void ClearData(DataBase &DB)
     Schoolyear* curYear = nullptr;
     StudyClass* curClass = nullptr;
     Student* curStudent = nullptr;
-    SemesterEnrolledCourse* curSemesterEnrolledCourse = nullptr;
     EnrolledCourse* curEnrolCourse = nullptr;
     delete []DB.quickSchoolPtr;
     DB.quickSchoolPtr = nullptr;
     while (DB.YearList != nullptr) {
         curYear = DB.YearList;
-        delete []curYear->quickClassPtr;
-        curYear->quickClassPtr = nullptr;
-        while (curYear->listClass != nullptr) {
-            curClass = curYear->listClass;
-            delete []curClass->quickStudentPtr;
-            curClass->quickStudentPtr = nullptr;
-            while (curClass->listStudent != nullptr) {
-                curStudent = curClass->listStudent;
-                curClass->listStudent = curStudent->nextStudent;
-                while (curStudent->CourseList != nullptr) {
-                    curEnrolCourse = curStudent->CourseList;
-                    curStudent->CourseList = curEnrolCourse->nextCourse;
-                    delete curEnrolCourse;
-                }
-                delete []curStudent->GPA;
-                delete curStudent;
-            }
-            curYear->listClass = curClass->nextClass;
-            delete curClass;
-        }
+        ClearClass(curYear->listCLC);
+        ClearClass(curYear->listAPCS);
+        ClearClass(curYear->listVP);
+        delete []curYear->qClassPtr;
         DB.YearList = curYear->nextYear;
         delete curYear;
     }
