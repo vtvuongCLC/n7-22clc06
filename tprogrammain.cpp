@@ -25,6 +25,5 @@ int main()
     } while (true);
 
     cout << "Closing program..." << endl;
-    //SaveData(DB);
     ClearData(DB);
 }
