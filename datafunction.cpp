@@ -18,7 +18,31 @@ bool IsemptyFile(string fileName)
     test.close();
     return result;
 }
-
+void LoadStaffData(StaffAccount* &staffList)
+{
+    ifstream staffin;
+    staffin.open("Data\\Staff.csv");
+    string temp;
+    StaffAccount* cur = nullptr;
+    while (staffin.eof() == false) {
+        getline(staffin,temp,',');
+        if (temp.empty() == false) {
+            if (staffList == nullptr) {
+                staffList = new StaffAccount;
+                cur = staffList;
+            } else {
+                cur->nextAccount = new StaffAccount;
+                cur = cur->nextAccount;
+            }
+            cur->username = temp;
+            getline(staffin,temp,',');
+            cur->password = temp;
+            getline(staffin,temp,'\n');
+            cur->name = temp;
+        }
+    }
+    staffin.close();
+}
 void LoadYearFromFile(string YearFile, Schoolyear* &listYear, int &numYear)
 {
     if (IsemptyFile(YearFile) == true)
@@ -43,12 +67,12 @@ void LoadYearFromFile(string YearFile, Schoolyear* &listYear, int &numYear)
     }
     YearIn.close();
 }
-void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass)
+void LoadClassFromfile(string yearName, string classType, StudyClass* &listClass, int &numClass)
 {
-    if (IsemptyFile(yearName+"StdyCls") == true)
+    if (IsemptyFile(yearName+classType) == true)
         return;
     ifstream ClassIn;
-    ClassIn.open("Data\\" + yearName + "StdyCls.txt");
+    ClassIn.open("Data\\"+yearName+classType+".txt");
     StudyClass* curClass = nullptr;
     while (ClassIn.eof() == false) {
         string tempClass;
@@ -62,12 +86,14 @@ void LoadClassFromfile(string yearName, StudyClass* &listClass, int &numClass)
                 curClass = curClass->nextClass;
             }
             numClass++;
+            curClass->year = yearName;
+            curClass->classType = classType;
             curClass->className = tempClass; 
         }
     }
     ClassIn.close();
 }
-void LoadStudentListFromFile(string yearName, string className, Student* &listStudent, int &numStudent)
+void LoadStudentListFromFile(string yearName, string className,string classType, Student* &listStudent, int &numStudent)
 {
     if (IsemptyFile(className+"StdyCls") == true)
         return;
@@ -88,6 +114,7 @@ void LoadStudentListFromFile(string yearName, string className, Student* &listSt
             numStudent++;
             curStudent->yearName = yearName;
             curStudent->className = className;
+            curStudent->programtype = classType;
             curStudent->dInfo.StudentID = tempData;
             getline(StudentIn,curStudent->password,',');
             getline(StudentIn,curStudent->dInfo.FirstName,',');
@@ -112,10 +139,26 @@ void LoadSchoolData(DataBase &DB)
     StudyClass* curClass = nullptr;
 
     while (curYear != nullptr) {
-        LoadClassFromfile(curYear->year,curYear->listClass,curYear->numClass);
-        curClass = curYear->listClass;
+        curYear->qClassPtr = new StudyClass**[3];
+        for (int i = 0; i < 3; i++) {
+            curYear->qClassPtr[i] = nullptr;
+        }
+        LoadClassFromfile(curYear->year,"CLC",curYear->listCLC,curYear->numCLC);
+        curClass = curYear->listCLC;
         while (curClass != nullptr) {
-            LoadStudentListFromFile(curYear->year, curClass->className,curClass->listStudent,curClass->numStudent);
+            LoadStudentListFromFile(curYear->year, curClass->className,"CLC",curClass->listStudent,curClass->numStudent);
+            curClass = curClass->nextClass;
+        }
+        LoadClassFromfile(curYear->year,"APCS",curYear->listAPCS,curYear->numAPCS);
+        curClass = curYear->listAPCS;
+        while (curClass != nullptr) {
+            LoadStudentListFromFile(curYear->year, curClass->className,"APCS",curClass->listStudent,curClass->numStudent);
+            curClass = curClass->nextClass;
+        }
+        LoadClassFromfile(curYear->year,"VP",curYear->listVP,curYear->numVP);
+        curClass = curYear->listVP;
+        while (curClass != nullptr) {
+            LoadStudentListFromFile(curYear->year, curClass->className,"VP",curClass->listStudent,curClass->numStudent);
             curClass = curClass->nextClass;
         }
         curYear = curYear->nextYear;
@@ -222,6 +265,8 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
             }
             curCourseStudent->yearIndex = stoi(tempData);
             getline(CourseStudentIn,tempData,',');
+            curCourseStudent->classtypeIndex = stoi(tempData);
+            getline(CourseStudentIn,tempData,',');
             curCourseStudent->classIndex = stoi(tempData);
             getline(CourseStudentIn,tempData,',');
             curCourseStudent->studentIndex = stoi(tempData);
@@ -233,21 +278,9 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
             curCourseStudent->savedScore.otherMark = stod(tempData);
             getline(CourseStudentIn,tempData,'\n');
             curCourseStudent->savedScore.totalMark = stod(tempData);
-
-            curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->quickClassPtr[curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
+            curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->qClassPtr[curCourseStudent->classtypeIndex][curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
             Student* curStudent = curCourseStudent->ptoStudent;
             LinkEnrolledCourse(curStudent,aCourse,curCourseStudent);
-            // if(!curStudent->lastEnrolledCourse){
-            //     curStudent->CourseList = new EnrolledCourse;
-            //     curStudent->lastEnrolledCourse = curStudent->CourseList;
-            // }
-            // else {
-            //     curStudent->lastEnrolledCourse->nextCourse = new EnrolledCourse;
-            //     curStudent->lastEnrolledCourse->nextCourse->prevCourse = curStudent->lastEnrolledCourse;
-            //     curStudent->lastEnrolledCourse = curStudent->lastEnrolledCourse->nextCourse;
-            // }
-            // curStudent->lastEnrolledCourse->ptoCourse = aCourse;
-            // curStudent->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
         }
     }
 }
@@ -271,6 +304,19 @@ void LoadSemesterSector(DataBase &DB)
         }
 }
 
+void SaveStaffData(StaffAccount* staffList)
+{
+    ofstream staffout;
+    staffout.open("Data\\Staff.csv");
+    string temp;
+    while (staffList != nullptr) {
+        staffout << staffList->username << ',';
+        staffout << staffList->password << ',';
+        staffout << staffList->name << '\n';
+        staffList = staffList->nextAccount;
+    }
+    staffout.close();
+}
 void SaveYearToFile(string YearFile, Schoolyear* ListYear)
 {
     if (ListYear == nullptr)
@@ -283,12 +329,12 @@ void SaveYearToFile(string YearFile, Schoolyear* ListYear)
     }
     out.close();
 }
-void SaveClassToFile(string yearName, StudyClass* listClass)
+void SaveClassToFile(string yearName, string classType, StudyClass* listClass)
 {
     if (listClass == nullptr)
         return;
     ofstream out;
-    out.open("Data\\" + yearName + "StdyCls.txt");
+    out.open("Data\\"+yearName+classType+".txt");
         while (listClass != nullptr) {
             out << listClass->className << endl;
             listClass = listClass->nextClass;
@@ -318,22 +364,25 @@ void SaveStudentListToFile(string className, Student* listStudent)
 
 void SaveCourseStudentToFile(Course* aCourse)
 {
-    if (aCourse->listStudent == nullptr)
-        return;
     ofstream out;
     out.open("Data\\" + aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className + ".txt");
     CourseStudent* curStudent = aCourse->listStudent;
     Scoreboard thisCourseBoard;
-    while (curStudent != nullptr) {
-        thisCourseBoard = curStudent->savedScore;
-        out << curStudent->yearIndex << ',';
-        out << curStudent->classIndex << ',';
-        out << curStudent->studentIndex << ',';
-        out << thisCourseBoard.midtermMark << ',';
-        out << thisCourseBoard.finalMark << ',';
-        out << thisCourseBoard.otherMark << ',';
-        out << thisCourseBoard.totalMark << endl;
-        curStudent = curStudent->nextStudent;
+    if (aCourse->listStudent == nullptr)
+        out << " ";
+    else {
+        while (curStudent != nullptr) {
+            thisCourseBoard = curStudent->savedScore;
+            out << curStudent->yearIndex << ',';
+            out << curStudent->classtypeIndex << ',';
+            out << curStudent->classIndex << ',';
+            out << curStudent->studentIndex << ',';
+            out << thisCourseBoard.midtermMark << ',';
+            out << thisCourseBoard.finalMark << ',';
+            out << thisCourseBoard.otherMark << ',';
+            out << thisCourseBoard.totalMark << endl;
+            curStudent = curStudent->nextStudent;
+        }
     }
     out.close();
 }
@@ -378,43 +427,38 @@ void SaveSemesterToFile(string SemesterFile, Semester* listSemester)
     out.close();
 }
 
-// void SaveData(DataBase DB)
-// {
-//     if (DB.YearList != nullptr) {
-//         SaveYearToFile(DB.YearFile,DB.YearList);
-//         Schoolyear* curYear = DB.YearList;
-//         StudyClass* curClass = nullptr;
-        
-//         while (curYear != nullptr) {
-//             SaveClassToFile(curYear->year,curYear->listClass);
-//             curClass = curYear->listClass;
-//             while (curClass != nullptr) {
-//                 SaveStudentListToFile(curClass->className,curClass->listStudent);
-//                 curClass = curClass->nextClass;
-//             }
-//             curYear = curYear->nextYear;
-//         }
-//     }
-
-//     if (DB.SemesterList != nullptr)
-//     {
-//         SaveSemesterToFile(DB.SemesterFile, DB.SemesterList);
-//         Semester* curSemester = DB.SemesterList;
-//         Course* curCourse = nullptr;
-
-//         while (curSemester != nullptr) {
-//             SaveCourseInfoToFile(curSemester);
-//             curCourse = curSemester->CourseList;
-//             while (curCourse != nullptr) {
-//                 SaveCourseStudentToFile(curCourse);
-//                 curCourse = curCourse->nextCourse;
-//             }
-//             curSemester = curSemester->nextSemester;
-//         }
-//     }
-
-
-// }
+void ClearStaffList(StaffAccount* &staffList)
+{
+    StaffAccount* todle = nullptr;
+    while (staffList != nullptr) {
+        todle = staffList;
+        staffList = staffList->nextAccount;
+        delete todle;
+    }
+}
+void ClearClass(StudyClass* &listClass)
+{
+    Student* curStudent = nullptr;
+    StudyClass* curClass = nullptr;
+    EnrolledCourse* curEnroll = nullptr;
+    while (listClass != nullptr) {
+        curClass = listClass;
+        while (curClass->listStudent != nullptr) {
+            curStudent = curClass->listStudent;
+            delete []curStudent->GPA;
+            
+            while (curStudent->CourseList != nullptr) {
+                curEnroll = curStudent->CourseList;
+                curStudent->CourseList = curEnroll->nextCourse;
+                delete curEnroll;
+            }
+            curClass->listStudent = curStudent->nextStudent;
+            delete curStudent;
+        }
+        listClass = curClass->nextClass;
+        delete curClass;
+    }
+}
 void ClearData(DataBase &DB)
 {
     Semester* curSemester = nullptr;
@@ -444,26 +488,10 @@ void ClearData(DataBase &DB)
     DB.quickSchoolPtr = nullptr;
     while (DB.YearList != nullptr) {
         curYear = DB.YearList;
-        delete []curYear->quickClassPtr;
-        curYear->quickClassPtr = nullptr;
-        while (curYear->listClass != nullptr) {
-            curClass = curYear->listClass;
-            delete []curClass->quickStudentPtr;
-            curClass->quickStudentPtr = nullptr;
-            while (curClass->listStudent != nullptr) {
-                curStudent = curClass->listStudent;
-                curClass->listStudent = curStudent->nextStudent;
-                while (curStudent->CourseList != nullptr) {
-                    curEnrolCourse = curStudent->CourseList;
-                    curStudent->CourseList = curEnrolCourse->nextCourse;
-                    delete curEnrolCourse;
-                }
-                delete []curStudent->GPA;
-                delete curStudent;
-            }
-            curYear->listClass = curClass->nextClass;
-            delete curClass;
-        }
+        ClearClass(curYear->listCLC);
+        ClearClass(curYear->listAPCS);
+        ClearClass(curYear->listVP);
+        delete []curYear->qClassPtr;
         DB.YearList = curYear->nextYear;
         delete curYear;
     }

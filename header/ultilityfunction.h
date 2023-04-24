@@ -4,21 +4,25 @@
 
 bool validInfo(Info infoparam,char gender);
 
-void AddStudentManual(Student* &listStudent, string yearName, string className, int &numStudent);
-void AddStudentCSV(Student* &listStudent, string yearName, string className, int &numStudent);
-void AddStudent(Student* &listStudent, string yearName, string className, int &numStudent);
-void AddClass(StudyClass* &listClass);
+void AddStudentManual(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
+void AddStudentCSV(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
+void AddStudent(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
+void AddClass(StudyClass* &listClass, string yearName, string classType);
 string getYearData(Schoolyear* listYear);
 void AddYear(DataBase &DB);
 
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex);
 StudyClass* navigateClass(StudyClass* listClass, int userindex);
 Course* navigateCourse(Course* listCourse, int userindex);
-bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string yearName,string className, string StudID,Course* curCourse);
+CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string className, int classtype, string StudID,Course* curCourse);
 CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID);
 Course* findTheCourse(Semester* pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass);
 
+void StudentPtrBinder(Student** quickStudentPtr, Student* listStudent);
+void ClassPtrBinder(StudyClass** quickClassPtr, StudyClass* listClass);
 void QuickPtrBinder(DataBase &DB);
+void QuickPtrDebinder(DataBase &DB);
+
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent);
 void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr);
 
@@ -35,4 +39,8 @@ void removeCourse(Semester* curSemester);
 void ExportCourseStudent(Course* curCourse);
 bool importCourseScore(Course* &curCourse);
 void ChangeStudentScore(CourseStudent* listCourseStudent);
+
+void ChangePasswordStaff(StaffAccount* curStaff);
+void ChangePasswordStudent(Student* curStudent);
+int searchStudentAccount(string username, string password, StudyClass* listClass, Student* &toStudent, StudyClass* &toStudyClass);
 #endif

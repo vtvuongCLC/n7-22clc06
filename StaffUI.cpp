@@ -244,16 +244,17 @@ void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester
         }
     } while(true);
 }
-void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSemester)
+void StudyClassManager(StudyClass* curClass, Semester* listSemester)
 {
     Semester** HandlingArr = nullptr;
-    calculateGPA(curClass,yearName,listSemester,HandlingArr);
+    calculateGPA(curClass,curClass->year,listSemester,HandlingArr);
     char selection;
     do {
         system("cls");
             cout << "Student Management" << endl;
             cout << endl; 
-            cout << "Year: " << yearName << endl;
+            cout << "Year: " << curClass->year << endl;
+            cout << "Academic Program: " << curClass->classType << endl;
             cout << "Class: " << curClass->className << endl;
             cout << endl;
             cout << left << setw(5) << "No";
@@ -279,11 +280,11 @@ void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSeme
             if (selection == '0')
                 break;
             if ((curClass->listStudent == nullptr) && (selection == 'n' || selection == 'N')) {
-                AddStudent(curClass->listStudent,yearName,curClass->className,curClass->numStudent);
+                AddStudent(curClass->listStudent,curClass->year,curClass->className,curClass->classType,curClass->numStudent);
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
             if (selection == 's' || selection == 'S') {
-                StudyClassScoreBoardManager(curClass,yearName,HandlingArr);
+                StudyClassScoreBoardManager(curClass,curClass->year,HandlingArr);
             }
     } while (true);
     Student* curStudent = curClass->listStudent;
@@ -294,9 +295,10 @@ void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSeme
     }
     delete []HandlingArr;
 }
-void ClassesManager(Schoolyear* curYear, Semester* listSemester)
+void ClassesManager(StudyClass* listClass, Semester* listSemester, string yearName, string classType)
 {
-    char selection;
+    system("cls");
+    char selection;  
     int maxSelection;
     StudyClass* chosenClass = nullptr;
     do {
@@ -304,15 +306,16 @@ void ClassesManager(Schoolyear* curYear, Semester* listSemester)
         system("cls");
         cout << "Classes Management" << endl;
         cout << endl;
-        cout << "Year: " << curYear->year << endl;
+        cout << "Year: " << yearName << endl;
+        cout << "Academic Program: " << classType << endl;
         cout << endl;
         cout << "List of classes: " << endl;
-        if (curYear->listClass == nullptr) {
+        if (listClass == nullptr) {
             cout << "No classes found" << endl;
             cout << endl;
             cout << "n. New class" << endl;
         } else {
-            DisplayClassList(curYear->listClass,maxSelection);
+            DisplayClassList(listClass,maxSelection);
             cout << endl;
         }
         cout << "0. Back" << endl;
@@ -321,14 +324,14 @@ void ClassesManager(Schoolyear* curYear, Semester* listSemester)
         if (selection == '0')
             break;
         else if (selection == 'n' || selection == 'N') {
-            AddClass(curYear->listClass);
-            SaveClassToFile(curYear->year,curYear->listClass);
+            AddClass(listClass,yearName,classType);
+            SaveClassToFile(listClass->year,listClass->classType,listClass);
         }
-        else if (curYear->listClass != nullptr) {
+        else if (listClass != nullptr) {
             int intSelection = int(selection) - '0';
             if (intSelection > 0 && intSelection <= maxSelection) {
-                chosenClass = navigateClass(curYear->listClass, intSelection);
-                StudyClassManager(chosenClass, curYear->year, listSemester);
+                chosenClass = navigateClass(listClass, intSelection);
+                StudyClassManager(chosenClass, listSemester);
             }
         }
     } while (true);
@@ -347,21 +350,35 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
         if (selection == 0)
             break;
         if (selection == 1) {
-            ClassesManager(curYear,DB.SemesterList);
+            char c;
+            cout << "Class's Program: " << endl;
+            cout << "1. CLC" << endl;
+            cout << "2. APCS" << endl;
+            cout << "3. VP" << endl;
+            cout << ">> ";
+            cin >> c;
+            if (c == '1') {
+                ClassesManager(curYear->listCLC,DB.SemesterList,curYear->year,"CLC");
+            }
+            if (c == '2') {
+                ClassesManager(curYear->listAPCS,DB.SemesterList,curYear->year,"APCS");
+            }
+            if (c == '3') {
+                ClassesManager(curYear->listVP,DB.SemesterList,curYear->year,"VP");
+            }
         }
             
         if (selection == 2)
         {
             QuickPtrBinder(DB);
-            LoadSemesterSector(DB);
             SemestersListManager(DB,curYear->year);
+            QuickPtrDebinder(DB);
         }
     } while (true);
     
 }
-
-void StaffUI(DataBase &DB)
-{   
+void MainManagementUI(DataBase &DB)
+{
     int maxSelection;
     Schoolyear* chosenYear = nullptr;
     char selection;
@@ -393,5 +410,29 @@ void StaffUI(DataBase &DB)
                 SchoolYearManager(DB,chosenYear);
             }
         }
+    } while (true);
+}
+void StaffUI(DataBase &DB,StaffAccount* toStaff, StaffAccount* staffList)
+{   
+    char c;
+    do {
+        system("cls");
+        cout << "Staff's Name: " << toStaff->name << endl;
+        cout << "Staff Menu:" << endl;
+        cout << "1. Change password" << endl;
+        cout << "2. Management Functions" << endl;
+        cout << "0. Log out" << endl;
+        cout << ">> ";
+        cin >> c;
+        if (c == '0')
+            break;
+        if (c == '1') {
+            ChangePasswordStaff(toStaff);
+            SaveStaffData(staffList);
+        }
+        if (c == '2') {
+            MainManagementUI(DB);
+        }
+
     } while (true);
 }

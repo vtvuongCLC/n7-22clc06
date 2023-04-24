@@ -58,7 +58,7 @@ void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester)
                 curEnrolled = curEnrolled->nextCourse;
             }
             if (curEnrolled == nullptr) {
-                cout << left << setw(15) << "N/A";
+                cout << left << setw(15) << " ";
             } else {
                 cout << left << setw(15) << (curEnrolled->Score->totalMark);
                 TOTAL += curEnrolled->Score->totalMark;
@@ -66,7 +66,13 @@ void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester)
             }
             curCourse = curCourse->nextCourse;
         }
-        cout << left << setw(15) << curStudent->GPA[semester];
+        if (curStudent->GPA != nullptr) {
+            if (curStudent->GPA[semester] < 0)
+                cout << left << setw(15) << "N/A";
+            else
+                cout << left << setw(15) << curStudent->GPA[semester];
+        }
+            
         curStudent = curStudent->nextStudent;
         cout << endl;
     }
@@ -86,7 +92,10 @@ void DisplayStudentList(Student* listStudent)
         cout << left << setw(11) << listStudent->dInfo.Gender;
         DisplayBirth(listStudent->dInfo.Birth);
         cout << left << setw(25) << listStudent->dInfo.SocialID;
-        cout << left << setw(15) << listStudent->ovrGPA << endl;
+        if (listStudent->ovrGPA < 0)
+            cout << left << setw(15) << "N/A" << endl;
+        else
+            cout << left << setw(15) << listStudent->ovrGPA << endl;
         listStudent = listStudent->nextStudent;
     }
 }

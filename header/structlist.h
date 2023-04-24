@@ -6,7 +6,7 @@
 #include <string>
 using namespace std;
 
-//SUPPORT INFO STRUCTS
+//SUPPORT STRUCTS
 struct BirthDate {
     int day;
     int month;
@@ -42,86 +42,132 @@ struct CourseInfo {
 
 //FUNCTIONAL STRUCTS
 
-//STRUCTS PROTOTYPES
-struct Course;
+    //STRUCTS PROTOTYPES
+    struct Schoolyear;
+    struct StudyClass;
+    struct Student;
+
+    struct Semester;
+    struct Course;
+    struct CourseStudent;
+    struct EnrolledCourse;
 
 //STRUCT IMPLEMENTATION
-struct EnrolledCourse {
-    
-    Scoreboard*     Score      = nullptr;
-    Course*         ptoCourse  = nullptr;
-    EnrolledCourse* nextCourse = nullptr;
-    EnrolledCourse* prevCourse = nullptr;
-};
-struct Student {
-    int No;
-    string yearName;
-    string className;
-    string password;
-    Info   dInfo;
-    double ovrGPA;
-    double* GPA = nullptr;
-    EnrolledCourse* CourseList  = nullptr;
-    EnrolledCourse* lastEnrolledCourse  = nullptr;
-    Student*        nextStudent = nullptr;
-};
-struct StudyClass {
-    string className;
-    int    numStudent = 0;
 
-    Student*    listStudent     = nullptr;
-    Student**   quickStudentPtr = nullptr;
-    StudyClass* nextClass       = nullptr;
-};
-struct CourseStudent {
-    int        no;
-    int        yearIndex;
-    int        classIndex;
-    int        studentIndex;
-    Scoreboard savedScore;
+    //ACCOUNTS
+    struct StaffAccount{
+        string username;
+        string password;
+        string name;
+        StaffAccount* nextAccount = nullptr;
+    };
 
-    Student*       ptoStudent  = nullptr;
-    CourseStudent* nextStudent = nullptr;
-    CourseStudent* prevStudent = nullptr;
-};
-struct Course {
-    int        courseIndex;
-    int        numCurStudents = 0;
-    int        semester;
-    string     year;
-    CourseInfo thisCourseInfo;
-    
-    CourseStudent* listStudent = nullptr;
-    Course*        nextCourse  = nullptr;
-    Course*        prevCourse  = nullptr;
-};
-struct Semester {
-    int    index;
-    int    semester;
-    string year;
-    string start, end;
-    int    numCourse = 0;
-    Course**  HandlingCourse = nullptr;
-    Course*   CourseList     = nullptr; 
-    Semester* nextSemester   = nullptr;
-};
-struct Schoolyear {
-    int    index;
-    int    numClass = 0;
-    string year;
-    
-    StudyClass*  listClass     = nullptr;
-    StudyClass** quickClassPtr = nullptr;
-    Schoolyear*  nextYear      = nullptr;
-};
+    //DATABASE INFORMATION
+    struct DataBase {
+        string      YearFile     = "Schoolyear";
+        string      SemesterFile = "Semester";
+        int         numYear      = 0;
+        
+        Semester*    SemesterList   = nullptr;
 
-struct DataBase {
-    string      YearFile     = "Schoolyear";
-    string      SemesterFile = "Semester";
-    int         numYear      = 0;
+        Schoolyear*  YearList = nullptr;
+        Schoolyear** quickSchoolPtr = nullptr;
+    };
 
-    Schoolyear*  YearList       = nullptr;
-    Schoolyear** quickSchoolPtr = nullptr;
-    Semester*    SemesterList   = nullptr; // up to 3
-};
+    //SCHOOLYEARS
+    struct Schoolyear {
+        int    index;
+        string year;
+        
+        int numCLC  = 0;
+        int numAPCS = 0;
+        int numVP   = 0;
+        StudyClass*** qClassPtr  = nullptr;
+
+        StudyClass*   listCLC    = nullptr;
+        StudyClass*   listAPCS   = nullptr;
+        StudyClass*   listVP     = nullptr;
+
+        
+        
+        Schoolyear*  nextYear      = nullptr;
+    };
+
+    //CLASSES
+    struct StudyClass {
+        string year;
+        string className;
+        string classType;
+        int    numStudent = 0;
+
+        Student*    listStudent     = nullptr;
+        Student**   quickStudentPtr = nullptr;
+        StudyClass* nextClass       = nullptr;
+    };
+
+    //STUDENTS
+    struct Student {
+        int No;
+        string yearName;
+        string className;
+        string password;
+        string programtype;
+        Info   dInfo;
+
+        double ovrGPA;
+        double* GPA = nullptr;
+
+        EnrolledCourse* CourseList          = nullptr;
+        EnrolledCourse* lastEnrolledCourse  = nullptr;
+
+        Student*        nextStudent         = nullptr;
+    };
+
+    //SEMESTERS
+    struct Semester {
+        int    index;
+        int    semester;
+        string year;
+        string start, end;
+
+        int    numCourse = 0;
+        Course**  HandlingCourse = nullptr;
+        Course*   CourseList     = nullptr;
+
+        Semester* nextSemester   = nullptr;
+    };
+
+    //COURSES
+    struct Course {
+        int        courseIndex;
+        int        numCurStudents = 0;
+        int        semester;
+        string     year;
+        CourseInfo thisCourseInfo;
+        
+        CourseStudent* listStudent = nullptr;
+        Course*        nextCourse  = nullptr;
+        Course*        prevCourse  = nullptr;
+    };
+    struct CourseStudent {
+        int        no;
+        int        yearIndex;
+        int        classtypeIndex;
+        int        classIndex;
+        int        studentIndex;
+
+        Scoreboard savedScore;
+
+        Student*       ptoStudent  = nullptr;
+
+        CourseStudent* nextStudent = nullptr;
+        CourseStudent* prevStudent = nullptr;
+    };
+    struct EnrolledCourse {
+        
+        Scoreboard*     Score      = nullptr;
+        Course*         ptoCourse  = nullptr;
+        EnrolledCourse* nextCourse = nullptr;
+        EnrolledCourse* prevCourse = nullptr;
+    };
 #endif

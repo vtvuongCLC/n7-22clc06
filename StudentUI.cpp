@@ -12,7 +12,7 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
         cout << "1. View profile info" << endl;
         cout << "2. Change password" << endl;
         cout << "3. View enrolled courses and scoreboard" << endl;
-        cout << "0. Back" << endl
+        cout << "0. Log out" << endl
              << endl;
         cout << ">> ";
         cin >> selection;

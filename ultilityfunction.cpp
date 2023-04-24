@@ -17,12 +17,11 @@ bool validInfo(Info infoparam,char gender)
     return true;
 }
  
-void AddStudentManual(Student* &listStudent, string yearName, string className, int &numStudent)
+void AddStudentManual(Student* &listStudent, string yearName, string className, string classType, int &numStudent)
 {
     Student* curStudent = nullptr;
     do {
         int check;
-        system("cls");
         cout << "Add new student ? (1 to proceed | 0 to exit) : " << endl;
         cin >> check;
         if (check <= 0)
@@ -58,6 +57,7 @@ void AddStudentManual(Student* &listStudent, string yearName, string className, 
                 numStudent++;
                 curStudent->yearName = yearName;
                 curStudent->className = className;
+                curStudent->programtype = classType;
                 curStudent->password = className;
                 curStudent->No = numStudent;
                 curStudent->dInfo.StudentID = tempInfo.StudentID;
@@ -72,18 +72,20 @@ void AddStudentManual(Student* &listStudent, string yearName, string className, 
                 curStudent->dInfo.Birth.month = tempInfo.Birth.month;
                 curStudent->dInfo.Birth.year = tempInfo.Birth.year;
                 curStudent->dInfo.SocialID = tempInfo.SocialID;
+                cout << "Successfully added student to class" << endl;
+                system("pause");
             } else {
                 cout << "Discarded input data." << endl;
                 system("pause");
             }
 
         } else {
-            cout << "Some information may not be correct...";
+            cout << "Some information may not be valid...";
             system("pause"); 
         }
     } while (true);
 }
-void AddStudentCSV(Student* &listStudent, string yearName, string className, int &numStudent)
+void AddStudentCSV(Student* &listStudent, string yearName, string className, string classType, int &numStudent)
 {
     string filepath;
     ifstream csvIn;
@@ -114,6 +116,7 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className, int
         }
         curStudent->yearName = yearName;
         curStudent->className = className;
+        curStudent->programtype = classType;
         numStudent++;
         string tempdata;
         getline(csvIn,tempdata,',');
@@ -146,18 +149,18 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className, int
     }
     system("pause");
 }
-void AddStudent(Student* &listStudent, string yearName, string className, int &numStudent)
+void AddStudent(Student* &listStudent, string yearName, string className, string classType, int &numStudent)
 {
     char choose; 
     cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
     cout << ">> ";
     cin >> choose;
     if (choose == 'f' || choose == 'F')
-        AddStudentCSV(listStudent,yearName,className, numStudent);
+        AddStudentCSV(listStudent,yearName,className,classType, numStudent);
     else
-        AddStudentManual(listStudent,yearName,className, numStudent);
+        AddStudentManual(listStudent,yearName,className,classType, numStudent);
 }
-void AddClass(StudyClass* &listClass)
+void AddClass(StudyClass* &listClass, string yearName, string classType)
 {
     StudyClass* curClass = nullptr;
     string tempClass;
@@ -177,6 +180,8 @@ void AddClass(StudyClass* &listClass)
             curClass = curClass->nextClass;
         }
         curClass->className = tempClass;
+        curClass->year = yearName;
+        curClass->classType = classType;
     } while (tempClass != "0");
 }
 string getYearData(Schoolyear* listYear)
@@ -265,7 +270,8 @@ Course* navigateCourse(Course* listCourse, int userindex)
     }
     return nullptr;
 }
-bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string yearName,string className, string StudID,Course* curCourse)
+
+CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string className, int classtype, string StudID,Course* curCourse)
 {
     Schoolyear* curYear = listYear;
     int x = 0;
@@ -276,41 +282,59 @@ bool FindStudentIndex(Schoolyear* listYear,CourseStudent* &CourseStud, string ye
     if (curYear == nullptr){
         cout << "This year hasn't existed in the system\n";
         system("pause");
-        return false;
+        return nullptr;
     }
-    StudyClass* curClass = curYear->listClass;
-    int y = 0;
+
+    int y;
+    StudyClass* curClass = nullptr;
+    if (classtype == 1) {
+        y = 0;
+        curClass = curYear->listCLC;
+    }   
+    if (classtype == 2) {
+        y = 1;
+        curClass = curYear->listAPCS;
+    }
+    if (classtype == 3) {
+        y = 2;
+        curClass = curYear->listVP;
+    }
+        
+    int z = 0;
     while(curClass && curClass->className != className) {
         curClass = curClass->nextClass;
-        y++;
+        z++;
     }
     if(curClass == nullptr){
         cout << "This study class hasn't existed in the system\n";
         system("pause");
-        return false;
+        return nullptr;
     }
     Student* curStudent = curClass->listStudent;
-    int z = 0;
+    int t = 0;
     while(curStudent->dInfo.StudentID != StudID) {
         curStudent = curStudent->nextStudent;
-        z++;
+        t++;
     }
     if(curStudent == nullptr){
         cout << "This student hasn't existed in the system\n";
         system("pause");
-        return false;
+        return nullptr;
     }
+    CourseStudent* CourseStud = new CourseStudent;
     CourseStud->ptoStudent = curStudent;
     CourseStud->yearIndex = x;
-    CourseStud->classIndex = y;
-    CourseStud->studentIndex = z;
+    CourseStud->classtypeIndex = y;
+    CourseStud->classIndex = z;
+    CourseStud->studentIndex = t;
     LinkEnrolledCourse(curStudent,curCourse, CourseStud);
-    return true;
+    return CourseStud;
 }
 CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID)
 {
     while(listStudent){
-        if(listStudent->ptoStudent->dInfo.StudentID == studID) break;
+        if(listStudent->ptoStudent->dInfo.StudentID == studID)
+            break;
         listStudent = listStudent->nextStudent;
     }
     return listStudent;
@@ -332,65 +356,109 @@ Course* findTheCourse(Semester* pSemester, string year, int semester, string Nam
         pCourse = pCourse->nextCourse;
     }
     return pCourse;
-} 
+}
 
+void StudentPtrBinder(Student** quickStudentPtr, Student* listStudent)
+{
+    int i = 0;
+    while (listStudent != nullptr) {
+        quickStudentPtr[i] = listStudent;
+        i++;
+        listStudent = listStudent->nextStudent;
+    }
+}
+void ClassPtrBinder(StudyClass** quickClassPtr, StudyClass* listClass)
+{
+    int i = 0;
+    while (listClass != nullptr) {
+        quickClassPtr[i] = listClass;
+        i++;
+        if (listClass->listStudent != nullptr) {
+            listClass->quickStudentPtr = new Student*[listClass->numStudent];
+            StudentPtrBinder(listClass->quickStudentPtr,listClass->listStudent);
+        }
+        listClass = listClass->nextClass;
+    }
+}
 void QuickPtrBinder(DataBase &DB)
 {
     if (DB.YearList != nullptr) {
-        if (DB.quickSchoolPtr != nullptr) {
+        if (DB.quickSchoolPtr != nullptr)
             delete []DB.quickSchoolPtr;
-            DB.quickSchoolPtr = nullptr;
-        } 
         DB.quickSchoolPtr = new Schoolyear*[DB.numYear];
         Schoolyear* curYear = DB.YearList;
-        StudyClass* curClass = nullptr;
+        
         Student* curStudent = nullptr;
         int i = 0;
         while (curYear != nullptr)
         {
             DB.quickSchoolPtr[i] = curYear;
             i++;
-            if (curYear->listClass != nullptr)
-            {
-                if (curYear->quickClassPtr == nullptr) {
-                    if (curYear->quickClassPtr != nullptr)
-                    {
-                        delete []curYear->quickClassPtr;
-                        curYear->quickClassPtr = nullptr;
-                    }
-                    curYear->quickClassPtr = new StudyClass*[curYear->numClass];
-                    curClass = curYear->listClass;
-                    int j = 0;
-                    while (curClass != nullptr)
-                    {
-                        curYear->quickClassPtr[j] = curClass;
-                        j++;
-                        if (curClass->listStudent != nullptr)
-                        {
-                            curStudent = curClass->listStudent;
-                            if (curClass->quickStudentPtr != nullptr)
-                            {
-                                delete []curClass->quickStudentPtr;
-                                curClass->quickStudentPtr = nullptr;
-                            }
-                            curClass->quickStudentPtr = new Student*[curClass->numStudent];
-                            int k = 0;
-                            while (curStudent != nullptr)
-                            {
-                                curClass->quickStudentPtr[k] = curStudent;
-                                k++;
-                                curStudent = curStudent->nextStudent;
-                            }
-                        }
-                        curClass = curClass->nextClass;
-                    }
-                }
-                
+            if (curYear->listCLC != nullptr) {
+                if (curYear->qClassPtr[0] != nullptr)
+                    delete []curYear->qClassPtr[0];
+
+                curYear->qClassPtr[0] = new StudyClass*[curYear->numCLC];
+                ClassPtrBinder(curYear->qClassPtr[0],curYear->listCLC);
+            }
+            if (curYear->listAPCS != nullptr) {
+                if (curYear->qClassPtr[1] != nullptr)
+                    delete []curYear->qClassPtr[1];     
+
+                curYear->qClassPtr[1] = new StudyClass*[curYear->numAPCS];
+                ClassPtrBinder(curYear->qClassPtr[1],curYear->listAPCS);
+            }
+            if (curYear->listVP != nullptr) {
+                if (curYear->qClassPtr[2] != nullptr)
+                    delete []curYear->qClassPtr[2];
+
+                curYear->qClassPtr[2] = new StudyClass*[curYear->numVP];
+                ClassPtrBinder(curYear->qClassPtr[2],curYear->listVP);
             }
             curYear = curYear->nextYear;
         }
     }
 }
+void QuickPtrDebinder(DataBase &DB)
+{
+    if (DB.YearList != nullptr) {
+        Schoolyear* curYear = DB.YearList;
+        StudyClass* curClass = nullptr;
+        while (curYear != nullptr) {
+            curClass = curYear->listCLC;
+
+            while (curClass != nullptr) {
+                delete []curClass->quickStudentPtr;
+                curClass->quickStudentPtr = nullptr;
+                curClass = curClass->nextClass;
+            }
+            curClass = curYear->listAPCS;
+            while (curClass != nullptr) {
+                delete []curClass->quickStudentPtr;
+                curClass->quickStudentPtr = nullptr;
+                curClass = curClass->nextClass;
+            }
+            curClass = curYear->listVP;
+            while (curClass != nullptr) {
+                delete []curClass->quickStudentPtr;
+                curClass->quickStudentPtr = nullptr;
+                curClass = curClass->nextClass;
+            }
+
+            if (curYear->qClassPtr != nullptr) {
+                for (int i = 0; i < 3; i++) {
+                    delete []curYear->qClassPtr[i];
+                    curYear->qClassPtr[i] = nullptr;
+                }
+            }
+
+            curYear = curYear->nextYear;
+        }
+        delete []DB.quickSchoolPtr;
+        DB.quickSchoolPtr = nullptr;
+    }
+}           
+
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent)
 {
     EnrolledCourse* temp = curStudent->CourseList;
@@ -421,7 +489,7 @@ void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester,
     }
     Student* curStudent = curClass->listStudent;
     while (curStudent != nullptr) {
-        curStudent->ovrGPA = 0;
+        curStudent->ovrGPA = -1;
         curStudent->GPA = new double[3];
             for (int j = 0; j < 3; j++) {
                 curStudent->GPA[j] = -1;
@@ -464,11 +532,19 @@ void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester,
                 count++;
             }
         }
-        curStudent->ovrGPA = totalgpa/(count*1.0);
+        if (count != 0)
+            curStudent->ovrGPA = totalgpa/(count*1.0);
         curStudent = curStudent->nextStudent;
     }
 }
 
+void uppercaser(string &a)
+{
+    for (int i = 0; i < a.length(); i++)
+    {
+        toupper(a[i]);
+    }
+}
 void UpdateCourseInfo(CourseInfo &curCourseInfo)
 {   
     int selection;
@@ -586,34 +662,41 @@ bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
     if(curCourse->listStudent)
         return false;
     CourseStudent* temp = nullptr;
-    string yearName, className, StudID;
+    string yearName, className, StudID,tmp;
     ifstream in;
     int i = 0;
     in.open(curCourse->thisCourseInfo.courseID+".csv");
     if(!in.is_open()){
         return false;
     }
+    int classtype;
     while (i < curCourse->thisCourseInfo.maxStudent && !in.eof())
     {
         in.ignore(100,',');
         getline(in,yearName,',');
         getline(in,className,',');
+        getline(in,tmp,',');
         getline(in,StudID);
-        if(!curCourse->listStudent){
-            curCourse->listStudent = new CourseStudent;
-            temp = curCourse->listStudent;
+        uppercaser(tmp);
+        if (tmp == "CLC")
+            classtype = 1;
+        if (tmp == "APCS")
+            classtype = 2;
+        if (tmp == "VP")
+            classtype = 3;
+        CourseStudent* newStudent = FindStudentIndex(listYear,yearName,className,classtype,StudID,curCourse);
+        if (newStudent != nullptr) {
+            if (curCourse->listStudent == nullptr) {
+                curCourse->listStudent = newStudent;
+                temp = curCourse->listStudent;
+            } else {
+                temp->nextStudent = newStudent;
+                temp->nextStudent->prevStudent = temp;
+                temp = temp->nextStudent;
+            }
+            i++;
         }
-        else{
-            temp->nextStudent = new CourseStudent;
-            temp->nextStudent->prevStudent = temp;
-            temp = temp->nextStudent;
-        }
-    
-        while(!FindStudentIndex(listYear,temp,yearName,className,StudID,curCourse)){
-             getline(in,className,',');
-             getline(in,StudID);
-        }
-        i++;
+        
     }
     if(i <= curCourse->thisCourseInfo.maxStudent) 
         cout<<"No student left to add.";
@@ -731,38 +814,33 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
         cout << "The course is having maximum student!!! You cannot add student to this course.\n";
         return;
     }
-    int numYears;
-    string  studentID, nameStudyClass, year;
+    int numYears,classtype;
+    string  studentID, nameStudyClass;
     // DisplayYearList(curYear, numYears);
     cin.ignore(1000,'\n');
-    cout << "Enter the year when a student start in system (ex: 2022-2023): ";
-    getline(cin, year);
-    cout << "Enter the student ID you want to add: ";
+    cout << "Enter the student ID: ";
     getline(cin, studentID);
+    cout << "Enter the academic program of student (1-CLC | 2-APCS | 3-VP): ";
+    cin >> classtype;
+    cin.ignore(1000,'\n');
     cout << "Enter the name of study class of student you want to add: ";
     getline(cin, nameStudyClass);
 
-    CourseStudent* newStudent = findStudentInCourse(curCourse->listStudent, studentID);
-        
-    if(newStudent != nullptr){
+    if (findStudentInCourse(curCourse->listStudent, studentID) != nullptr) {
         cout << "This student has enrolled to this course!\n";
         system("pause");
         return;
     }
-    newStudent = new CourseStudent;
-    if(!FindStudentIndex(curYear, newStudent, year ,nameStudyClass, studentID, curCourse)){
-        delete newStudent;
-        return;
+    CourseStudent* newStudent = FindStudentIndex(curYear,curYear->year, nameStudyClass,classtype, studentID, curCourse);
+    if (newStudent != nullptr) {
+        newStudent->nextStudent = curCourse->listStudent;
+        if(curCourse->listStudent){
+            curCourse->listStudent-> prevStudent= newStudent;
+        }
+        curCourse->listStudent = newStudent;
+        curCourse->numCurStudents++;
+
     }
-
-
-    newStudent->nextStudent = curCourse->listStudent;
-    if(curCourse->listStudent){
-        curCourse->listStudent-> prevStudent= newStudent;
-    }
-    curCourse->listStudent = newStudent;
-    curCourse->numCurStudents++;
-
 }
 
 void removeEnrollCourse(Student* removedStudent, Course* pCourse)
@@ -789,8 +867,6 @@ void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
 {
     string studentName, studentID, nameStudyClass;
     cin.ignore(1000,'\n');
-    // cout << "Enter the student name you want to remove: ";
-    // getline(cin, studentName);
     cout << "Enter the student ID you want to remove: ";
     getline(cin, studentID);
 
@@ -976,4 +1052,97 @@ void ChangeStudentScore(CourseStudent* listCourseStudent)
                 break;
         }
     }while(choice != 5);
+}
+void ChangePasswordStaff(StaffAccount* curStaff)
+{
+    int check;
+    string password, confirm;
+    while(true){
+        system("cls");
+        cout << "Do you want to continue changing password ? (1 to proceed | 0 to exit): "; cin >> check;
+        if(check == 0) return;
+        if(check != 1) continue;
+        system("cls");
+        cout << "Change Password\n\n";
+        cout << "Current Password: "; cin >> password;
+        if(password != curStaff->password){
+            cout << "You must enter a valid password\n";
+        }
+        else {
+            cout << "New Password: "; cin >> password;
+            cout << "Confirm Password: "; cin >> confirm;
+            if(password == confirm){
+                curStaff->password = confirm;
+                cout << "The password has been changed successfully!!!\n";
+                system("pause");
+                break;
+            }
+            else{
+                cout << "The new password and confirmation password do not match. The password hasn't been changed!!!\n";
+            }
+        }
+        system("pause");
+    }
+}
+void ChangePasswordStudent(Student* curStudent)
+{
+    int check;
+    string password, confirm;
+    while(true){
+        system("cls");
+        cout << "Do you want to continue changing password ? (1 to proceed | 0 to exit): "; cin >> check;
+        if(check == 0) return;
+        if(check != 1) continue;
+        system("cls");
+        cout << "Change Password\n\n";
+        cout << "Current Password: "; cin >> password;
+        if(password != curStudent->password){
+            cout << "You must enter a valid password\n";
+        }
+        else {
+            cout << "New Password: "; cin >> password;
+            cout << "Confirm Password: "; cin >> confirm;
+            if(password == confirm){
+                curStudent->password = confirm;
+                cout << "The password has been changed successfully!!!\n";
+                system("pause");
+                break;
+            }
+            else{
+                cout << "The new password and confirmation password do not match. The password hasn't been changed!!!\n";
+            }
+        }
+        
+    }
+}
+int searchStudentAccount(string username, string password, StudyClass* listClass, Student* &toStudent, StudyClass* &toStudyClass)
+{
+	Student* curStudent = nullptr;
+	while (listClass != nullptr) {
+		curStudent = listClass->listStudent;
+		while (curStudent != nullptr) {
+			if (curStudent->dInfo.StudentID == username) {
+				if (curStudent->password != password) {
+					do {
+						cout << "Invalid password, please re-enter again (0 to exit)" << endl;
+						cout << ">> ";
+						cin >> password;
+					} while (password != curStudent->password && password != "0");
+					if (password == "0") {
+						cout << "Cancelled Login" << endl;
+						system("pause");
+						return 0;
+					}
+				}
+				toStudent = curStudent;
+				toStudyClass = listClass;
+                cout << "Login successful" << endl;
+				system("pause");
+				return 1;
+			}
+			curStudent = curStudent->nextStudent;
+		}
+		listClass = listClass->nextClass;
+	}
+	return -1;
 }

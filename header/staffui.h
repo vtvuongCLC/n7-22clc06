@@ -8,10 +8,11 @@ void SemestersListManager(DataBase &DB, string yearName);
 
 void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester** HandlingArr);
 
-void StudyClassManager(StudyClass* curClass, string yearName, Semester* listSemester);
-void ClassesManager(Schoolyear* curYear, Semester* listSemester);
+void StudyClassManager(StudyClass* curClass, Semester* listSemester);
+void ClassesManager(StudyClass* listClass, Semester* listSemester, string yearName, string classType);
 void SchoolYearManager(DataBase &DB, Schoolyear* curYear);
 
-void StaffUI(DataBase &DB);
+void MainManagementUI(DataBase &DB);
+void StaffUI(DataBase &DB,StaffAccount* toStaff, StaffAccount* staffList);
 
 #endif
