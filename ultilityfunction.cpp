@@ -482,12 +482,13 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo)
         cout << "6. Course Session: " <<  curCourseInfo.CourseDate.session << endl;
         cout << "7. Teacher: " << curCourseInfo.Teacher << endl;
         cout << "8. Number of Credits: " << curCourseInfo.credit << endl;
-        cout << "0. Back";
+        cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
         if (selection == 0)
             break;
         cin.ignore(1000,'\n');
+        system("cls");
         switch(selection) {
                 
                 case 1:
@@ -734,7 +735,7 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
     string  studentID, nameStudyClass, year;
     // DisplayYearList(curYear, numYears);
     cin.ignore(1000,'\n');
-    cout << "Enter the year number when a student start in system: ";
+    cout << "Enter the year when a student start in system (ex: 2022-2023): ";
     getline(cin, year);
     cout << "Enter the student ID you want to add: ";
     getline(cin, studentID);

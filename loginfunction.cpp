@@ -29,7 +29,7 @@ void ChangePasswordStudent(Student* curStudent){
     }
 }
 
-int login_student(string id,string pass, Schoolyear* DataBase, Student* &toStudent) {
+int login_student(string id,string pass, Schoolyear* DataBase, Student* &toStudent, StudyClass* &toStudyClass) {
 	if (DataBase == nullptr)
 		return -2;
 	Schoolyear* curYear = DataBase;
@@ -46,6 +46,7 @@ int login_student(string id,string pass, Schoolyear* DataBase, Student* &toStude
 				if (curStudent->dInfo.StudentID == id) {
 					if (curStudent->password == pass) {
 						toStudent = curStudent;
+						toStudyClass = curClass;
 						return 1;
 					}
 					else
@@ -89,7 +90,7 @@ bool login_staff(string AccountStaff, string passStaff) {
     filein.close();
     return key;
 }
-int login(Schoolyear *DataBase, Student* &toStudent) {
+int login(Schoolyear *DataBase, Student* &toStudent, StudyClass* &toStudyClass) {
     int tmp;
 	cout<<"You are :"<<endl;
     cout<<"1. Student"<<endl;
@@ -107,12 +108,13 @@ int login(Schoolyear *DataBase, Student* &toStudent) {
 		string pass;
 		int key;
 		toStudent = nullptr;
+		toStudyClass = nullptr;
 		do {
 			cout << "Student ID: ";
 			cin >> id;
 			cout << "Password: ";
 			cin >> pass;
-			key = login_student(id, pass, DataBase,toStudent);
+			key = login_student(id, pass, DataBase,toStudent, toStudyClass);
 			if (key == 1)
 				break;
 			if (key == -1) {
