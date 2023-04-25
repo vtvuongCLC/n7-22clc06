@@ -96,6 +96,7 @@ struct CourseInfo {
     //CLASSES
     struct StudyClass {
         string year;
+        string curyear;
         string className;
         string classType;
         int    numStudent = 0;
@@ -123,7 +124,7 @@ struct CourseInfo {
         Student*        nextStudent         = nullptr;
     };
 
-    //SEMESTERS
+    //SEMESTERS 
     struct Semester {
         int    index;
         int    semester;

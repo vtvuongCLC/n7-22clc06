@@ -11,7 +11,7 @@ void DisplayCourseStudentList(CourseStudent* listCourseStudent);
 void DisplayCourseList(Course* listCourse, int &max);
 void DisplayScoreboardCourse(Course* pCourse);
 bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string yearName, int &max);
-void DisplayInfoStudent(Student* listStudent);
+void DisplayInfoStudent(Student* curStudent);
 void DisplayCourseList1Student(Student* pStudent, int semester, string year);
 void DisplayScoreboard1Student(Student* pStudent, int semester, string year);
 #endif

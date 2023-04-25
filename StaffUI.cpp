@@ -247,13 +247,13 @@ void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester
 void StudyClassManager(StudyClass* curClass, Semester* listSemester)
 {
     Semester** HandlingArr = nullptr;
-    calculateGPA(curClass,curClass->year,listSemester,HandlingArr);
+    calculateGPA(curClass,curClass->curyear,listSemester,HandlingArr);
     char selection;
     do {
         system("cls");
             cout << "Student Management" << endl;
             cout << endl; 
-            cout << "Year: " << curClass->year << endl;
+            cout << "Year: " << curClass->curyear << endl;
             cout << "Academic Program: " << curClass->classType << endl;
             cout << "Class: " << curClass->className << endl;
             cout << endl;

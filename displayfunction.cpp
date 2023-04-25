@@ -239,14 +239,17 @@ bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string 
 }
 
 //STUDENT
-void DisplayInfoStudent(Student* listStudent)
+void DisplayInfoStudent(Student* curStudent)
 {
-    cout << "Student ID: " << listStudent->dInfo.StudentID << endl;
-    cout << "Student Name: " << listStudent->dInfo.FirstName << ' ' << listStudent->dInfo.LastName << endl;
-    listStudent->dInfo.Gender[0] = toupper(listStudent->dInfo.Gender[0]);
-    cout << "Gender: " << listStudent->dInfo.Gender << " ";
-    cout << "Date of Birth: "; DisplayBirth(listStudent->dInfo.Birth);
-    cout << "Social ID: " << listStudent->dInfo.SocialID << endl;
+    cout << "Student Name: " << curStudent->dInfo.FirstName << ' ' << curStudent->dInfo.LastName << endl;
+    curStudent->dInfo.Gender[0] = toupper(curStudent->dInfo.Gender[0]);
+    cout << "Gender: " << curStudent->dInfo.Gender << endl;
+    cout << "Date of Birth: "; DisplayBirth(curStudent->dInfo.Birth);
+    cout << "Social ID: " << curStudent->dInfo.SocialID << endl << endl;
+
+    cout << "Student ID: " << curStudent->dInfo.StudentID << endl;
+    cout << "Class Name: " << curStudent->className << endl;
+    cout << "Academic Program: " << curStudent->programtype << endl;
 }
 
 void DisplayCourseList1Student(Student* pStudent, int semester, string year)
