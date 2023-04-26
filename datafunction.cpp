@@ -219,8 +219,6 @@ void LoadCourseInfoFromFile(Semester* curSemester)
                     curCourse->nextCourse->prevCourse = curCourse;
                     curCourse = curCourse->nextCourse;
                 }
-            curCourse->year = curSemester->year;
-            curCourse->semester = curSemester->semester;
             curCourse->thisCourseInfo.courseID = tempData;
             getline(CourseInfoIn,tempData,',');
             curCourse->thisCourseInfo.courseName = tempData;
@@ -242,7 +240,7 @@ void LoadCourseInfoFromFile(Semester* curSemester)
     
     CourseInfoIn.close();
 }
-void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
+void LoadCourseStudentFromFile(Course* aCourse, Semester* curSemester, Schoolyear** quickPtr)
 {
     string fileName = aCourse->thisCourseInfo.courseID + '_' + aCourse->thisCourseInfo.className;
     if (IsemptyFile(fileName) == true)
@@ -280,7 +278,39 @@ void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr)
             curCourseStudent->savedScore.totalMark = stod(tempData);
             curCourseStudent->ptoStudent = quickPtr[curCourseStudent->yearIndex]->qClassPtr[curCourseStudent->classtypeIndex][curCourseStudent->classIndex]->quickStudentPtr[curCourseStudent->studentIndex];
             Student* curStudent = curCourseStudent->ptoStudent;
-            LinkEnrolledCourse(curStudent,aCourse,curCourseStudent);
+            //function LINKENROLLEDCOURSE will reverse the order of a student's enrolled courses list.
+            if (curStudent->pSemester == nullptr)
+            {
+                curStudent->pSemester = new SemEnrollCourse;
+                curStudent->pSemester->semester = curSemester->semester;
+                curStudent->pSemester->year = curSemester->year;
+            }
+            SemEnrollCourse* curSemEnroll = curStudent->pSemester;
+            while (curSemEnroll)
+            {
+                if (curSemEnroll->semester == curSemester->semester && curSemEnroll->year == curSemester->year)
+                {
+                    if(!curSemEnroll->lastEnrolledCourse){
+                        curSemEnroll->CourseList = new EnrolledCourse;
+                        curSemEnroll->lastEnrolledCourse = curSemEnroll->CourseList;
+                    }
+                    else {
+                        curSemEnroll->lastEnrolledCourse->nextCourse = new EnrolledCourse;
+                        curSemEnroll->lastEnrolledCourse->nextCourse->prevCourse = curSemEnroll->lastEnrolledCourse;
+                        curSemEnroll->lastEnrolledCourse = curSemEnroll->lastEnrolledCourse->nextCourse;
+                    }
+                    curSemEnroll->lastEnrolledCourse->ptoCourse = aCourse;
+                    curSemEnroll->lastEnrolledCourse->Score = &(curCourseStudent->savedScore);
+                    break;
+                }
+                if (curSemEnroll->nextSem == nullptr)
+                {
+                    curSemEnroll->nextSem = new SemEnrollCourse;
+                    curSemEnroll->nextSem->semester = curSemester->semester;
+                    curSemEnroll->nextSem->year = curSemester->year;
+                }
+                curSemEnroll = curSemEnroll->nextSem;
+            }
         }
     }
 }
@@ -297,7 +327,7 @@ void LoadSemesterSector(DataBase &DB)
             LoadCourseInfoFromFile(curSem);
             curCourse = curSem->CourseList;
             while (curCourse != nullptr) {
-                LoadCourseStudentFromFile(curCourse,DB.quickSchoolPtr);
+                LoadCourseStudentFromFile(curCourse,curSem, DB.quickSchoolPtr);
                 curCourse = curCourse->nextCourse;
             }
             curSem = curSem->nextSemester;
@@ -369,7 +399,7 @@ void SaveCourseStudentToFile(Course* aCourse)
     CourseStudent* curStudent = aCourse->listStudent;
     Scoreboard thisCourseBoard;
     if (aCourse->listStudent == nullptr)
-        out << " ";
+        out << "";
     else {
         while (curStudent != nullptr) {
             thisCourseBoard = curStudent->savedScore;
@@ -440,18 +470,23 @@ void ClearClass(StudyClass* &listClass)
 {
     Student* curStudent = nullptr;
     StudyClass* curClass = nullptr;
+    SemEnrollCourse* curSemEnroll = nullptr;
     EnrolledCourse* curEnroll = nullptr;
     while (listClass != nullptr) {
         curClass = listClass;
         while (curClass->listStudent != nullptr) {
             curStudent = curClass->listStudent;
             delete []curStudent->GPA;
-            
-            while (curStudent->CourseList != nullptr) {
-                curEnroll = curStudent->CourseList;
-                curStudent->CourseList = curEnroll->nextCourse;
-                delete curEnroll;
-            }
+                while(curStudent->pSemester != nullptr){
+                    curSemEnroll = curStudent->pSemester;
+                    curStudent->pSemester = curSemEnroll->nextSem;
+                    while (curSemEnroll->CourseList != nullptr) {
+                        curEnroll = curSemEnroll->CourseList;
+                        curSemEnroll->CourseList = curEnroll->nextCourse;
+                        delete curEnroll;
+                    }
+                    delete curSemEnroll;
+                }
             curClass->listStudent = curStudent->nextStudent;
             delete curStudent;
         }

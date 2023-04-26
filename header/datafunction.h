@@ -14,7 +14,7 @@ void LoadSchoolData(DataBase &DB);
 
 void LoadSemesterFromFile(string SemesterFile, Semester* &listSemester);
 void LoadCourseInfoFromFile(Semester* curSemester);
-void LoadCourseStudentFromFile(Course* aCourse, Schoolyear** quickPtr);
+void LoadCourseStudentFromFile(Course* aCourse, Semester* curSemester, Schoolyear** quickPtr);
 void LoadSemesterSector(DataBase &DB);
 
 void SaveStaffData(StaffAccount* staffList);

@@ -271,7 +271,7 @@ Course* navigateCourse(Course* listCourse, int userindex)
     return nullptr;
 }
 
-CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string className, int classtype, string StudID,Course* curCourse)
+CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string className, int classtype, string StudID,Course* curCourse, Semester* curSemester)
 {
     Schoolyear* curYear = listYear;
     int x = 0;
@@ -327,7 +327,7 @@ CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string cla
     CourseStud->classtypeIndex = y;
     CourseStud->classIndex = z;
     CourseStud->studentIndex = t;
-    LinkEnrolledCourse(curStudent,curCourse, CourseStud);
+    LinkEnrolledCourse(curStudent,curCourse, CourseStud, curSemester);
     return CourseStud;
 }
 CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID)
@@ -459,17 +459,35 @@ void QuickPtrDebinder(DataBase &DB)
     }
 }           
 
-void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent)
+void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent, Semester* curSemester)
 {
-    EnrolledCourse* temp = curStudent->CourseList;
-    curStudent->CourseList = new EnrolledCourse;
-    curStudent->CourseList->nextCourse = temp;
-    if(temp)
-        temp->prevCourse = curStudent->CourseList;
-    else
-        curStudent->lastEnrolledCourse = curStudent->CourseList;
-    curStudent->CourseList->ptoCourse = curCourse;
-    curStudent->CourseList->Score = &(curCourseStudent->savedScore);
+    if(curStudent->pSemester == nullptr){
+        curStudent->pSemester = new SemEnrollCourse;
+        curStudent->pSemester->semester = curSemester->semester;
+        curStudent->pSemester->year = curSemester->year;
+    }
+
+    SemEnrollCourse* curSemEnroll = curStudent->pSemester;
+    while(curSemEnroll){
+        if(curSemEnroll->semester == curSemester->semester && curSemEnroll->year == curSemester->year){
+            EnrolledCourse* tmp = curSemEnroll->CourseList;
+            curSemEnroll->CourseList = new EnrolledCourse;
+            curSemEnroll->CourseList->nextCourse = tmp;
+            if(tmp) 
+                tmp->prevCourse = curSemEnroll->CourseList;
+            else 
+                curSemEnroll->lastEnrolledCourse = curSemEnroll->CourseList;
+            curSemEnroll->CourseList->ptoCourse = curCourse;
+            curSemEnroll->CourseList->Score = &(curCourseStudent->savedScore);
+            return;
+        }
+        if(curSemEnroll->nextSem == nullptr){
+            curSemEnroll->nextSem = new SemEnrollCourse;
+            curSemEnroll->nextSem->semester = curSemester->semester;
+            curSemEnroll->nextSem->year = curSemester->year;
+        }
+        curSemEnroll = curSemEnroll->nextSem;
+    }
 }
 void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr)
 {
@@ -479,7 +497,6 @@ void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester,
         HandlingArr[i] = nullptr;
     }
     i = 0;
-    
     while (listSemester != nullptr && i < 3) {
         if (listSemester->year == yearName) {
             HandlingArr[i] = listSemester;
@@ -497,6 +514,7 @@ void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester,
         curStudent = curStudent->nextStudent;
     }
     Course* curCourse = nullptr;
+    SemEnrollCourse* curSemEnroll = nullptr;
     EnrolledCourse* curEnrolled = nullptr;
     for (i = 0; i < 3; i++) {
         if (HandlingArr[i] != nullptr) {
@@ -505,8 +523,15 @@ void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester,
                 int count = 0;
                 double totalscore = 0;
                 curCourse = HandlingArr[i]->CourseList;
+                curSemEnroll = curStudent->pSemester;
+                while(curSemEnroll != nullptr && (curSemEnroll->semester != HandlingArr[i]->semester || curSemEnroll->year != HandlingArr[i]->year))
+                    curSemEnroll = curSemEnroll->nextSem;
+                if(curSemEnroll == nullptr) {
+                    curStudent = curStudent->nextStudent;
+                    continue;
+                }
                 while (curCourse != nullptr) {
-                    curEnrolled = curStudent->CourseList;
+                    curEnrolled = curSemEnroll->CourseList;
                     while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse)
                         curEnrolled = curEnrolled->nextCourse;
                     if (curEnrolled != nullptr) {
@@ -657,7 +682,7 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo)
             }
     } while (true);
 }
-bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
+bool UploadListofStud(Course* &curCourse, Semester* curSemester, Schoolyear* listYear)
 {
     if(curCourse->listStudent)
         return false;
@@ -684,7 +709,7 @@ bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
             classtype = 2;
         if (tmp == "VP")
             classtype = 3;
-        CourseStudent* newStudent = FindStudentIndex(listYear,yearName,className,classtype,StudID,curCourse);
+        CourseStudent* newStudent = FindStudentIndex(listYear, yearName, className, classtype, StudID, curCourse, curSemester);
         if (newStudent != nullptr) {
             if (curCourse->listStudent == nullptr) {
                 curCourse->listStudent = newStudent;
@@ -706,14 +731,12 @@ bool UploadListofStud(Course* &curCourse, Schoolyear* listYear)
     curCourse->numCurStudents = i;
     return true;
 }
-void NewCourse(Course* &firstCour, int semester, string year)
+void NewCourse(Course* &firstCour)
 {
     system("cls");
     Course* tmp = firstCour;
     firstCour = new Course;
     firstCour->nextCourse = tmp;
-    firstCour->year = year;
-    firstCour->semester = semester;
     if(tmp) tmp->prevCourse = firstCour;
 
     cin.ignore(1000,'\n');
@@ -808,7 +831,7 @@ void InitSemester(Semester* &Sem, int semester, string year)
     cout<<"Enter ending date for semester "<< curSem->semester <<": ";
     getline(cin,curSem->end);
 }
-void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
+void addStudentToCourse(Course* curCourse,Semester* curSemester, Schoolyear* curYear)
 {
     if(curCourse->numCurStudents >= curCourse->thisCourseInfo.maxStudent ){
         cout << "The course is having maximum student!!! You cannot add student to this course.\n";
@@ -831,7 +854,7 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
         system("pause");
         return;
     }
-    CourseStudent* newStudent = FindStudentIndex(curYear,curYear->year, nameStudyClass,classtype, studentID, curCourse);
+    CourseStudent* newStudent = FindStudentIndex(curYear,curYear->year, nameStudyClass,classtype, studentID, curCourse, curSemester);
     if (newStudent != nullptr) {
         newStudent->nextStudent = curCourse->listStudent;
         if(curCourse->listStudent){
@@ -843,27 +866,47 @@ void addStudentToCourse(Course* curCourse, Schoolyear* curYear)
     }
 }
 
-void removeEnrollCourse(Student* removedStudent, Course* pCourse)
+void removeEnrollCourse(Student* removedStudent, Course* pCourse, Semester* curSemester)
 {
-    EnrolledCourse* tmp = removedStudent->CourseList;
+    SemEnrollCourse* removedSem = removedStudent->pSemester;
+    while(removedSem){
+        if(removedSem->semester == curSemester->semester && removedSem->year == curSemester->year) break;
+        removedSem = removedSem->nextSem;
+    }
+    if(!removedSem) return;
+    EnrolledCourse* tmp = removedSem->CourseList;
     while(tmp){
         if(tmp->ptoCourse == pCourse) break;
         tmp = tmp->nextCourse;
     }
     if(!tmp->nextCourse)
-        removedStudent->lastEnrolledCourse = tmp->prevCourse;
+        removedSem->lastEnrolledCourse = tmp->prevCourse;
     if(tmp->prevCourse && tmp->nextCourse) {
        tmp->prevCourse->nextCourse = tmp->nextCourse;
        tmp->nextCourse->prevCourse = tmp->prevCourse;
     }
     else {
-        removedStudent->CourseList = tmp->nextCourse;
-        if(removedStudent->CourseList) removedStudent->CourseList->prevCourse = nullptr;
+        removedSem->CourseList = tmp->nextCourse;
+        if(removedSem->CourseList) removedSem->CourseList->prevCourse = nullptr;
     }
     delete tmp;
 
+    if(!(removedSem->CourseList)){
+        if(removedStudent->pSemester == removedSem){
+            removedStudent->pSemester = removedStudent->pSemester->nextSem;
+        }
+        else {
+            SemEnrollCourse* tmpSem  = removedStudent->pSemester;
+            while(tmpSem && tmpSem->nextSem != removedSem) 
+                tmpSem = tmpSem->nextSem;
+            tmpSem->nextSem = tmpSem->nextSem->nextSem;
+        }
+
+        delete removedSem;
+    }
+
 }
-void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
+void removeStudentFromCourse(Course* curCourse, Semester* curSemester, Schoolyear* curYear)
 {
     string studentName, studentID, nameStudyClass;
     cin.ignore(1000,'\n');
@@ -878,7 +921,7 @@ void removeStudentFromCourse(Course* curCourse, Schoolyear* curYear)
         return;
     }
 
-    removeEnrollCourse(removedStudent->ptoStudent, curCourse);
+    removeEnrollCourse(removedStudent->ptoStudent, curCourse, curSemester);
     
     if (removedStudent->nextStudent) {
         removedStudent->nextStudent->prevStudent = removedStudent->prevStudent;
@@ -907,6 +950,7 @@ void removeCourse(Semester* curSemester)
     if(!pCourse) {
         cout << "This course doesn't exist!\n";
         system("pause");
+        return;
     }
 
     if(pCourse == curSemester->CourseList){
@@ -915,13 +959,13 @@ void removeCourse(Semester* curSemester)
     }
     else {
         pCourse->prevCourse->nextCourse = pCourse->nextCourse;
-        pCourse->nextCourse->prevCourse = pCourse->prevCourse;
+        if(pCourse->nextCourse) pCourse->nextCourse->prevCourse = pCourse->prevCourse;
     }
 
     while(pCourse->listStudent){
         CourseStudent* tmp = pCourse->listStudent;
         pCourse->listStudent = pCourse->listStudent->nextStudent;
-        removeEnrollCourse(tmp->ptoStudent, pCourse);
+        removeEnrollCourse(tmp->ptoStudent, pCourse, curSemester);
         delete tmp;
     }
     string filename = "Data\\" + pCourse->thisCourseInfo.courseID + '_' + pCourse->thisCourseInfo.className + ".txt";
@@ -1017,6 +1061,8 @@ void ChangeStudentScore(CourseStudent* listCourseStudent)
     CourseStudent* curStudent = findStudentInCourse(listCourseStudent,StudentID);
         int choice;
     do{
+        system("cls");
+        cout << "Student ID: " << curStudent->ptoStudent->dInfo.StudentID << endl;
         cout << "Which of Score Updating: " << endl;
         cout << "1. Current Midterm Score: " << curStudent->savedScore.midtermMark << endl;
         cout << "2. Current Final Score: " << curStudent->savedScore.finalMark << endl;
