@@ -91,6 +91,7 @@ void AddStudentCSV(Student* &listStudent, string yearName, string className, str
     ifstream csvIn;
     system("cls");
     do {
+        cin.ignore();
         cout << "Enter CSV file path: ";
         getline(cin,filepath,'\n');
         csvIn.open(filepath);
@@ -312,7 +313,7 @@ CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string cla
     }
     Student* curStudent = curClass->listStudent;
     int t = 0;
-    while(curStudent->dInfo.StudentID != StudID) {
+    while(curStudent && curStudent->dInfo.StudentID != StudID) {
         curStudent = curStudent->nextStudent;
         t++;
     }
