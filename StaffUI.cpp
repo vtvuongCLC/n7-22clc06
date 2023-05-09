@@ -247,7 +247,7 @@ void StudyClassManager(StudyClass* curClass, Semester* listSemester)
 {
     Semester** HandlingArr = nullptr;
     calculateGPA(curClass,curClass->year,listSemester,HandlingArr);
-    char selection;
+    string selection;
     do {
         system("cls");
             cout << "Student Management" << endl;
@@ -271,19 +271,38 @@ void StudyClassManager(StudyClass* curClass, Semester* listSemester)
             } else {
                 DisplayStudentList(curClass->listStudent);
                 cout << endl;
+                cout << "Enter an index or select below options:" << endl;
                 cout << "s. View Scoreboard" << endl;
             }
             cout << "0. Back" << endl;
             cout << ">> ";
             cin >> selection;
-            if (selection == '0')
+            if (selection == "0")
                 break;
-            if ((curClass->listStudent == nullptr) && (selection == 'n' || selection == 'N')) {
+            if ((curClass->listStudent == nullptr) && (selection == "n" || selection == "N")) {
                 AddStudent(curClass->listStudent,curClass->year,curClass->className,curClass->classType,curClass->numStudent);
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
-            if (selection == 's' || selection == 'S') {
+            if (selection == "s" || selection == "S") {
                 StudyClassScoreBoardManager(curClass,curClass->year,HandlingArr);
+            }
+            if (curClass->listStudent != nullptr) {
+                int intselection = stoi(selection);
+                if (intselection > 0 && intselection <= curClass->numStudent) {
+                    char choose;
+                    cout << "Options: " << endl;
+                    cout << "1. Change student's information" << endl;
+                    cout << "0. Back" << endl;
+                    cout << ">> ";
+                    cin >> choose;
+                    if (choose == '1') {
+                        Student* curStudent = navigateStudent(curClass->listStudent,intselection);
+                        if (curStudent != nullptr) {
+                            UpdateStudentInfo(curStudent);
+                            SaveStudentListToFile(curClass->className,curClass->listStudent);
+                        }
+                    }
+                }
             }
     } while (true);
     Student* curStudent = curClass->listStudent;
@@ -316,6 +335,7 @@ void ClassesManager(StudyClass* &listClass, Semester* listSemester, string yearN
         } else {
             DisplayClassList(listClass,maxSelection);
             cout << endl;
+            cout << "Enter an index or select below options:" << endl;
         }
         cout << "0. Back" << endl;
         cout << ">> ";
@@ -387,12 +407,16 @@ void MainManagementUI(DataBase &DB)
         cout << "List of years:" << endl;
         if (DB.YearList == nullptr) {
             cout << "No school years found" << endl;
+            cout << endl;
         } else {
             DisplayYearList(DB.YearList,maxSelection);
+            cout << endl;
+            cout << "Enter an index or select below options:" << endl;
         }
-        cout << endl;
+        
         cout << "n. Add a new year" << endl;
         cout << "0. Back" << endl;
+        
         cout << endl << ">> ";
         cin >> selection;
         if (selection == 'n' || selection == 'N') {

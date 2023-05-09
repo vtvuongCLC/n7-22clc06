@@ -21,13 +21,13 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
         case 0:
             return;
         case 1:
+            system("cls");
             DisplayInfoStudent(curStudent);
             system("pause");
             break;
         case 2:
             ChangePasswordStudent(curStudent);
             SaveStudentListToFile(curStudyClass->className, curStudyClass->listStudent);
-            system("pause");
             break;
         case 3:
             while (true)

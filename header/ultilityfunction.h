@@ -2,7 +2,7 @@
 #define _ULTILITY_FUNCTION
 #include "structlist.h"
 
-bool validInfo(Info infoparam,char gender);
+bool validInfo(BirthDate birth,char gender);
 
 void AddStudentManual(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
 void AddStudentCSV(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
@@ -14,6 +14,8 @@ void AddYear(DataBase &DB);
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex);
 StudyClass* navigateClass(StudyClass* listClass, int userindex);
 Course* navigateCourse(Course* listCourse, int userindex);
+Student* navigateStudent(Student* listStudent, int userindex);
+
 CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string className, int classtype, string StudID,Course* curCourse, Semester* curSemester);
 CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID);
 Course* findTheCourse(Semester* pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass);
@@ -26,6 +28,7 @@ void QuickPtrDebinder(DataBase &DB);
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent, Semester* curSemester);
 void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr);
 
+void UpdateStudentInfo(Student *curStudent);
 void UpdateCourseInfo(CourseInfo &curCourseInfo);
 bool UploadListofStud(Course* &curCourse, Semester* curSemester, Schoolyear* listYear);
 void NewCourse(Course* &firstCour);
