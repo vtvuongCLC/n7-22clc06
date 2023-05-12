@@ -190,14 +190,14 @@ void AddStudentCSV(Student *&listStudent, string yearName, string className, str
 }
 void AddStudent(Student *&listStudent, string yearName, string className, string classType, int &numStudent)
 {
-    char choose;
-    cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
-    cout << ">> ";
-    cin >> choose;
-    if (choose == 'f' || choose == 'F')
+    // char choose;
+    // cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
+    // cout << ">> ";
+    // cin >> choose;
+    // if (choose == 'f' || choose == 'F')
         AddStudentCSV(listStudent, yearName, className, classType, numStudent);
-    else
-        AddStudentManual(listStudent, yearName, className, classType, numStudent);
+    // else
+    //     AddStudentManual(listStudent, yearName, className, classType, numStudent);
 }
 void AddClass(StudyClass *&listClass, string yearName, string classType)
 {
