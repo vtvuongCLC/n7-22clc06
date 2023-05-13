@@ -235,10 +235,10 @@ void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester
         cin >> selection;
         if (selection == '0')
             break;
-        if (selection == 'z' || selection == 'Z') {
+        if (i != 0  && (selection == 'z' || selection == 'Z')) {
             i--;
         }
-        if (selection == 'x' || selection == 'X') {
+        if (!(i == 2 || HandlingArr[i+1] == nullptr) && (selection == 'x' || selection == 'X')) {
             i++;
         }
     } while(true);
@@ -247,7 +247,7 @@ void StudyClassManager(StudyClass* curClass, Semester* listSemester)
 {
     Semester** HandlingArr = nullptr;
     calculateGPA(curClass,curClass->year,listSemester,HandlingArr);
-    string selection;
+    char selection;
     do {
         system("cls");
             cout << "Student Management" << endl;
@@ -277,17 +277,17 @@ void StudyClassManager(StudyClass* curClass, Semester* listSemester)
             cout << "0. Back" << endl;
             cout << ">> ";
             cin >> selection;
-            if (selection == "0")
+            if (selection == '0')
                 break;
-            if ((curClass->listStudent == nullptr) && (selection == "n" || selection == "N")) {
+            if ((curClass->listStudent == nullptr) && (selection == 'n' || selection == 'N')) {
                 AddStudent(curClass->listStudent,curClass->year,curClass->className,curClass->classType,curClass->numStudent);
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
-            if (selection == "s" || selection == "S") {
+            if (selection == 's' || selection == 'S') {
                 StudyClassScoreBoardManager(curClass,curClass->year,HandlingArr);
             }
             if (curClass->listStudent != nullptr) {
-                int intselection = stoi(selection);
+                int intselection = int(selection) - '0';
                 if (intselection > 0 && intselection <= curClass->numStudent) {
                     char choose;
                     cout << "Options: " << endl;
