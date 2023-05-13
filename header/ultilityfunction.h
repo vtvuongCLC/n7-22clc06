@@ -8,7 +8,7 @@ void AddStudentManual(Student* &listStudent, string yearName, string className, 
 void AddStudentCSV(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
 void AddStudent(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
 void AddClass(StudyClass* &listClass, string yearName, string classType);
-string getYearData(Schoolyear* listYear);
+Schoolyear* getYearData(Schoolyear* listYear);
 void AddYear(DataBase &DB);
 
 Schoolyear* navigateYear(Schoolyear* listYear, int userindex);
@@ -26,7 +26,7 @@ void QuickPtrBinder(DataBase &DB);
 void QuickPtrDebinder(DataBase &DB);
 
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent, Semester* curSemester);
-void calculateGPA(StudyClass* curClass, string yearName, Semester* listSemester, Semester** &HandlingArr);
+void getCourseListForHandlingArr(string curYearName, Semester* listSemester, Semester** HandlingArr, int &k);
 
 void UpdateStudentInfo(Student *curStudent);
 void UpdateCourseInfo(CourseInfo &curCourseInfo);

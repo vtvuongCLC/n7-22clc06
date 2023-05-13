@@ -52,17 +52,21 @@ void LoadYearFromFile(string YearFile, Schoolyear* &listYear, int &numYear)
     Schoolyear* curYear = nullptr;
     while (YearIn.eof() == false) {
         string tempData;
-        getline(YearIn,tempData,'\n');
+        getline(YearIn,tempData,',');
         if (tempData.empty() == false) {
             if (listYear == nullptr) {
                 listYear = new Schoolyear;
                 curYear = listYear;
             } else {
                 curYear->nextYear = new Schoolyear;
+                curYear->nextYear->prevYear = curYear;
                 curYear = curYear->nextYear;
             }
             numYear++;
-            curYear->year = tempData;
+            curYear->start = stoi(tempData);
+            getline(YearIn,tempData,',');
+            curYear->end = stoi(tempData);
+            getline(YearIn,curYear->year,'\n');
         }
     }
     YearIn.close();
@@ -127,7 +131,6 @@ void LoadStudentListFromFile(string yearName, string className,string classType,
             getline(StudentIn,tempData,',');
             curStudent->dInfo.Birth.year = stoi(tempData);
             getline(StudentIn,curStudent->dInfo.SocialID,'\n');
-
         }
     }
     StudentIn.close();
@@ -313,6 +316,7 @@ void LoadCourseStudentFromFile(Course* aCourse, Semester* curSemester, Schoolyea
             }
         }
     }
+    CourseStudentIn.close();
 }
 void LoadSemesterSector(DataBase &DB)
 {
@@ -354,6 +358,8 @@ void SaveYearToFile(string YearFile, Schoolyear* ListYear)
     ofstream out;
     out.open("Data\\" + YearFile + ".txt");
     while (ListYear != nullptr) {
+        out << ListYear->start << ',';
+        out << ListYear->end << ',';
         out << ListYear->year << endl;
         ListYear = ListYear->nextYear;
     }
@@ -476,7 +482,6 @@ void ClearClass(StudyClass* &listClass)
         curClass = listClass;
         while (curClass->listStudent != nullptr) {
             curStudent = curClass->listStudent;
-            delete []curStudent->GPA;
                 while(curStudent->pSemester != nullptr){
                     curSemEnroll = curStudent->pSemester;
                     curStudent->pSemester = curSemEnroll->nextSem;

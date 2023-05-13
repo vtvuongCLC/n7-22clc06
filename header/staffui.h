@@ -6,10 +6,10 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester);
 void SpecificSemesterManager(DataBase &DB, Semester* curSemester);
 void SemestersListManager(DataBase &DB, string yearName);
 
-void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester** HandlingArr);
+void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Semester* listSemester);
 
-void StudyClassManager(StudyClass* curClass, Semester* listSemester);
-void ClassesManager(StudyClass* &listClass, Semester* listSemester, string yearName, string classType);
+void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* listSemester);
+void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* listSemester, string yearName, string classType);
 void SchoolYearManager(DataBase &DB, Schoolyear* curYear);
 
 void MainManagementUI(DataBase &DB);

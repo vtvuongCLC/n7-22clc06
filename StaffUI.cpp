@@ -114,14 +114,16 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
         if (curSemester->CourseList == nullptr)
         {
             cout << "No Courses found" << endl;
-
+            cout << endl;
+            cout << "n. Add Course" << endl;
         } else {
             DisplayCourseList(curSemester->CourseList,maxSelection);
+            cout << endl;
+            cout << "Enter an index or select below options:" << endl;
+            cout << "n. Add Course" << endl;
+            cout << "x. Remove Course" << endl;
         }
         curSemester->numCourse = maxSelection;
-        cout << endl;
-        cout << "n. Add Course" << endl;
-        cout << "x. Remove Course" << endl;
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
@@ -173,11 +175,11 @@ void SemestersListManager(DataBase &DB, string yearName)
             cout << "No semesters found." << endl;
         }
         cout << endl;
+        if (maxSelection > 0 && maxSelection <= 3)
+            cout << "Enter an index or select below options:" << endl;
         if (maxSelection < 3)
         {
             cout << "n. Add semester" << endl;
-        } else {
-            cout << "All 3 semesters of this year have been added" << endl;
         }
         cout << "0. Back" << endl;
         cout << ">> ";
@@ -201,58 +203,79 @@ void SemestersListManager(DataBase &DB, string yearName)
     delete []handlingArr;
 }
 
-void StudyClassScoreBoardManager(StudyClass* curClass, string yearName, Semester** HandlingArr)
-{
-    if (HandlingArr[0] == nullptr) {
-        cout << "No Semesters found for this year" << endl;
-        system("pause");
-        return;
-    }
 
-    int i = 0;
-    char selection = '\0';
-    bool nextStep;
-    do {
-        system("cls");
-        cout << "Year: " << yearName << endl;
-        cout << "Semester: " << i+1 << endl;
-        
-        DisplayScoreBoardUI(HandlingArr[i]->CourseList,nextStep);
-        if (nextStep == true) {
-            DisplayScoreBoard(curClass,HandlingArr[i]->CourseList,i, yearName);
-            cout << endl;
-        } else {    
-            cout << endl;
-        }
-        if (i != 0) {
-                cout << "z. Previous Semester" << endl;
-            }
-        if (!(i == 2 || HandlingArr[i+1] == nullptr)) {
-                cout << "x. Next Semester" << endl;
-        }
-        cout << "0. Back" << endl;
-        cout << ">> ";
-        cin >> selection;
-        if (selection == '0')
-            break;
-        if (i != 0  && (selection == 'z' || selection == 'Z')) {
-            i--;
-        }
-        if (!(i == 2 || HandlingArr[i+1] == nullptr) && (selection == 'x' || selection == 'X')) {
-            i++;
-        }
-    } while(true);
-}
-void StudyClassManager(StudyClass* curClass, Semester* listSemester)
+void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Semester* listSemester)
 {
-    Semester** HandlingArr = nullptr;
-    calculateGPA(curClass,curClass->year,listSemester,HandlingArr);
+    Semester** HandlingArr = new Semester*[3];
+    int k = 0;
+    do {
+        if (k == -1) {
+            listYear = listYear->prevYear;
+        }
+        if (k == 3) {
+            listYear = listYear->nextYear;
+        }
+        getCourseListForHandlingArr(listYear->year,listSemester,HandlingArr,k);
+    
+        if (HandlingArr[0] == nullptr) {
+            cout << "No Semesters found for this year, return to class manager" << endl;
+            system("pause");
+            delete []HandlingArr;
+            return;
+        }
+        char selection = '\0';
+        bool nextStep;
+        do {
+            system("cls");
+            cout << "Year: " << listYear->year << endl;
+            cout << "Semester: " << k+1 << endl;
+            
+            DisplayScoreBoardUI(HandlingArr[k]->CourseList,nextStep);
+            if (nextStep == true) {
+                DisplayScoreBoard(curClass,HandlingArr[k]->CourseList,k, listYear->year);
+                cout << endl;
+            } else {    
+                cout << endl;
+            }
+            cout << "Menu options:" << endl;
+            if (!(listYear->prevYear == nullptr && k == 0)) {
+                    cout << "z. Previous Semester" << endl;
+                }
+            if (!(listYear->nextYear == nullptr && (k == 2 || (k < 2 && HandlingArr[k+1] == nullptr)))) {
+                    cout << "x. Next Semester" << endl;
+            }
+            cout << "0. Back" << endl;
+            cout << ">> ";
+            cin >> selection;
+            if (selection == '0') {
+                delete []HandlingArr;
+                return;
+            }
+            if (selection == 'z' || selection == 'Z') {
+                if (!(listYear->prevYear == nullptr && k == 0)) {
+                    k--;
+                }
+            }
+            if (selection == 'x' || selection == 'X') {
+                if (!(listYear->nextYear == nullptr && (k == 2 || (k < 2 && HandlingArr[k+1] == nullptr)))) {
+                    k++;
+                    while (k <= 2 && HandlingArr[k] == nullptr)
+                        k++;
+                }
+            }
+        } while(k >= 0 && k <= 2);
+    } while (true);
+}
+void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* listSemester)
+{
+    while (listYear->nextYear != nullptr)
+        listYear = listYear->nextYear;
     char selection;
     do {
         system("cls");
             cout << "Student Management" << endl;
             cout << endl; 
-            cout << "Year: " << curClass->curyear << endl;
+            cout << "Established Year: " << curClass->year << endl;
             cout << "Academic Program: " << curClass->classType << endl;
             cout << "Class: " << curClass->className << endl;
             cout << endl;
@@ -284,7 +307,7 @@ void StudyClassManager(StudyClass* curClass, Semester* listSemester)
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
             if (selection == 's' || selection == 'S') {
-                StudyClassScoreBoardManager(curClass,curClass->year,HandlingArr);
+                StudyClassScoreBoardManager(listYear,curClass,listSemester);
             }
             if (curClass->listStudent != nullptr) {
                 int intselection = int(selection) - '0';
@@ -305,15 +328,8 @@ void StudyClassManager(StudyClass* curClass, Semester* listSemester)
                 }
             }
     } while (true);
-    Student* curStudent = curClass->listStudent;
-    while (curStudent != nullptr) {
-        delete []curStudent->GPA;
-        curStudent->GPA = nullptr;
-        curStudent = curStudent->nextStudent;
-    }
-    delete []HandlingArr;
 }
-void ClassesManager(StudyClass* &listClass, Semester* listSemester, string yearName, string classType)
+void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* listSemester, string yearName, string classType)
 {
     system("cls");
     char selection;  
@@ -327,7 +343,7 @@ void ClassesManager(StudyClass* &listClass, Semester* listSemester, string yearN
         cout << "Year: " << yearName << endl;
         cout << "Academic Program: " << classType << endl;
         cout << endl;
-        cout << "List of classes: " << endl;
+        cout << "List of classes created in this year: " << endl;
         if (listClass == nullptr) {
             cout << "No classes found" << endl;
             cout << endl;
@@ -350,7 +366,7 @@ void ClassesManager(StudyClass* &listClass, Semester* listSemester, string yearN
             int intSelection = int(selection) - '0';
             if (intSelection > 0 && intSelection <= maxSelection) {
                 chosenClass = navigateClass(listClass, intSelection);
-                StudyClassManager(chosenClass, listSemester);
+                StudyClassManager(listYear,chosenClass, listSemester);
             }
         }
     } while (true);
@@ -377,13 +393,13 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
             cout << ">> ";
             cin >> c;
             if (c == '1') {
-                ClassesManager(curYear->listCLC,DB.SemesterList,curYear->year,"CLC");
+                ClassesManager(DB.YearList, curYear->listCLC,DB.SemesterList,curYear->year,"CLC");
             }
             if (c == '2') {
-                ClassesManager(curYear->listAPCS,DB.SemesterList,curYear->year,"APCS");
+                ClassesManager(DB.YearList, curYear->listAPCS,DB.SemesterList,curYear->year,"APCS");
             }
             if (c == '3') {
-                ClassesManager(curYear->listVP,DB.SemesterList,curYear->year,"VP");
+                ClassesManager(DB.YearList, curYear->listVP,DB.SemesterList,curYear->year,"VP");
             }
         }
             

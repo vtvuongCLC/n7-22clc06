@@ -190,14 +190,14 @@ void AddStudentCSV(Student *&listStudent, string yearName, string className, str
 }
 void AddStudent(Student *&listStudent, string yearName, string className, string classType, int &numStudent)
 {
-    // char choose;
-    // cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
-    // cout << ">> ";
-    // cin >> choose;
-    // if (choose == 'f' || choose == 'F')
-        AddStudentCSV(listStudent, yearName, className, classType, numStudent);
-    // else
-    //     AddStudentManual(listStudent, yearName, className, classType, numStudent);
+    char choose;
+    cout << "Please choose the input method (m - manual(default) or f - CSV file input): " << endl;
+    cout << ">> ";
+    cin >> choose;
+    if (choose == 'f' || choose == 'F')
+     AddStudentCSV(listStudent, yearName, className, classType, numStudent);
+    else
+        AddStudentManual(listStudent, yearName, className, classType, numStudent);
 }
 void AddClass(StudyClass *&listClass, string yearName, string classType)
 {
@@ -229,55 +229,72 @@ void AddClass(StudyClass *&listClass, string yearName, string classType)
         curClass->classType = classType;
     } while (tempClass != "0");
 }
-string getYearData(Schoolyear *listYear)
+Schoolyear* getYearData(Schoolyear *listYear)
 {
     system("cls");
-    string schoolyear;
-    bool exist;
+    bool continueloop;
+    Schoolyear* tempYear = new Schoolyear;
     do
     {
-        exist = false;
+        continueloop = false;
         cout << "Enter School year's start year and end year" << endl
              << endl;
-        cin.ignore();
         cout << "Enter School year's Start year: ";
-        cin >> schoolyear;
-        schoolyear += '-';
-        string temp;
+        cin >> tempYear->start;
         cout << "Enter School year's End year: ";
-        cin >> temp;
-        schoolyear += temp;
+        cin >> tempYear->end;
+        if (tempYear->start >= tempYear->end) {
+            cout << "End year must be at least 1 year greater than start year" << endl;
+            system("pause");
+            continueloop = true;
+            continue;
+        }
+
+        tempYear->year = to_string(tempYear->start);
+        tempYear->year += '-';
+        tempYear->year += to_string(tempYear->end);
+        if (listYear == nullptr)
+            break;
         Schoolyear *check = listYear;
         while (check != nullptr)
         {
-            if (check->year == schoolyear)
+            if (check->start == tempYear->start)
             {
-                cout << "This year has already existed" << endl;
+                cout << "This year has already existed, please re-enter another start-end year" << endl;
                 system("pause");
-                exist = true;
+                continueloop = true;
                 break;
             }
             check = check->nextYear;
         }
-    } while (exist == true && listYear != nullptr);
-    return schoolyear;
+        if (continueloop == true)
+            continue;
+        check = listYear;
+        while (check->nextYear != nullptr)
+            check = check->nextYear;
+        if (check->end > tempYear->start) {
+            cout << "This year start time must be after the last added year's end time (last added year's end time: " << check->end << ')' << endl;
+            system("pause");
+            continueloop = true;
+        }
+    } while (continueloop == true);
+    return tempYear;
 }
 void AddYear(DataBase &DB)
 {
     if (DB.YearList == nullptr)
     {
-        DB.YearList = new Schoolyear;
-        DB.YearList->year = getYearData(DB.YearList);
+        DB.YearList = getYearData(DB.YearList);
     }
     else
-    {
+    { 
         Schoolyear *curYear = DB.YearList;
         while (curYear->nextYear != nullptr)
         {
             curYear = curYear->nextYear;
         }
-        curYear->nextYear = new Schoolyear;
-        curYear->nextYear->year = getYearData(DB.YearList);
+        curYear->nextYear = getYearData(DB.YearList);
+        curYear->nextYear->prevYear = curYear;
     }
     DB.numYear++;
 }
@@ -399,6 +416,21 @@ CourseStudent *FindStudentIndex(Schoolyear *listYear, string yearName, string cl
         cout << "This student hasn't existed in the system\n";
         system("pause");
         return nullptr;
+    }
+    SemEnrollCourse* curEnrolledSemester = curStudent->pSemester;
+    while (curEnrolledSemester != nullptr) {
+        if (curEnrolledSemester->year == curSemester->year && curEnrolledSemester->semester == curSemester->semester) {
+            EnrolledCourse* curEnrolledCourse = curEnrolledSemester->CourseList;
+            while (curEnrolledCourse != nullptr) {
+                if (curEnrolledCourse->ptoCourse->thisCourseInfo.CourseDate.session == curCourse->thisCourseInfo.CourseDate.session) {
+                    cout << "This student has participated in another courses in this session, return to course manager" << endl;
+                    system("pause");
+                    return nullptr;
+                }
+                curEnrolledCourse = curEnrolledCourse->nextCourse;
+            }
+        }
+        curEnrolledSemester = curEnrolledSemester->nextSem;
     }
     CourseStudent *CourseStud = new CourseStudent;
     CourseStud->ptoStudent = curStudent;
@@ -589,93 +621,21 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent *
         curSemEnroll = curSemEnroll->nextSem;
     }
 }
-void calculateGPA(StudyClass *curClass, string yearName, Semester *listSemester, Semester **&HandlingArr)
+void getCourseListForHandlingArr(string curYearName, Semester* listSemester, Semester** HandlingArr, int &k)
 {
-    HandlingArr = new Semester *[3];
-    int i;
-    for (i = 0; i < 3; i++)
-    {
-        HandlingArr[i] = nullptr;
-    }
-    i = 0;
-    while (listSemester != nullptr && i < 3)
-    {
-        if (listSemester->year == yearName)
-        {
-            HandlingArr[i] = listSemester;
-            i++;
+    for (int i = 0; i < 3; i++) {
+            HandlingArr[i] = nullptr;
         }
-        listSemester = listSemester->nextSemester;
-    }
-    Student *curStudent = curClass->listStudent;
-    while (curStudent != nullptr)
-    {
-        curStudent->ovrGPA = -1;
-        curStudent->GPA = new double[3];
-        for (int j = 0; j < 3; j++)
-        {
-            curStudent->GPA[j] = -1;
+    Semester* iSemester = listSemester;
+    k = 0;       
+    while (iSemester != nullptr) {
+        if (iSemester->year == curYearName)  {
+            HandlingArr[k] = iSemester;
+            k++;
         }
-        curStudent = curStudent->nextStudent;
+        iSemester = iSemester->nextSemester;
     }
-    Course *curCourse = nullptr;
-    SemEnrollCourse *curSemEnroll = nullptr;
-    EnrolledCourse *curEnrolled = nullptr;
-    for (i = 0; i < 3; i++)
-    {
-        if (HandlingArr[i] != nullptr)
-        {
-            curStudent = curClass->listStudent;
-            while (curStudent != nullptr)
-            {
-                int count = 0;
-                double totalscore = 0;
-                curCourse = HandlingArr[i]->CourseList;
-                curSemEnroll = curStudent->pSemester;
-                while (curSemEnroll != nullptr && (curSemEnroll->semester != HandlingArr[i]->semester || curSemEnroll->year != HandlingArr[i]->year))
-                    curSemEnroll = curSemEnroll->nextSem;
-                if (curSemEnroll == nullptr)
-                {
-                    curStudent = curStudent->nextStudent;
-                    continue;
-                }
-                while (curCourse != nullptr)
-                {
-                    curEnrolled = curSemEnroll->CourseList;
-                    while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse)
-                        curEnrolled = curEnrolled->nextCourse;
-                    if (curEnrolled != nullptr)
-                    {
-                        count++;
-                        totalscore += curEnrolled->Score->totalMark;
-                    }
-                    curCourse = curCourse->nextCourse;
-                }
-                if (count != 0)
-                {
-                    curStudent->GPA[i] = (totalscore * 4) / (count * 10.0);
-                }
-                curStudent = curStudent->nextStudent;
-            }
-        }
-    }
-    curStudent = curClass->listStudent;
-    while (curStudent != nullptr)
-    {
-        double totalgpa = 0;
-        int count = 0;
-        for (int k = 0; k < 3; k++)
-        {
-            if (curStudent->GPA[k] != -1)
-            {
-                totalgpa += curStudent->GPA[k];
-                count++;
-            }
-        }
-        if (count != 0)
-            curStudent->ovrGPA = totalgpa / (count * 1.0);
-        curStudent = curStudent->nextStudent;
-    }
+    k--;
 }
 
 void uppercaser(string &a)

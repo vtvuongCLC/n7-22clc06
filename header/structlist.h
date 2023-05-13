@@ -77,6 +77,8 @@ struct CourseInfo {
     //SCHOOLYEARS
     struct Schoolyear {
         int    index;
+
+        int start,end;
         string year;
         
         int numCLC  = 0;
@@ -91,12 +93,12 @@ struct CourseInfo {
         
         
         Schoolyear*  nextYear      = nullptr;
+        Schoolyear*  prevYear      = nullptr;
     };
 
     //CLASSES
     struct StudyClass {
         string year;
-        string curyear;
         string className;
         string classType;
         int    numStudent = 0;
@@ -123,7 +125,6 @@ struct CourseInfo {
         Info   dInfo;
 
         double ovrGPA;
-        double* GPA = nullptr;
 
         SemEnrollCourse* pSemester  = nullptr;
         Student*        nextStudent = nullptr;
