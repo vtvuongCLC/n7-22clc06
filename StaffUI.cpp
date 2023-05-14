@@ -7,6 +7,7 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
     char selection;
     do {
         system("cls");
+        cout << "Course Management Panel" << endl;
         cout << "Year: " << curSemester->year << endl;
         cout << "Semester: " << curSemester->semester << endl;
         cout << "Course ID: " << curCourse->thisCourseInfo.courseID << endl;
@@ -98,6 +99,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
     do {
         maxSelection = 0;
         system("cls");
+        cout << "Courses List Management Panel" << endl;
         cout << "Current Year: " << curSemester->year << endl;
         cout << "Semester: " << curSemester->semester << endl;
         cout << "Start date: " << curSemester->start << endl;
@@ -166,6 +168,7 @@ void SemestersListManager(DataBase &DB, string yearName)
     do {
         maxSelection = 0;
         system("cls");
+        cout << "Semesters List Management Panel" << endl;
         cout << "Current Year: " << yearName << endl;
         cout << left << setw(10) << "Index";
         cout << left << setw(10) << "Semester";
@@ -229,6 +232,7 @@ void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Sem
         bool nextStep;
         do {
             system("cls");
+            cout << "Class Scoreboard Management Panel" << endl;
             cout << "Year: " << listYear->year << endl;
             cout << "Semester: " << k+1 << endl;
             
@@ -275,7 +279,7 @@ void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* lis
     char selection;
     do {
         system("cls");
-            cout << "Student Management" << endl;
+            cout << "Student Management Panel" << endl;
             cout << endl; 
             cout << "Established Year: " << curClass->year << endl;
             cout << "Academic Program: " << curClass->classType << endl;
@@ -344,7 +348,7 @@ void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* list
     do {
         maxSelection = 0;
         system("cls");
-        cout << "Classes Management" << endl;
+        cout << "Classes Management Panel" << endl;
         cout << endl;
         cout << "Year: " << yearName << endl;
         cout << "Academic Program: " << classType << endl;
@@ -382,6 +386,7 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
     char selection;
     do {
         system("cls");
+        cout << "Academic Year Management Panel" << endl;
         cout << "Current Year: " << curYear->year << endl;
         cout << "1. Classes management" << endl;
         cout << "2. Semesters management" << endl;
@@ -426,6 +431,7 @@ void MainManagementUI(DataBase &DB)
     do {
         maxSelection = 0;
         system("cls");
+        cout << "School Management Panel" << endl;
         cout << "List of years:" << endl;
         if (DB.YearList == nullptr) {
             cout << "No school years found" << endl;

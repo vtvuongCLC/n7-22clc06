@@ -1423,6 +1423,11 @@ void ChangeStudentScore(CourseStudent *listCourseStudent)
     cout << "Enter the ID of the student: ";
     cin >> StudentID;
     CourseStudent *curStudent = findStudentInCourse(listCourseStudent, StudentID);
+    if (curStudent == nullptr) {
+        cout << "There is no student with this ID in the course" << endl;
+        system("pause");
+        return;
+    }
     int choice;
     do
     {
