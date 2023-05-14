@@ -211,6 +211,11 @@ void SemestersListManager(DataBase &DB, string yearName)
 
 void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Semester* listSemester)
 {
+    if (listSemester == nullptr) {
+        cout << "No Semesters found for this year, return to class manager" << endl;
+        system("pause");
+        return;
+    }
     Semester** HandlingArr = new Semester*[3]; 
     int k = 0;
     do {
@@ -221,12 +226,11 @@ void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Sem
             listYear = listYear->nextYear;
         }
         getCourseListForHandlingArr(listYear->year,listSemester,HandlingArr,k);
-    
-        if (HandlingArr[0] == nullptr) {
-            cout << "No Semesters found for this year, return to class manager" << endl;
-            system("pause");
-            delete []HandlingArr;
-            return;
+        if (HandlingArr[0] == nullptr)
+        {
+            k = 0;
+            listYear = listYear->prevYear;
+            continue;
         }
         char selection = '\0';
         bool nextStep;
@@ -260,6 +264,8 @@ void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Sem
             if (selection == 'z' || selection == 'Z') {
                 if (!(listYear->prevYear == nullptr && k == 0)) {
                     k--;
+                    while (k >= 0 && HandlingArr[k] == nullptr)
+                        k--;
                 }
             }
             if (selection == 'x' || selection == 'X') {
@@ -418,7 +424,6 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
         {
             QuickPtrBinder(DB);
             SemestersListManager(DB,curYear->year);
-            QuickPtrDebinder(DB);
         }
     } while (true);
     

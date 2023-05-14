@@ -499,6 +499,7 @@ void ClearClass(StudyClass* &listClass)
 }
 void ClearData(DataBase &DB)
 {
+    QuickPtrDebinder(DB);
     Semester* curSemester = nullptr;
     Course* curCourse = nullptr;
     CourseStudent* curCourseStudent = nullptr;

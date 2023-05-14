@@ -48,6 +48,7 @@ int main()
     
     cout << "Closing program..." << endl;
     cout << "Cleaning data..." << endl;
+    
     ClearStaffList(staffList);
     ClearData(DB);
     system("pause");
