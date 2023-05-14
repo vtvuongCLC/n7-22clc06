@@ -545,7 +545,7 @@ void subBinder(StudyClass* listClass, int numClass, StudyClass** &ClassHandler)
     ClassHandler = new StudyClass*[numClass];
     ClassPtrBinder(ClassHandler,listClass);
 }
-void QuickPtrBinder(DataBase DB)
+void QuickPtrBinder(DataBase &DB)
 {
     if (DB.YearList != nullptr)
     {
@@ -586,7 +586,7 @@ void subDebinder(StudyClass* curClass)
         curClass = curClass->nextClass;
     }
 }
-void QuickPtrDebinder(DataBase DB)
+void QuickPtrDebinder(DataBase &DB)
 {
     if (DB.YearList != nullptr)
     {

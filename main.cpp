@@ -24,8 +24,14 @@ int main()
         cout << "0. Exit Program"           << endl;
         cout << ">> ";
         cin >> usertype;
-        if (usertype != 1 && usertype != 2)
-            break;
+        if (usertype == 0) {
+            char exit;
+            cout << "Exit program ? (y/n) >> ";
+            cin >> exit;
+            if (exit == 'y' || exit == 'Y')
+                break;
+        }
+            
         if (usertype == 1) {
             StudyClass* toStudyClass = nullptr;
             Student* toStudent = nullptr;
