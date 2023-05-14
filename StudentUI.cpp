@@ -64,26 +64,29 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
                     cin >> choice;
                     if (choice =='0')
                         continue;
-                    intChoice = int(choice) - '0';
-                    if (intChoice > 0 && intChoice <= maxChoice){
-                        Semester* chosenSemester = handlingArr[intChoice - 1];
-                        while (true){
-                            system("cls");
-                            cout << "Year: " << chosenYear->year << endl;
-                            cout << "Semester: " << chosenSemester->semester << endl;
-                            cout << "1. View enrolled courses" << endl;
-                            cout << "2. View scoreboard" << endl;
-                            cout << "0. Back" << endl
-                                 << ">> ";
-                            cin >> choice;
-                            if (choice == '0') break;
-                            intChoice = int(choice) - '0';
-                            if(intChoice == 1) DisplayCourseList1Student(curStudent, chosenSemester->semester, chosenYear->year);
-                            if(intChoice == 2) DisplayScoreboard1Student(curStudent, chosenSemester->semester, chosenYear->year);
-                            system("pause");
+                    if (handlingArr[0] != 0) {
+                        intChoice = int(choice) - '0';
+                        if (intChoice > 0 && intChoice <= maxChoice){
+                            Semester* chosenSemester = handlingArr[intChoice - 1];
+                            while (true){
+                                system("cls");
+                                cout << "Year: " << chosenYear->year << endl;
+                                cout << "Semester: " << chosenSemester->semester << endl;
+                                cout << "1. View enrolled courses" << endl;
+                                cout << "2. View scoreboard" << endl;
+                                cout << "0. Back" << endl
+                                    << ">> ";
+                                cin >> choice;
+                                if (choice == '0') break;
+                                intChoice = int(choice) - '0';
+                                if(intChoice == 1) DisplayCourseList1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                                if(intChoice == 2) DisplayScoreboard1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                                system("pause");
+                            }
                         }
                     }
-                }
+                    delete []handlingArr;
+                }        
             }
             break;
         }
