@@ -1468,16 +1468,16 @@ void ChangeStudentScore(CourseStudent *listCourseStudent)
 }
 void ChangePasswordStaff(StaffAccount *curStaff)
 {
-    int check;
+    char check;
     string password, confirm;
     while (true)
     {
         system("cls");
         cout << "Do you want to continue changing password ? (1 to proceed | 0 to exit): ";
         cin >> check;
-        if (check == 0)
+        if (check == '0')
             return;
-        if (check != 1)
+        if (check != '1')
             continue;
         system("cls");
         cout << "Change Password\n\n";
@@ -1510,16 +1510,16 @@ void ChangePasswordStaff(StaffAccount *curStaff)
 }
 void ChangePasswordStudent(Student *curStudent)
 {
-    int check;
+    char check;
     string password, confirm;
     while (true)
     {
         system("cls");
         cout << "Do you want to continue changing password ? (1 to proceed | 0 to exit): ";
         cin >> check;
-        if (check == 0)
+        if (check == '0')
             return;
-        if (check != 1)
+        if (check != '1')
             continue;
         system("cls");
         cout << "Change Password\n\n";

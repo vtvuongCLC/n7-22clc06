@@ -4,7 +4,7 @@
 #include "header/displayfunction.h"
 void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
 {
-    int selection;
+    char selection;
     do {
         system("cls");
         cout << "Year: " << curSemester->year << endl;
@@ -43,9 +43,9 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
-        if (selection == 0)
+        if (selection == '0')
             break;
-        switch (selection)
+        switch (int(selection) - '0')
         {
         case 1:
             if (curCourse->numCurStudents == curCourse->thisCourseInfo.maxStudent) {
@@ -376,7 +376,7 @@ void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* list
 }
 void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
 {
-    int selection;
+    char selection;
     do {
         system("cls");
         cout << "Current Year: " << curYear->year << endl;
@@ -385,9 +385,9 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
         cout << "0. Back" << endl;
         cout << ">> ";
         cin >> selection;
-        if (selection == 0)
+        if (selection == '0')
             break;
-        if (selection == 1) {
+        if (selection == '1') {
             char c;
             cout << "Class's Program: " << endl;
             cout << "1. CLC" << endl;
@@ -406,7 +406,7 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
             }
         }
             
-        if (selection == 2)
+        if (selection == '2')
         {
             QuickPtrBinder(DB);
             SemestersListManager(DB,curYear->year);
