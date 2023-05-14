@@ -28,9 +28,10 @@ void DisplayScoreBoardUI(Course* listCourse, bool &nextStep)
             listCourse = listCourse->nextCourse;
         }
         if (noCourse == true) {
-            cout << endl << "No Courses found" << endl;
+            cout << "     No Courses found" << endl;
             nextStep = false;
         } else {
+            cout << left << setw(15) << "GPA (10)";
             cout << left << setw(15) << "GPA (4)" << endl;
             nextStep = true;
         }
@@ -46,7 +47,6 @@ void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester, s
     int i = 0;
     while (curStudent != nullptr) {
         i++;
-        int k = 0;
         double TOTAL = 0;
         cout << left << setw(5) << i;
         cout << left << setw(15) << curStudent->dInfo.StudentID;
@@ -62,26 +62,30 @@ void DisplayScoreBoard(StudyClass* curClass, Course* listCourse, int semester, s
                 cout << left << setw(15) << "N/A";
                 curCourse = curCourse->nextCourse;
             }
-        }
-        while (curCourse != nullptr) {
-            curEnrolled = curSemEnroll->CourseList;
-            while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse) {
-                curEnrolled = curEnrolled->nextCourse;
-            }
-            if (curEnrolled == nullptr) {
-                cout << left << setw(15) << "N/A";
-            } else {
-                cout << left << setw(15) << (curEnrolled->Score->totalMark);
-                TOTAL += curEnrolled->Score->totalMark;
-                k++;
-            }
-            curCourse = curCourse->nextCourse;
-        }
-        if (k == 0) {
-            cout << left << setw(15) << 0;
         } else {
-            cout << left << setw(15) << (TOTAL*4.0)/(k*10.0);
+            int k = 0;
+            while (curCourse != nullptr) {
+                curEnrolled = curSemEnroll->CourseList;
+                while (curEnrolled != nullptr && curEnrolled->ptoCourse != curCourse) {
+                    curEnrolled = curEnrolled->nextCourse;
+                }
+                if (curEnrolled == nullptr) {
+                    cout << left << setw(15) << "N/A";
+                } else {
+                    cout << left << setw(15) << (curEnrolled->Score->totalMark);
+                    TOTAL += curEnrolled->Score->totalMark;
+                    k++;
+                }
+                curCourse = curCourse->nextCourse;
+            }
+            if (k == 0) {
+                cout << left << setw(15) << 0;
+            } else {
+                cout << left << setw(15) << TOTAL/(k*1.0);
+                cout << left << setw(15) << (TOTAL*4.0)/(k*10.0);
+            }
         }
+        
             
         curStudent = curStudent->nextStudent;
         cout << endl;
@@ -115,10 +119,11 @@ void DisplayStudentList(Student* listStudent)
             curEnrolledSemester = curEnrolledSemester->nextSem;
         }
         if (index != 0) {
-            listStudent->ovrGPA = (listStudent->ovrGPA*4.0)/(10.0*index);
-            cout << left << setw(15) << listStudent->ovrGPA << endl;
+            cout << left << setw(20) << listStudent->ovrGPA/(1.0*index);
+            cout << left << setw(20) << (listStudent->ovrGPA*4.0)/(10.0*index) << endl;
         } else {
-            cout << 0 << endl; 
+            cout << left << setw(20) << 0;
+            cout << left << setw(20) << 0 << endl; 
         }
         
         listStudent = listStudent->nextStudent;

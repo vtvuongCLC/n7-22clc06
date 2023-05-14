@@ -106,6 +106,10 @@ bool login_staff(StaffAccount* staffList, StaffAccount* &toStaff)
 			}
 			cur = cur->nextAccount;
 		}
+		if (cur == nullptr) {
+			cout << "Username not found, please try again" << endl;
+			system("pause");
+		}
 	} while (true);
 	return false;
 }

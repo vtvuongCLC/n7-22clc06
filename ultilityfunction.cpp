@@ -1316,11 +1316,12 @@ void removeCourse(Semester *curSemester)
         removeEnrollCourse(tmp->ptoStudent, pCourse, curSemester);
         delete tmp;
     }
-    string filename = "Data\\" + pCourse->thisCourseInfo.courseID + '_' + pCourse->thisCourseInfo.className + ".txt";
+    string filename = "Data\\" + pCourse->thisCourseInfo.courseID + "_" + pCourse->thisCourseInfo.className + ".txt";
     remove(filename.c_str());
 
     delete pCourse;
     cout << "The program removed this course.\n";
+    curSemester->numCourse--;
     system("pause");
 }
 

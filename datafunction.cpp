@@ -418,13 +418,17 @@ void SaveCourseStudentToFile(Course* aCourse)
 }
 void SaveCourseInfoToFile(Semester* curSemester)
 {
-    if (curSemester->CourseList == nullptr)
-        return;
     ofstream out;
-    string fileName = curSemester->year;
+    string fileName = "Data\\";
+    fileName += curSemester->year;
     fileName += "_HK";
     fileName += ('0' + curSemester->semester);
-    out.open("Data\\" + fileName + "_CourseInfo.txt");
+    fileName += "_CourseInfo.txt";
+    if (curSemester->CourseList == nullptr) {
+        remove(fileName.c_str());
+        return;
+    }
+    out.open(fileName);
     out << curSemester->numCourse << endl;
     Course* curCourse = curSemester->CourseList;
     while (curCourse != nullptr) {

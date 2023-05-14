@@ -131,6 +131,7 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
             break;
         if (selection == 'n' || selection == 'N') {
             NewCourse(curSemester->CourseList);
+            curSemester->numCourse++;
             SaveCourseInfoToFile(curSemester);
             continue;
         }
@@ -140,10 +141,11 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
             {
                 cout << "No Courses to remove now" << endl;
                 system("pause");
+            } else {
+                removeCourse(curSemester);
+                SaveCourseInfoToFile(curSemester);
+                continue;
             }
-            removeCourse(curSemester);
-            SaveCourseInfoToFile(curSemester);
-            continue;
         }
             
         if (curSemester->CourseList != nullptr) {
@@ -286,7 +288,8 @@ void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* lis
             cout << left << setw(11) << "Gender";
             cout << left << setw(19) << "Date of Birth";
             cout << left << setw(25) << "Social ID";
-            cout << left << setw(15) << "Overall GPA" << endl;
+            cout << left << setw(20) << "Overall GPA (10)";
+            cout << left << setw(20) << "Overall GPA (4)" << endl;
             if (curClass->listStudent == nullptr) {
                 cout << "No students found" << endl;
                 cout << endl;
