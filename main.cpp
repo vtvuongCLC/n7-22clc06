@@ -12,7 +12,7 @@ int main()
     LoadSchoolData(DB);
     LoadSemesterSector(DB);
 
-    int usertype;
+    char usertype;
     
     do {
         system("cls");
@@ -24,7 +24,7 @@ int main()
         cout << "0. Exit Program"           << endl;
         cout << ">> ";
         cin >> usertype;
-        if (usertype == 0) {
+        if (usertype == '0') {
             char exit;
             cout << "Exit program ? (y/n) >> ";
             cin >> exit;
@@ -32,13 +32,13 @@ int main()
                 break;
         }
             
-        if (usertype == 1) {
+        if (usertype == '1') {
             StudyClass* toStudyClass = nullptr;
             Student* toStudent = nullptr;
             if (login_student(DB.YearList,toStudent,toStudyClass) == true) 
                 StudentUI(toStudent,toStudyClass,DB);
         }
-        if (usertype == 2) {
+        if (usertype == '2') {
             StaffAccount* toStaff = nullptr;
             if (login_staff(staffList,toStaff) == true)
                 StaffUI(DB,toStaff,staffList);
