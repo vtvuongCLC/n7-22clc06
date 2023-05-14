@@ -5,7 +5,7 @@
 #include "header/datafunction.h"
 
 void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
-    int selection;
+    char selection;
     while (true)
     {
         system("cls");
@@ -18,21 +18,22 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
         cin >> selection;
         switch (selection)
         {
-        case 0:
+        case '0':
             return;
-        case 1:
+        case '1':
             system("cls");
             DisplayInfoStudent(curStudent);
             system("pause");
             break;
-        case 2:
+        case '2':
             ChangePasswordStudent(curStudent);
             SaveStudentListToFile(curStudyClass->className, curStudyClass->listStudent);
             break;
-        case 3:
+        case '3':
             while (true)
             {
-                int maxChoice = 0, choice;
+                int maxChoice = 0;
+                char choice;
                 system("cls");
                 cout << "Choose the year to view enrolled courses and scoreboard" << endl
                      << endl;
@@ -41,11 +42,12 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
                 cout << "0. Back" << endl
                      << ">> ";
                 cin >> choice;
-                if (choice == 0)
+                if (choice == '0')
                     break;
-                if (choice > 0 && choice <= maxChoice)
+                int intChoice = int(choice) - '0';
+                if (intChoice > 0 && intChoice <= maxChoice)
                 {
-                    Schoolyear *chosenYear = navigateYear(DB.YearList, choice);
+                    Schoolyear *chosenYear = navigateYear(DB.YearList, intChoice);
                     system("cls");
                     Semester **handlingArr = nullptr;
                     cout << "Choose the semester of year " << chosenYear->year << " to view enrolled courses and scoreboard" << endl << endl;
@@ -60,10 +62,11 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
                     cout << "0. Back" << endl
                          << ">> ";
                     cin >> choice;
-                    if (choice == 0)
+                    if (choice =='0')
                         continue;
-                    if (choice > 0 && choice <= maxChoice){
-                        Semester* chosenSemester = handlingArr[choice - 1];
+                    intChoice = int(choice) - '0';
+                    if (intChoice > 0 && intChoice <= maxChoice){
+                        Semester* chosenSemester = handlingArr[intChoice - 1];
                         while (true){
                             system("cls");
                             cout << "Year: " << chosenYear->year << endl;
@@ -73,9 +76,10 @@ void StudentUI(Student *curStudent, StudyClass* curStudyClass, DataBase DB){
                             cout << "0. Back" << endl
                                  << ">> ";
                             cin >> choice;
-                            if (choice == 0) break;
-                            if(choice == 1) DisplayCourseList1Student(curStudent, chosenSemester->semester, chosenYear->year);
-                            if(choice == 2) DisplayScoreboard1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                            if (choice == '0') break;
+                            intChoice = int(choice) - '0';
+                            if(intChoice == 1) DisplayCourseList1Student(curStudent, chosenSemester->semester, chosenYear->year);
+                            if(intChoice == 2) DisplayScoreboard1Student(curStudent, chosenSemester->semester, chosenYear->year);
                             system("pause");
                         }
                     }
