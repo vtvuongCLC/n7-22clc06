@@ -165,7 +165,7 @@ void AddStudentCSV(Student *&listStudent, string yearName, string className, str
         cin.ignore();
         cout << "Enter CSV file name (without file extension): ";
         getline(cin, filepath);
-        csvIn.open("Input\\" + filepath + ".csv");
+        csvIn.open("InOut\\" + filepath + ".csv");
         if (csvIn.is_open() == false)
         {
             int selection;
@@ -1337,7 +1337,7 @@ void ExportCourseStudent(Course *curCourse)
         return;
     }
     ofstream out;
-    out.open("StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
+    out.open("InOut\\StudentOf_" + curCourse->thisCourseInfo.courseID + '_' + curCourse->thisCourseInfo.className + ".csv");
     CourseStudent *curStudent = curCourse->listStudent;
     Scoreboard thisCourseBoard;
     Student *temp = nullptr;
@@ -1383,7 +1383,7 @@ bool importCourseScore(Course *&curCourse)
     cin.ignore(1000, '\n');
     cout << "Enter filename (without file extension): ";
     getline(cin, filepath);
-    in.open("Input\\" + filepath + ".csv");
+    in.open("InOut\\" + filepath + ".csv");
     if (!in.is_open()) {
         success = false;
     } else {
