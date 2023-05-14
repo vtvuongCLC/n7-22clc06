@@ -163,9 +163,9 @@ void AddStudentCSV(Student *&listStudent, string yearName, string className, str
     do
     {
         cin.ignore();
-        cout << "Enter CSV file path: ";
-        getline(cin, filepath, '\n');
-        csvIn.open(filepath);
+        cout << "Enter CSV file name (without file extension): ";
+        getline(cin, filepath);
+        csvIn.open("Input\\" + filepath + ".csv");
         if (csvIn.is_open() == false)
         {
             int selection;
@@ -1342,6 +1342,7 @@ void ExportCourseStudent(Course *curCourse)
     Scoreboard thisCourseBoard;
     Student *temp = nullptr;
     bool successflag = false;
+    out << "No,Student ID,Full Name,Mid Term Mark,Final Mark,Other Mark,Total Mark" << endl;
     while (curStudent != nullptr)
     {
         successflag = true;
@@ -1375,39 +1376,54 @@ bool importCourseScore(Course *&curCourse)
         system("pause");
         return false;
     }
-
+    bool success;
     ifstream in;
-    CourseStudent *temp = curCourse->listStudent;
-    Student *StudTemp = nullptr;
     string No, ID, Name, TotalMark, FinalMark, MidtermMark, OtherMark;
     string filepath;
     cin.ignore(1000, '\n');
-    cout << "Enter filepath: ";
+    cout << "Enter filename (without file extension): ";
     getline(cin, filepath);
-    in.open(filepath);
-    if (!in.is_open())
-        return false;
-    while (temp != nullptr && in.eof() == false)
-    {
-        StudTemp = temp->ptoStudent;
-        getline(in, No, ',');
-        getline(in, ID, ',');
-        getline(in, Name, ',');
-        getline(in, MidtermMark, ',');
-        getline(in, FinalMark, ',');
-        getline(in, OtherMark, ',');
-        getline(in, TotalMark, '\n');
-        if (temp->no == stoi(No) && StudTemp->dInfo.StudentID == ID && StudTemp->dInfo.LastName + " " + StudTemp->dInfo.FirstName == Name)
+    in.open("Input\\" + filepath + ".csv");
+    if (!in.is_open()) {
+        success = false;
+    } else {
+        in.ignore(1000,'\n');
+        while (in.eof() == false)
         {
+            getline(in, No, ',');
+            if (No.empty() == true) {
+                in.close();
+                break;
+            }
+            getline(in, ID, ',');
+            getline(in, Name, ',');
+            getline(in, MidtermMark, ',');
+            getline(in, FinalMark, ',');
+            getline(in, OtherMark, ',');
+            getline(in, TotalMark, '\n');
+            CourseStudent *temp = curCourse->listStudent;
+            while (temp != nullptr) {
+                if (temp->ptoStudent->dInfo.StudentID == ID)
+                    break;
+                temp = temp->nextStudent;
+            }
             temp->savedScore.midtermMark = stod(MidtermMark);
             temp->savedScore.finalMark = stod(FinalMark);
             temp->savedScore.otherMark = stod(OtherMark);
             temp->savedScore.totalMark = stod(TotalMark);
+            success = true;
         }
-        temp = temp->nextStudent;
+        in.close();
     }
-    in.close();
-    return true;
+    if (success == true) {
+        cout << "Successfully imported file" << endl;
+        system("pause");
+        return true;
+    } else {
+        cout << "Error occurred while importing" << endl;
+        system("pause");
+        return false;
+    }
 }
 
 void ChangeStudentScore(CourseStudent *listCourseStudent)
