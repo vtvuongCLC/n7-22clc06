@@ -15,6 +15,7 @@ int main()
     int usertype;
     
     do {
+        usertype = -9;
         system("cls");
         cout << "Courses Management System" << endl;
         cout << "Login Menu"                << endl;
@@ -46,6 +47,8 @@ int main()
     } while (true);
     
     cout << "Closing program..." << endl;
+    cout << "Cleaning data..." << endl;
     ClearStaffList(staffList);
     ClearData(DB);
+    system("pause");
 }
