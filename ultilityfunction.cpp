@@ -37,7 +37,29 @@ bool validInfo(BirthDate birth, char gender)
 
     return true;
 }
-
+bool validName(string name)
+{
+    for (int i = 0; i < name.length(); i++) {
+        if (name[i] >= 'A' && name[i] <= 'Z' || name[i] >= 'a' && name[i] <= 'z')
+            break;
+        else {
+            name.erase(i);
+        }
+    }
+    for (int i = name.length()-1; i >= 0; i++) {
+        if (name[i] >= 'A' && name[i] <= 'Z' || name[i] >= 'a' && name[i] <= 'z')
+            break;
+        else {
+            name.erase(i);
+        }
+    }
+    for (int i = 0; i < name.length(); i++)
+    {
+        if (!(name[i] >= 'A' && name[i] <= 'Z' || name[i] >= 'a' && name[i] <= 'z' || name[i] == ' '))
+            return false;
+    }
+    return true;
+}
 void AddStudentManual(Student *&listStudent, string yearName, string className, string classType, int &numStudent)
 {
     Student *curStudent = nullptr;
@@ -52,10 +74,26 @@ void AddStudentManual(Student *&listStudent, string yearName, string className, 
         cin.ignore();
         cout << "Enter student ID : ";
         getline(cin, tempInfo.StudentID, '\n');
-        cout << "Enter student First Name : ";
-        getline(cin, tempInfo.FirstName, '\n');
-        cout << "Enter student Last Name : ";
-        getline(cin, tempInfo.LastName, '\n');
+        bool continueloop;
+        do {
+            continueloop = false;
+            cout << "Enter student First Name : ";
+            getline(cin, tempInfo.FirstName, '\n');
+            if (validName(tempInfo.FirstName) == false) {
+                continueloop = true;
+                cout << "Enter only Alphabet character only" << endl;
+            }
+        } while (continueloop == true);
+        do {
+            continueloop = false;
+            cout << "Enter student Last Name : ";
+            getline(cin, tempInfo.LastName, '\n');
+            if (validName(tempInfo.LastName) == false) {
+                continueloop = true;
+                cout << "Enter only Alphabet character only" << endl;
+            }
+        } while (continueloop == true);
+       
         char gender;
         cout << "Enter student Gender (male = m | female = f) : ";
         cin >> gender;
@@ -195,14 +233,15 @@ void AddStudent(Student *&listStudent, string yearName, string className, string
     cout << ">> ";
     cin >> choose;
     if (choose == 'f' || choose == 'F')
-     AddStudentCSV(listStudent, yearName, className, classType, numStudent);
+        AddStudentCSV(listStudent, yearName, className, classType, numStudent);
     else
         AddStudentManual(listStudent, yearName, className, classType, numStudent);
 }
-void AddClass(StudyClass *&listClass, string yearName, string classType)
+void AddClass(StudyClass *&listClass, string yearName, string classType, int &numClass)
 {
     StudyClass *curClass = nullptr;
     string tempClass;
+    int i = 0;
     cout << "Enter Classes in this year (0 to stop): " << endl
          << endl;
     cin.ignore();
@@ -227,7 +266,9 @@ void AddClass(StudyClass *&listClass, string yearName, string classType)
         curClass->className = tempClass;
         curClass->year = yearName;
         curClass->classType = classType;
+        i++;
     } while (tempClass != "0");
+    numClass = i;
 }
 Schoolyear* getYearData(Schoolyear *listYear)
 {
@@ -491,56 +532,61 @@ void ClassPtrBinder(StudyClass **quickClassPtr, StudyClass *listClass)
         i++;
         if (listClass->listStudent != nullptr)
         {
+            delete []listClass->quickStudentPtr;
             listClass->quickStudentPtr = new Student *[listClass->numStudent];
             StudentPtrBinder(listClass->quickStudentPtr, listClass->listStudent);
         }
         listClass = listClass->nextClass;
     }
 }
-void QuickPtrBinder(DataBase &DB)
+void subBinder(StudyClass* listClass, int numClass, StudyClass** &ClassHandler)
+{
+    delete []ClassHandler;
+    ClassHandler = new StudyClass*[numClass];
+    ClassPtrBinder(ClassHandler,listClass);
+}
+void QuickPtrBinder(DataBase DB)
 {
     if (DB.YearList != nullptr)
     {
-        if (DB.quickSchoolPtr != nullptr)
-            delete[] DB.quickSchoolPtr;
-        DB.quickSchoolPtr = new Schoolyear *[DB.numYear];
-        Schoolyear *curYear = DB.YearList;
-
-        Student *curStudent = nullptr;
+        delete []DB.quickSchoolPtr;
+        DB.quickSchoolPtr = new Schoolyear* [DB.numYear]; 
+        Schoolyear* curYear = DB.YearList;
         int i = 0;
         while (curYear != nullptr)
         {
             DB.quickSchoolPtr[i] = curYear;
+            delete []curYear->qClassPtr;
+            curYear->qClassPtr = new StudyClass**[3];
+            for (int j = 0; j < 3; j++)
+                curYear->qClassPtr[j] = nullptr;
+
+            if (curYear->listCLC != nullptr) {
+                subBinder(curYear->listCLC,curYear->numCLC,curYear->qClassPtr[0]);
+            }
+            if (curYear->listAPCS != nullptr) {
+                subBinder(curYear->listAPCS,curYear->numAPCS,curYear->qClassPtr[1]);
+            }
+            if (curYear->listVP != nullptr) {
+                subBinder(curYear->listVP,curYear->numVP,curYear->qClassPtr[2]);
+            }
             i++;
-            if (curYear->listCLC != nullptr)
-            {
-                if (curYear->qClassPtr[0] != nullptr)
-                    delete[] curYear->qClassPtr[0];
-
-                curYear->qClassPtr[0] = new StudyClass *[curYear->numCLC];
-                ClassPtrBinder(curYear->qClassPtr[0], curYear->listCLC);
-            }
-            if (curYear->listAPCS != nullptr)
-            {
-                if (curYear->qClassPtr[1] != nullptr)
-                    delete[] curYear->qClassPtr[1];
-
-                curYear->qClassPtr[1] = new StudyClass *[curYear->numAPCS];
-                ClassPtrBinder(curYear->qClassPtr[1], curYear->listAPCS);
-            }
-            if (curYear->listVP != nullptr)
-            {
-                if (curYear->qClassPtr[2] != nullptr)
-                    delete[] curYear->qClassPtr[2];
-
-                curYear->qClassPtr[2] = new StudyClass *[curYear->numVP];
-                ClassPtrBinder(curYear->qClassPtr[2], curYear->listVP);
-            }
             curYear = curYear->nextYear;
         }
     }
 }
-void QuickPtrDebinder(DataBase &DB)
+void subDebinder(StudyClass* curClass)
+{
+    while (curClass != nullptr)
+    {
+        if (curClass->listStudent != nullptr) {
+            delete[] curClass->quickStudentPtr;
+            curClass->quickStudentPtr = nullptr;
+        }
+        curClass = curClass->nextClass;
+    }
+}
+void QuickPtrDebinder(DataBase DB)
 {
     if (DB.YearList != nullptr)
     {
@@ -549,35 +595,21 @@ void QuickPtrDebinder(DataBase &DB)
         while (curYear != nullptr)
         {
             curClass = curYear->listCLC;
-
-            while (curClass != nullptr)
-            {
-                delete[] curClass->quickStudentPtr;
-                curClass->quickStudentPtr = nullptr;
-                curClass = curClass->nextClass;
-            }
+            subDebinder(curClass);
             curClass = curYear->listAPCS;
-            while (curClass != nullptr)
-            {
-                delete[] curClass->quickStudentPtr;
-                curClass->quickStudentPtr = nullptr;
-                curClass = curClass->nextClass;
-            }
+            subDebinder(curClass);
             curClass = curYear->listVP;
-            while (curClass != nullptr)
-            {
-                delete[] curClass->quickStudentPtr;
-                curClass->quickStudentPtr = nullptr;
-                curClass = curClass->nextClass;
-            }
+            subDebinder(curClass);
 
             if (curYear->qClassPtr != nullptr)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    delete[] curYear->qClassPtr[i];
+                    delete []curYear->qClassPtr[i];
                     curYear->qClassPtr[i] = nullptr;
                 }
+                delete []curYear->qClassPtr;
+                curYear->qClassPtr = nullptr;
             }
 
             curYear = curYear->nextYear;

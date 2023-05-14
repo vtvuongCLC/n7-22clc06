@@ -206,7 +206,7 @@ void SemestersListManager(DataBase &DB, string yearName)
 
 void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Semester* listSemester)
 {
-    Semester** HandlingArr = new Semester*[3];
+    Semester** HandlingArr = new Semester*[3]; 
     int k = 0;
     do {
         if (k == -1) {
@@ -295,6 +295,9 @@ void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* lis
                 DisplayStudentList(curClass->listStudent);
                 cout << endl;
                 cout << "Enter an index or select below options:" << endl;
+                
+            }
+            if (listSemester != nullptr) {
                 cout << "s. View Scoreboard" << endl;
             }
             cout << "0. Back" << endl;
@@ -306,7 +309,7 @@ void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* lis
                 AddStudent(curClass->listStudent,curClass->year,curClass->className,curClass->classType,curClass->numStudent);
                 SaveStudentListToFile(curClass->className,curClass->listStudent);
             }
-            if (selection == 's' || selection == 'S') {
+            if ((listSemester != nullptr) && (selection == 's' || selection == 'S')) {
                 StudyClassScoreBoardManager(listYear,curClass,listSemester);
             }
             if (curClass->listStudent != nullptr) {
@@ -329,7 +332,7 @@ void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* lis
             }
     } while (true);
 }
-void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* listSemester, string yearName, string classType)
+void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* listSemester, string yearName, string classType, int &numClass)
 {
     system("cls");
     char selection;  
@@ -359,7 +362,7 @@ void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* list
         if (selection == '0')
             break;
         else if (selection == 'n' || selection == 'N') {
-            AddClass(listClass,yearName,classType);
+            AddClass(listClass,yearName,classType,numClass);
             SaveClassToFile(listClass->year,listClass->classType,listClass);
         }
         else if (listClass != nullptr) {
@@ -393,13 +396,13 @@ void SchoolYearManager(DataBase &DB, Schoolyear* curYear)
             cout << ">> ";
             cin >> c;
             if (c == '1') {
-                ClassesManager(DB.YearList, curYear->listCLC,DB.SemesterList,curYear->year,"CLC");
+                ClassesManager(DB.YearList, curYear->listCLC,DB.SemesterList,curYear->year,"CLC",curYear->numCLC);
             }
             if (c == '2') {
-                ClassesManager(DB.YearList, curYear->listAPCS,DB.SemesterList,curYear->year,"APCS");
+                ClassesManager(DB.YearList, curYear->listAPCS,DB.SemesterList,curYear->year,"APCS",curYear->numAPCS);
             }
             if (c == '3') {
-                ClassesManager(DB.YearList, curYear->listVP,DB.SemesterList,curYear->year,"VP");
+                ClassesManager(DB.YearList, curYear->listVP,DB.SemesterList,curYear->year,"VP",curYear->numVP);
             }
         }
             

@@ -3,11 +3,12 @@
 #include "structlist.h"
 
 bool validInfo(BirthDate birth,char gender);
+bool validName(string name);
 
 void AddStudentManual(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
 void AddStudentCSV(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
 void AddStudent(Student* &listStudent, string yearName, string className, string classType, int &numStudent);
-void AddClass(StudyClass* &listClass, string yearName, string classType);
+void AddClass(StudyClass *&listClass, string yearName, string classType, int &numClass);
 Schoolyear* getYearData(Schoolyear* listYear);
 void AddYear(DataBase &DB);
 
@@ -22,8 +23,10 @@ Course* findTheCourse(Semester* pSemester, string year, int semester, string Nam
 
 void StudentPtrBinder(Student** quickStudentPtr, Student* listStudent);
 void ClassPtrBinder(StudyClass** quickClassPtr, StudyClass* listClass);
-void QuickPtrBinder(DataBase &DB);
-void QuickPtrDebinder(DataBase &DB);
+void subBinder(StudyClass* listClass, int numClass, StudyClass** &ClassHandler);
+void QuickPtrBinder(DataBase DB);
+void subDebinder(StudyClass* curClass);
+void QuickPtrDebinder(DataBase DB);
 
 void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* curCourseStudent, Semester* curSemester);
 void getCourseListForHandlingArr(string curYearName, Semester* listSemester, Semester** HandlingArr, int &k);

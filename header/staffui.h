@@ -9,7 +9,8 @@ void SemestersListManager(DataBase &DB, string yearName);
 void StudyClassScoreBoardManager(Schoolyear* listYear, StudyClass* curClass, Semester* listSemester);
 
 void StudyClassManager(Schoolyear* listYear ,StudyClass* curClass, Semester* listSemester);
-void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* listSemester, string yearName, string classType);
+void ClassesManager(Schoolyear* listYear, StudyClass* &listClass, Semester* listSemester, string yearName, string classType, int &numClass);
+
 void SchoolYearManager(DataBase &DB, Schoolyear* curYear);
 
 void MainManagementUI(DataBase &DB);

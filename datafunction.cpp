@@ -142,10 +142,6 @@ void LoadSchoolData(DataBase &DB)
     StudyClass* curClass = nullptr;
 
     while (curYear != nullptr) {
-        curYear->qClassPtr = new StudyClass**[3];
-        for (int i = 0; i < 3; i++) {
-            curYear->qClassPtr[i] = nullptr;
-        }
         LoadClassFromfile(curYear->year,"CLC",curYear->listCLC,curYear->numCLC);
         curClass = curYear->listCLC;
         while (curClass != nullptr) {
@@ -321,8 +317,6 @@ void LoadCourseStudentFromFile(Course* aCourse, Semester* curSemester, Schoolyea
 void LoadSemesterSector(DataBase &DB)
 {
     QuickPtrBinder(DB);
-    if (DB.SemesterList != nullptr)
-        return;
     Semester* curSem = nullptr;
     Course* curCourse = nullptr;
     LoadSemesterFromFile(DB.SemesterFile,DB.SemesterList);
