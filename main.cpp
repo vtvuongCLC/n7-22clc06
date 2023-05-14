@@ -15,7 +15,7 @@ int main()
     char usertype;
     
     do {
-        usertype = -9;
+        usertype = '\0';
         system("cls");
         cout << "Courses Management System" << endl;
         cout << "Login Menu"                << endl;
