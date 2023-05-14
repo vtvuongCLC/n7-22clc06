@@ -160,7 +160,6 @@ void AddStudentCSV(Student *&listStudent, string yearName, string className, str
 {
     string filepath;
     ifstream csvIn;
-    system("cls");
     do
     {
         cin.ignore();
@@ -338,6 +337,8 @@ void AddYear(DataBase &DB)
         curYear->nextYear->prevYear = curYear;
     }
     DB.numYear++;
+    cout << "Successfully created an academic year" << endl;
+    system("pause");
 }
 
 Schoolyear *navigateYear(Schoolyear *listYear, int userindex)
@@ -1154,6 +1155,8 @@ void InitSemester(Semester *&Sem, int semester, string year)
     getline(cin, curSem->start);
     cout << "Enter ending date for semester " << curSem->semester << ": ";
     getline(cin, curSem->end);
+    cout << "Successfully created a semester" << endl;
+    system("pause");
 }
 void addStudentToCourse(Course *curCourse, Semester *curSemester, Schoolyear *curYear)
 {
