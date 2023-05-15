@@ -32,7 +32,7 @@ void LinkEnrolledCourse(Student *&curStudent, Course *curCourse, CourseStudent* 
 void getCourseListForHandlingArr(string curYearName, Semester* listSemester, Semester** HandlingArr, int &k);
 
 void UpdateStudentInfo(Student *curStudent);
-void UpdateCourseInfo(CourseInfo &curCourseInfo);
+void UpdateCourseInfo(CourseInfo &curCourseInfo, Semester* curSemester);
 bool UploadListofStud(Course* &curCourse, Semester* curSemester, Schoolyear* listYear);
 void NewCourse(Course* &firstCour);
 void InitSemester(Semester* &Sem, int semester, string year);

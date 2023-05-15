@@ -815,7 +815,7 @@ void UpdateStudentInfo(Student *curStudent)
         }
     } while (true);
 }
-void UpdateCourseInfo(CourseInfo &curCourseInfo)
+void UpdateCourseInfo(CourseInfo &curCourseInfo, Semester* curSemester)
 {
     int selection;
     do
@@ -836,22 +836,23 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo)
             break;
         cin.ignore(1000, '\n');
         system("cls");
+        string courseID = curCourseInfo.courseID, courseName = curCourseInfo.courseName, className = curCourseInfo.className;
         switch (selection)
         {
 
         case 1:
             cout << "Enter the new course ID: ";
-            getline(cin, curCourseInfo.courseID);
+            getline(cin, courseID);
             break;
 
         case 2:
             cout << "Enter the new course name: ";
-            getline(cin, curCourseInfo.courseName);
+            getline(cin, courseName);
             break;
 
         case 3:
             cout << "Enter the new class name: ";
-            getline(cin, curCourseInfo.className);
+            getline(cin, className);
             break;
 
         case 4:
@@ -906,10 +907,10 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo)
 
         case 6:
             int session;
-            cout << "1. S1 (07:30)" << endl
-                 << "2. S2 (09:30)" << endl
-                 << "3. S3 (13:30)" << endl
-                 << "4. S4 (15:30)" << endl
+            cout << "1. S1(07:30)" << endl
+                 << "2. S2(09:30)" << endl
+                 << "3. S3(13:30)" << endl
+                 << "4. S4(15:30)" << endl
                  << "0. Cancel" << endl
                  << "Enter the selection of the session: ";
             cin >> session;
@@ -917,16 +918,16 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo)
             switch (session)
             {
             case 1:
-                curCourseInfo.CourseDate.session = "S1 (07:30)";
+                curCourseInfo.CourseDate.session = "S1(07:30)";
                 break;
             case 2:
-                curCourseInfo.CourseDate.session = "S2 (09:30)";
+                curCourseInfo.CourseDate.session = "S2(09:30)";
                 break;
             case 3:
-                curCourseInfo.CourseDate.session = "S3 (13:30)";
+                curCourseInfo.CourseDate.session = "S3(13:30)";
                 break;
             case 4:
-                curCourseInfo.CourseDate.session = "S4 (15:30)";
+                curCourseInfo.CourseDate.session = "S4(15:30)";
                 break;
             default:
                 cout << "Cancel change" << endl;
@@ -952,6 +953,20 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo)
         default:
             return;
         }
+        if(!(courseID == curCourseInfo.courseID && courseName == curCourseInfo.courseName && className == curCourseInfo.className)){
+            if(findTheCourse(curSemester->CourseList, courseID, courseName, className) == nullptr){
+                curCourseInfo.courseID = courseID;
+                curCourseInfo.courseName = courseName;
+                curCourseInfo.className = className;
+            }
+            else {
+                cout << "The new information of this course has been duplicated with other courses!!!" << endl;
+                system("pause");
+                continue; 
+            }
+        }
+        cout << "This course is updated with the new info" << endl;
+        system("pause");
     } while (true);
 }
 bool UploadListofStud(Course *&curCourse, Semester *curSemester, Schoolyear *listYear)

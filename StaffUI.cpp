@@ -72,7 +72,7 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
             } 
             break;
         case 4:
-                UpdateCourseInfo(curCourse->thisCourseInfo);
+                UpdateCourseInfo(curCourse->thisCourseInfo, curSemester);
                 SaveCourseInfoToFile(curSemester);
             break;
         case 5:
