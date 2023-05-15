@@ -133,8 +133,18 @@ void SpecificSemesterManager(DataBase &DB, Semester* curSemester)
             break;
         if (selection == 'n' || selection == 'N') {
             NewCourse(curSemester->CourseList);
-            curSemester->numCourse++;
-            SaveCourseInfoToFile(curSemester);
+            if(findTheCourse(curSemester->CourseList->nextCourse, curSemester->CourseList->thisCourseInfo.courseName, curSemester->CourseList->thisCourseInfo.courseID, curSemester->CourseList->thisCourseInfo.className) != nullptr){
+                Course* tmp = curSemester->CourseList;
+                curSemester->CourseList = curSemester->CourseList->nextCourse;
+                delete tmp;
+                cout << "This course has existed in system!!!" << endl;
+            }
+            else{
+                curSemester->numCourse++;
+                SaveCourseInfoToFile(curSemester);
+                cout << "The system create a new course successfully!!!\n";
+            }
+            system("pause");
             continue;
         }
             

@@ -19,7 +19,7 @@ Student* navigateStudent(Student* listStudent, int userindex);
 
 CourseStudent* FindStudentIndex(Schoolyear* listYear,string yearName, string className, int classtype, string StudID,Course* curCourse, Semester* curSemester);
 CourseStudent* findStudentInCourse(CourseStudent* listStudent, string studID);
-Course* findTheCourse(Semester* pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass);
+Course *findTheCourse(Course* pCourse, string NameCourse, string IDCourse, string NameClass);
 
 void StudentPtrBinder(Student** quickStudentPtr, Student* listStudent);
 void ClassPtrBinder(StudyClass** quickClassPtr, StudyClass* listClass);

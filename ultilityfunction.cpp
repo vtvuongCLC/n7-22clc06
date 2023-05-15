@@ -493,18 +493,9 @@ CourseStudent *findStudentInCourse(CourseStudent *listStudent, string studID)
     }
     return listStudent;
 }
-Course *findTheCourse(Semester *pSemester, string year, int semester, string NameCourse, string IDCourse, string NameClass)
-{
-    while (pSemester)
-    {
-        if (pSemester->year == year && pSemester->semester == semester)
-            break;
-        pSemester = pSemester->nextSemester;
-    }
-    if (pSemester == nullptr)
-        return nullptr;
 
-    Course *pCourse = pSemester->CourseList;
+Course *findTheCourse(Course* pCourse, string NameCourse, string IDCourse, string NameClass)
+{
     while (pCourse)
     {
         if (NameCourse == pCourse->thisCourseInfo.courseName && IDCourse == pCourse->thisCourseInfo.courseID && NameClass == pCourse->thisCourseInfo.className)
@@ -1125,8 +1116,6 @@ void NewCourse(Course *&firstCour)
         if (session >= 1 && session <= 4)
             checkInvalid = false;
     }
-    cout << "The system create a new course successfully!!!\n";
-    system("pause");
 }
 void InitSemester(Semester *&Sem, int semester, string year)
 {
@@ -1291,7 +1280,7 @@ void removeCourse(Semester *curSemester)
     cout << "Enter the class name of course you want to remove: ";
     getline(cin, className);
 
-    Course *pCourse = findTheCourse(curSemester, curSemester->year, curSemester->semester, courseName, courseID, className);
+    Course *pCourse = findTheCourse(curSemester->CourseList, courseName, courseID, className);
     if (!pCourse)
     {
         cout << "This course doesn't exist!\n";
