@@ -182,7 +182,7 @@ void SemestersListManager(DataBase &DB, string yearName)
         cout << "Current Year: " << yearName << endl;
         cout << left << setw(10) << "Index";
         cout << left << setw(10) << "Semester";
-        cout << left << setw(10) << "Start";
+        cout << left << setw(15) << "Start";
         cout << left << setw(10) << "End";
         cout << endl;
         if (DisplaySemesterList(DB.SemesterList,handlingArr,yearName,maxSelection) == false)

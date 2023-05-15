@@ -254,7 +254,7 @@ bool DisplaySemesterList(Semester* SemesterList,Semester** &handlingArr, string 
             SemesterList->semester = i;
             cout << left << setw(10) << SemesterList->index;
             cout << left << setw(10) << SemesterList->semester;
-            cout << left << setw(10) << SemesterList->start;
+            cout << left << setw(15) << SemesterList->start;
             cout << left << setw(10) << SemesterList->end;
             cout << endl;
         }
