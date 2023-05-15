@@ -1197,6 +1197,8 @@ void addStudentToCourse(Course *curCourse, Semester *curSemester, Schoolyear *cu
         }
         curCourse->listStudent = newStudent;
         curCourse->numCurStudents++;
+        cout << "Successfully added a student to course" << endl;
+        system("pause");
     }
 }
 
@@ -1282,6 +1284,8 @@ void removeStudentFromCourse(Course *curCourse, Semester *curSemester, Schoolyea
     }
     delete removedStudent;
     curCourse->numCurStudents--;
+    cout << "Successfully removed a student from the course" << endl;
+    system("pause");
 }
 void removeCourse(Semester *curSemester)
 {
