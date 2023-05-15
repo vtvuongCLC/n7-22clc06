@@ -404,7 +404,7 @@ CourseStudent *FindStudentIndex(Schoolyear *listYear, string yearName, string cl
 {
     Schoolyear *curYear = listYear;
     int x = 0;
-    while (curYear && curYear->year.find(yearName) == string::npos)
+    while (curYear && curYear->year != yearName)
     {
         curYear = curYear->nextYear;
         x++;
@@ -977,7 +977,7 @@ bool UploadListofStud(Course *&curCourse, Semester *curSemester, Schoolyear *lis
     string yearName, className, StudID, tmp;
     ifstream in;
     int i = 0;
-    in.open(curCourse->thisCourseInfo.courseID + ".csv");
+    in.open("InOut\\" + curCourse->thisCourseInfo.courseID + ".csv");
     if (!in.is_open())
     {
         return false;
@@ -985,7 +985,7 @@ bool UploadListofStud(Course *&curCourse, Semester *curSemester, Schoolyear *lis
     int classtype;
     while (i < curCourse->thisCourseInfo.maxStudent && !in.eof())
     {
-        in.ignore(100, ',');
+        in.ignore(1000,'\n');
         getline(in, yearName, ',');
         getline(in, className, ',');
         getline(in, tmp, ',');
