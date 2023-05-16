@@ -72,7 +72,7 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
                 }
                 else{
                     cout << "Unable to read file." << endl;
-                    cout << "Make sure file name is correct or list of student in the course is empty." << end;
+                    cout << "Make sure file name is correct or list of student in the course is empty." << endl;
                     system("pause");
                 }
             } 
