@@ -209,7 +209,7 @@ void LoadCourseInfoFromFile(Semester* curSemester)
         curSemester->numCourse = stoi(tempData);
         while (CourseInfoIn.eof() == false) {
             getline(CourseInfoIn,tempData,',');
-            if (tempData.empty() == false) {
+            if (tempData.empty() == false || CourseInfoIn.eof() == false) {
                 if (curSemester->CourseList == nullptr) {
                     curSemester->CourseList = new Course;
                     curCourse = curSemester->CourseList;
