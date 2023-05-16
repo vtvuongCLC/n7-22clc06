@@ -67,8 +67,14 @@ void CourseManager(DataBase &DB ,Course* curCourse, Semester* curSemester)
                 cout << "Maximum number of students in course exceeded" << endl;
                 system("pause");
             } else {
-                UploadListofStud(curCourse, curSemester, DB.YearList);
+                if(UploadListofStud(curCourse, curSemester, DB.YearList)){
                 SaveCourseStudentToFile(curCourse);
+                }
+                else{
+                    cout << "Unable to read file." << endl;
+                    cout << "Make sure file name is correct or list of student in the course is empty." << end;
+                    system("pause");
+                }
             } 
             break;
         case 4:
