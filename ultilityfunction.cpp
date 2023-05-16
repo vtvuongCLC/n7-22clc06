@@ -983,9 +983,9 @@ bool UploadListofStud(Course *&curCourse, Semester *curSemester, Schoolyear *lis
         return false;
     }
     int classtype;
+    in.ignore(1000,'\n');
     while (i < curCourse->thisCourseInfo.maxStudent && !in.eof())
     {
-        in.ignore(1000,'\n');
         getline(in, yearName, ',');
         getline(in, className, ',');
         getline(in, tmp, ',');
