@@ -954,7 +954,7 @@ void UpdateCourseInfo(CourseInfo &curCourseInfo, Semester* curSemester)
             return;
         }
         if(!(courseID == curCourseInfo.courseID && courseName == curCourseInfo.courseName && className == curCourseInfo.className)){
-            if(findTheCourse(curSemester->CourseList, courseID, courseName, className) == nullptr){
+            if(findTheCourse(curSemester->CourseList, courseName, courseID, className) == nullptr){
                 curCourseInfo.courseID = courseID;
                 curCourseInfo.courseName = courseName;
                 curCourseInfo.className = className;
